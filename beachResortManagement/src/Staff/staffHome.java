@@ -4,6 +4,9 @@
  */
 package Staff;
 
+import java.awt.BorderLayout;
+import java.beans.PropertyVetoException;
+
 
 
 /**
@@ -48,45 +51,47 @@ public class staffHome extends javax.swing.JFrame {
         jPanel6 = new javax.swing.JPanel();
         jLabel28 = new javax.swing.JLabel();
         jLabel29 = new javax.swing.JLabel();
-        jPanel4 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jPanel15 = new javax.swing.JPanel();
+        jPanel14 = new javax.swing.JPanel();
+        jLabel30 = new javax.swing.JLabel();
+        pnlmain = new javax.swing.JPanel();
+        txtHead = new javax.swing.JLabel();
+        pnlCheckin = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
-        jPanel16 = new javax.swing.JPanel();
+        pnlWaterActivities = new javax.swing.JPanel();
         jPanel12 = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
-        jPanel17 = new javax.swing.JPanel();
+        pnlReserveRoom = new javax.swing.JPanel();
         jPanel18 = new javax.swing.JPanel();
         jLabel11 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
-        jPanel19 = new javax.swing.JPanel();
+        pnlConfirmReservation = new javax.swing.JPanel();
         jPanel20 = new javax.swing.JPanel();
         jLabel14 = new javax.swing.JLabel();
         jLabel19 = new javax.swing.JLabel();
-        jPanel21 = new javax.swing.JPanel();
+        pnlAvailableRoom = new javax.swing.JPanel();
         jPanel22 = new javax.swing.JPanel();
         jLabel15 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
-        jPanel23 = new javax.swing.JPanel();
+        pnlAvailableBoat = new javax.swing.JPanel();
         jPanel24 = new javax.swing.JPanel();
         jLabel18 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
-        jPanel25 = new javax.swing.JPanel();
+        pnlReserveBoat = new javax.swing.JPanel();
         jPanel26 = new javax.swing.JPanel();
         jLabel20 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        jPanel27 = new javax.swing.JPanel();
+        pnlCancelReservation = new javax.swing.JPanel();
         jPanel28 = new javax.swing.JPanel();
         jLabel21 = new javax.swing.JLabel();
         jLabel22 = new javax.swing.JLabel();
-        jPanel29 = new javax.swing.JPanel();
+        pnlGuest = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblbooking1 = new rojerusan.RSTableMetro();
         jLabel24 = new javax.swing.JLabel();
-        jPanel30 = new javax.swing.JPanel();
+        pnlUpcomming = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblbooking = new rojerusan.RSTableMetro();
         jLabel23 = new javax.swing.JLabel();
@@ -95,6 +100,7 @@ public class staffHome extends javax.swing.JFrame {
         setUndecorated(true);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jPanel1.setBackground(new java.awt.Color(0, 0, 0));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel2.setBackground(new java.awt.Color(39, 114, 160));
@@ -109,11 +115,12 @@ public class staffHome extends javax.swing.JFrame {
 
         jPanel2.add(jPanel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 440, -1, 30));
 
+        jPanel10.setBackground(new java.awt.Color(255, 255, 255));
         jPanel10.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel6.setText("Logout");
+        jLabel6.setText("LOGOUT");
         jPanel10.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 90, 30));
 
         jPanel2.add(jPanel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(1090, 20, 90, 30));
@@ -141,7 +148,12 @@ public class staffHome extends javax.swing.JFrame {
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setText("HOME");
+        jLabel3.setText("DASHBOARD");
+        jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel3MouseClicked(evt);
+            }
+        });
         jPanel7.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(28, 0, 140, 50));
 
         jPanel3.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 290, 200, 50));
@@ -152,8 +164,13 @@ public class staffHome extends javax.swing.JFrame {
         jLabel4.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel4.setText("CHECK-IN");
-        jPanel8.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(28, 0, 140, 50));
+        jLabel4.setText("MANAGE ROOMS");
+        jLabel4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel4MouseClicked(evt);
+            }
+        });
+        jPanel8.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(18, 0, 160, 50));
 
         jPanel3.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 340, 200, 50));
 
@@ -163,7 +180,12 @@ public class staffHome extends javax.swing.JFrame {
         jLabel5.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel5.setText("CHECK-OUT");
+        jLabel5.setText("MANAGE BOATS");
+        jLabel5.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel5MouseClicked(evt);
+            }
+        });
         jPanel9.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(28, 0, 140, 50));
 
         jPanel3.add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 390, 200, 50));
@@ -174,164 +196,176 @@ public class staffHome extends javax.swing.JFrame {
         jLabel26.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
         jLabel26.setForeground(new java.awt.Color(255, 255, 255));
         jLabel26.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel26.setText("HISTORY");
+        jLabel26.setText("HISTORY LOG");
         jPanel11.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(28, 0, 140, 50));
 
-        jPanel3.add(jPanel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 440, 200, 50));
-        jPanel3.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 20, 140, 110));
+        jPanel3.add(jPanel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 490, 200, 50));
+        jPanel3.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 40, 140, 110));
 
         jLabel28.setFont(new java.awt.Font("Tahoma", 1, 30)); // NOI18N
         jLabel28.setForeground(new java.awt.Color(255, 255, 255));
         jLabel28.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel28.setText("Aldrie");
-        jPanel3.add(jLabel28, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 150, 220, 30));
+        jPanel3.add(jLabel28, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, 220, 30));
 
         jLabel29.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
         jLabel29.setForeground(new java.awt.Color(255, 255, 255));
         jLabel29.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel29.setText("Beach Resort");
-        jPanel3.add(jLabel29, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 180, 220, 20));
+        jPanel3.add(jLabel29, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 200, 220, 20));
+
+        jPanel14.setBackground(new java.awt.Color(27, 59, 95));
+        jPanel14.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel30.setBackground(new java.awt.Color(204, 0, 153));
+        jLabel30.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        jLabel30.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel30.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel30.setText("CHECK-OUT");
+        jPanel14.add(jLabel30, new org.netbeans.lib.awtextra.AbsoluteConstraints(28, 0, 140, 50));
+
+        jPanel3.add(jPanel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 440, 200, 50));
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 240, 830));
 
-        jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        pnlmain.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel1.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 36)); // NOI18N
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Welcome to Beach Front Resort Managemenr System");
-        jLabel1.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 3, 0, new java.awt.Color(39, 114, 160)));
-        jPanel4.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 1140, 80));
+        txtHead.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
+        txtHead.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        txtHead.setText("Beach-Front Resort Managemenr System");
+        txtHead.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 3, 0, new java.awt.Color(39, 114, 160)));
+        pnlmain.add(txtHead, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 1140, 80));
 
-        jPanel15.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel15.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        pnlCheckin.setBackground(new java.awt.Color(255, 255, 255));
+        pnlCheckin.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel5.setBackground(new java.awt.Color(153, 153, 153));
-        jPanel15.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 70, 50));
+        pnlCheckin.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 70, 50));
 
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel8.setText("00");
-        jPanel15.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 40, 40, -1));
+        pnlCheckin.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 40, 40, -1));
 
         jLabel17.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 13)); // NOI18N
         jLabel17.setText("Check-in Today");
-        jPanel15.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
+        pnlCheckin.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
 
-        jPanel4.add(jPanel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 100, 270, 70));
+        pnlmain.add(pnlCheckin, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 100, 270, 70));
 
-        jPanel16.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel16.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        pnlWaterActivities.setBackground(new java.awt.Color(255, 255, 255));
+        pnlWaterActivities.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel12.setBackground(new java.awt.Color(255, 153, 51));
-        jPanel16.add(jPanel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 70, 50));
+        pnlWaterActivities.add(jPanel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 70, 50));
 
         jLabel9.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 13)); // NOI18N
         jLabel9.setText("Water Activities");
-        jPanel16.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
+        pnlWaterActivities.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
 
         jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel10.setText("00");
-        jPanel16.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 40, 40, -1));
+        pnlWaterActivities.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 40, 40, -1));
 
-        jPanel4.add(jPanel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 190, 270, 70));
+        pnlmain.add(pnlWaterActivities, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 190, 270, 70));
 
-        jPanel17.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel17.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        pnlReserveRoom.setBackground(new java.awt.Color(255, 255, 255));
+        pnlReserveRoom.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel18.setBackground(new java.awt.Color(51, 204, 0));
-        jPanel17.add(jPanel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 70, 50));
+        pnlReserveRoom.add(jPanel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 70, 50));
 
         jLabel11.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 13)); // NOI18N
         jLabel11.setText("Reserve Room");
-        jPanel17.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
+        pnlReserveRoom.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
 
         jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel12.setText("00");
-        jPanel17.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 40, 40, -1));
+        pnlReserveRoom.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 40, 40, -1));
 
-        jPanel4.add(jPanel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 100, 270, 70));
+        pnlmain.add(pnlReserveRoom, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 100, 270, 70));
 
-        jPanel19.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel19.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        pnlConfirmReservation.setBackground(new java.awt.Color(255, 255, 255));
+        pnlConfirmReservation.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel20.setBackground(new java.awt.Color(0, 51, 204));
-        jPanel19.add(jPanel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 70, 50));
+        pnlConfirmReservation.add(jPanel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 70, 50));
 
         jLabel14.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel14.setText("00");
-        jPanel19.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 40, 40, -1));
+        pnlConfirmReservation.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 40, 40, -1));
 
         jLabel19.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 13)); // NOI18N
         jLabel19.setText("Confirm Reservation");
-        jPanel19.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
+        pnlConfirmReservation.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
 
-        jPanel4.add(jPanel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 100, 270, 70));
+        pnlmain.add(pnlConfirmReservation, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 100, 270, 70));
 
-        jPanel21.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel21.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        pnlAvailableRoom.setBackground(new java.awt.Color(255, 255, 255));
+        pnlAvailableRoom.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel22.setBackground(new java.awt.Color(204, 0, 51));
-        jPanel21.add(jPanel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 70, 50));
+        pnlAvailableRoom.add(jPanel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 70, 50));
 
         jLabel15.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 13)); // NOI18N
         jLabel15.setText("Available Room");
-        jPanel21.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
+        pnlAvailableRoom.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
 
         jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel16.setText("00");
-        jPanel21.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 40, 40, -1));
+        pnlAvailableRoom.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 40, 40, -1));
 
-        jPanel4.add(jPanel21, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 100, 270, 70));
+        pnlmain.add(pnlAvailableRoom, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 100, 270, 70));
 
-        jPanel23.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel23.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        pnlAvailableBoat.setBackground(new java.awt.Color(255, 255, 255));
+        pnlAvailableBoat.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel24.setBackground(new java.awt.Color(204, 204, 0));
-        jPanel23.add(jPanel24, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 70, 50));
+        pnlAvailableBoat.add(jPanel24, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 70, 50));
 
         jLabel18.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel18.setText("00");
-        jPanel23.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 40, 40, -1));
+        pnlAvailableBoat.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 40, 40, -1));
 
         jLabel13.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 13)); // NOI18N
         jLabel13.setText("Available Boat");
-        jPanel23.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
+        pnlAvailableBoat.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
 
-        jPanel4.add(jPanel23, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 190, 270, 70));
+        pnlmain.add(pnlAvailableBoat, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 190, 270, 70));
 
-        jPanel25.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel25.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        pnlReserveBoat.setBackground(new java.awt.Color(255, 255, 255));
+        pnlReserveBoat.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel26.setBackground(new java.awt.Color(0, 204, 204));
-        jPanel25.add(jPanel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 70, 50));
+        pnlReserveBoat.add(jPanel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 70, 50));
 
         jLabel20.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel20.setText("00");
-        jPanel25.add(jLabel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 40, 40, -1));
+        pnlReserveBoat.add(jLabel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 40, 40, -1));
 
         jLabel7.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 13)); // NOI18N
         jLabel7.setText("Reserve Boat");
-        jPanel25.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
+        pnlReserveBoat.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
 
-        jPanel4.add(jPanel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 190, 270, 70));
+        pnlmain.add(pnlReserveBoat, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 190, 270, 70));
 
-        jPanel27.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel27.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        pnlCancelReservation.setBackground(new java.awt.Color(255, 255, 255));
+        pnlCancelReservation.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel28.setBackground(new java.awt.Color(204, 0, 204));
-        jPanel27.add(jPanel28, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 70, 50));
+        pnlCancelReservation.add(jPanel28, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 70, 50));
 
         jLabel21.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 13)); // NOI18N
         jLabel21.setText("Cancel Reservation");
-        jPanel27.add(jLabel21, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
+        pnlCancelReservation.add(jLabel21, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
 
         jLabel22.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel22.setText("00");
-        jPanel27.add(jLabel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 40, 40, -1));
+        pnlCancelReservation.add(jLabel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 40, 40, -1));
 
-        jPanel4.add(jPanel27, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 190, 270, 70));
+        pnlmain.add(pnlCancelReservation, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 190, 270, 70));
 
-        jPanel29.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel29.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        pnlGuest.setBackground(new java.awt.Color(255, 255, 255));
+        pnlGuest.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         tblbooking1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -347,7 +381,7 @@ public class staffHome extends javax.swing.JFrame {
                 {null}
             },
             new String [] {
-                "Room Number"
+                "Guest Name"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -358,20 +392,21 @@ public class staffHome extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        tblbooking1.setToolTipText("");
         tblbooking1.setColorBackgoundHead(new java.awt.Color(255, 255, 255));
         tblbooking1.setColorBordeFilas(new java.awt.Color(255, 255, 255));
         tblbooking1.setColorBordeHead(new java.awt.Color(255, 255, 255));
         tblbooking1.setColorFilasBackgound2(new java.awt.Color(255, 255, 255));
-        tblbooking1.setColorFilasForeground1(new java.awt.Color(61, 58, 87));
-        tblbooking1.setColorFilasForeground2(new java.awt.Color(61, 58, 87));
+        tblbooking1.setColorFilasForeground1(new java.awt.Color(27, 59, 95));
+        tblbooking1.setColorFilasForeground2(new java.awt.Color(27, 59, 95));
         tblbooking1.setColorForegroundHead(new java.awt.Color(0, 0, 0));
-        tblbooking1.setColorSelBackgound(new java.awt.Color(61, 58, 87));
+        tblbooking1.setColorSelBackgound(new java.awt.Color(27, 59, 95));
         tblbooking1.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
         tblbooking1.setFuenteFilas(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         tblbooking1.setFuenteFilasSelect(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         tblbooking1.setGridColor(new java.awt.Color(204, 204, 204));
         tblbooking1.setRowHeight(30);
-        tblbooking1.setSelectionBackground(new java.awt.Color(61, 58, 87));
+        tblbooking1.setSelectionBackground(new java.awt.Color(27, 59, 95));
         tblbooking1.setSelectionForeground(new java.awt.Color(255, 255, 255));
         tblbooking1.setShowGrid(false);
         tblbooking1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -381,16 +416,16 @@ public class staffHome extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(tblbooking1);
 
-        jPanel29.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 230, 380));
+        pnlGuest.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 230, 380));
 
         jLabel24.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 14)); // NOI18N
-        jLabel24.setText("Available Room");
-        jPanel29.add(jLabel24, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 16, -1, 30));
+        jLabel24.setText("Currently Check-in");
+        pnlGuest.add(jLabel24, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 16, -1, 30));
 
-        jPanel4.add(jPanel29, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 280, 270, 460));
+        pnlmain.add(pnlGuest, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 280, 270, 460));
 
-        jPanel30.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel30.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        pnlUpcomming.setBackground(new java.awt.Color(255, 255, 255));
+        pnlUpcomming.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         tblbooking.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -421,16 +456,16 @@ public class staffHome extends javax.swing.JFrame {
         tblbooking.setColorBordeFilas(new java.awt.Color(255, 255, 255));
         tblbooking.setColorBordeHead(new java.awt.Color(255, 255, 255));
         tblbooking.setColorFilasBackgound2(new java.awt.Color(255, 255, 255));
-        tblbooking.setColorFilasForeground1(new java.awt.Color(61, 58, 87));
-        tblbooking.setColorFilasForeground2(new java.awt.Color(61, 58, 87));
+        tblbooking.setColorFilasForeground1(new java.awt.Color(27, 59, 95));
+        tblbooking.setColorFilasForeground2(new java.awt.Color(27, 59, 95));
         tblbooking.setColorForegroundHead(new java.awt.Color(0, 0, 0));
-        tblbooking.setColorSelBackgound(new java.awt.Color(61, 58, 87));
+        tblbooking.setColorSelBackgound(new java.awt.Color(27, 59, 95));
         tblbooking.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
         tblbooking.setFuenteFilas(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         tblbooking.setFuenteFilasSelect(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         tblbooking.setGridColor(new java.awt.Color(204, 204, 204));
         tblbooking.setRowHeight(30);
-        tblbooking.setSelectionBackground(new java.awt.Color(61, 58, 87));
+        tblbooking.setSelectionBackground(new java.awt.Color(27, 59, 95));
         tblbooking.setSelectionForeground(new java.awt.Color(255, 255, 255));
         tblbooking.setShowGrid(false);
         tblbooking.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -440,15 +475,15 @@ public class staffHome extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(tblbooking);
 
-        jPanel30.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 810, 380));
+        pnlUpcomming.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 810, 380));
 
         jLabel23.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 14)); // NOI18N
         jLabel23.setText("Upcomming Check-In");
-        jPanel30.add(jLabel23, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 16, -1, 30));
+        pnlUpcomming.add(jLabel23, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 16, -1, 30));
 
-        jPanel4.add(jPanel30, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 280, 850, 460));
+        pnlmain.add(pnlUpcomming, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 280, 850, 460));
 
-        jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 70, 1200, 760));
+        jPanel1.add(pnlmain, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 70, 1200, 760));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 830));
 
@@ -464,6 +499,58 @@ public class staffHome extends javax.swing.JFrame {
     private void tblbooking1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblbooking1MouseClicked
         // TODO add your handling code here:
     }//GEN-LAST:event_tblbooking1MouseClicked
+
+    private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
+        staffRooms room = new staffRooms();
+        pnlmain.removeAll(); // Remove existing components
+        pnlmain.setLayout(new BorderLayout()); // Set the layout
+        pnlmain.add(room, BorderLayout.CENTER); // Add new component
+        pnlmain.revalidate(); // Revalidate to reflect changes
+        pnlmain.repaint(); // Repaint the panel to show updates
+        room.setVisible(true);   
+    }//GEN-LAST:event_jLabel4MouseClicked
+
+    private void jLabel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel5MouseClicked
+        staffBoats boat = new staffBoats();
+        pnlmain.removeAll(); // Remove existing components
+        pnlmain.setLayout(new BorderLayout()); // Set the layout
+        pnlmain.add(boat, BorderLayout.CENTER); // Add new component
+        pnlmain.revalidate(); // Revalidate to reflect changes
+        pnlmain.repaint(); // Repaint the panel to show updates
+        boat.setVisible(true); 
+    }//GEN-LAST:event_jLabel5MouseClicked
+
+    private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
+    // Clear the panel
+    pnlmain.removeAll();
+    pnlmain.revalidate();
+    pnlmain.repaint();
+
+    // Set the background color of pnlmain
+    pnlmain.setBackground(new java.awt.Color(242, 242, 242)); // Set the background color to light gray
+    pnlmain.setOpaque(true); // Ensure the panel is opaque
+
+    // Add all your components to pnlmain
+    pnlmain.add(txtHead);
+    pnlmain.add(pnlUpcomming); 
+    pnlmain.add(pnlGuest);
+    pnlmain.add(pnlCancelReservation); 
+    pnlmain.add(pnlCheckin); 
+    pnlmain.add(pnlAvailableRoom); 
+    pnlmain.add(pnlReserveRoom); 
+    pnlmain.add(pnlAvailableBoat); 
+    pnlmain.add(pnlReserveBoat); 
+    pnlmain.add(pnlWaterActivities); 
+    pnlmain.add(pnlConfirmReservation);
+
+    // Revalidate and repaint to reflect the changes
+    pnlmain.revalidate();
+    pnlmain.repaint();
+
+
+    
+   
+    }//GEN-LAST:event_jLabel3MouseClicked
 
     /**
      * @param args the command line arguments
@@ -500,7 +587,6 @@ new staffHome().setVisible(true);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
@@ -523,6 +609,7 @@ new staffHome().setVisible(true);
     private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -534,25 +621,15 @@ new staffHome().setVisible(true);
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel13;
-    private javax.swing.JPanel jPanel15;
-    private javax.swing.JPanel jPanel16;
-    private javax.swing.JPanel jPanel17;
+    private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel18;
-    private javax.swing.JPanel jPanel19;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel20;
-    private javax.swing.JPanel jPanel21;
     private javax.swing.JPanel jPanel22;
-    private javax.swing.JPanel jPanel23;
     private javax.swing.JPanel jPanel24;
-    private javax.swing.JPanel jPanel25;
     private javax.swing.JPanel jPanel26;
-    private javax.swing.JPanel jPanel27;
     private javax.swing.JPanel jPanel28;
-    private javax.swing.JPanel jPanel29;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel30;
-    private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
@@ -560,7 +637,19 @@ new staffHome().setVisible(true);
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JPanel pnlAvailableBoat;
+    private javax.swing.JPanel pnlAvailableRoom;
+    private javax.swing.JPanel pnlCancelReservation;
+    private javax.swing.JPanel pnlCheckin;
+    private javax.swing.JPanel pnlConfirmReservation;
+    private javax.swing.JPanel pnlGuest;
+    private javax.swing.JPanel pnlReserveBoat;
+    private javax.swing.JPanel pnlReserveRoom;
+    private javax.swing.JPanel pnlUpcomming;
+    private javax.swing.JPanel pnlWaterActivities;
+    private javax.swing.JPanel pnlmain;
     private rojerusan.RSTableMetro tblbooking;
     private rojerusan.RSTableMetro tblbooking1;
+    private javax.swing.JLabel txtHead;
     // End of variables declaration//GEN-END:variables
 }
