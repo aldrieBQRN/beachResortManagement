@@ -85,12 +85,13 @@ public class staffBoats extends javax.swing.JInternalFrame {
                 // Fetch the boat details from the result set
                 String boatNumber = rs.getString("boat_number");
                 String boatName = rs.getString("boat_name");
+                String description = rs.getString("description");
                 int capacity = rs.getInt("capacity");
                 String registrationDate = rs.getString("registration_date");
                 double price = rs.getDouble("price");
 
                 // Add data to the table model
-                boatModel.addRow(new Object[] { boatNumber, registrationDate, boatName, capacity, price });
+                boatModel.addRow(new Object[] { boatNumber, registrationDate, boatName, description, capacity, price });
             }
         } catch (SQLException ex) {
             // Handle any SQL exceptions
@@ -139,23 +140,23 @@ public class staffBoats extends javax.swing.JInternalFrame {
         tblBoatDetails.setForeground(new java.awt.Color(255, 255, 255));
         tblBoatDetails.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "Boat Number", "Registration Date", "Name", "Capacity", "Price"
+                "Boat Number", "Registration Date", "Name", "Details", "Capacity", "Price/Tour"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
+                false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -186,12 +187,13 @@ public class staffBoats extends javax.swing.JInternalFrame {
         jScrollPane1.setViewportView(tblBoatDetails);
         if (tblBoatDetails.getColumnModel().getColumnCount() > 0) {
             tblBoatDetails.getColumnModel().getColumn(0).setPreferredWidth(5);
+            tblBoatDetails.getColumnModel().getColumn(1).setPreferredWidth(5);
             tblBoatDetails.getColumnModel().getColumn(2).setPreferredWidth(5);
-            tblBoatDetails.getColumnModel().getColumn(3).setPreferredWidth(5);
             tblBoatDetails.getColumnModel().getColumn(4).setPreferredWidth(5);
+            tblBoatDetails.getColumnModel().getColumn(5).setPreferredWidth(5);
         }
 
-        jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 1110, 570));
+        jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 1120, 570));
 
         jTextField1.setText("Seach here...");
         jTextField1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
@@ -225,6 +227,11 @@ public class staffBoats extends javax.swing.JInternalFrame {
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("Update Details");
+        jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel2MouseClicked(evt);
+            }
+        });
         jPanel4.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 110, 30));
 
         jPanel3.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(790, 20, 110, 30));
@@ -236,6 +243,11 @@ public class staffBoats extends javax.swing.JInternalFrame {
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("Add New Boat");
+        jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel3MouseClicked(evt);
+            }
+        });
         jPanel5.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 90, 30));
 
         jPanel3.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 20, 110, 30));
@@ -248,6 +260,11 @@ public class staffBoats extends javax.swing.JInternalFrame {
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel4.setText("View Reservation");
+        jLabel4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel4MouseClicked(evt);
+            }
+        });
         jPanel6.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 120, 30));
 
         jPanel3.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(1030, 20, 120, 30));
@@ -259,6 +276,11 @@ public class staffBoats extends javax.swing.JInternalFrame {
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel5.setText("Delete Boat");
+        jLabel5.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel5MouseClicked(evt);
+            }
+        });
         jPanel7.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 0, 100, 30));
 
         jPanel3.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(910, 20, 110, 30));
@@ -278,6 +300,22 @@ public class staffBoats extends javax.swing.JInternalFrame {
     private void rSComboMetro1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSComboMetro1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_rSComboMetro1ActionPerformed
+
+    private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
+       new boatAdd().setVisible(true);
+    }//GEN-LAST:event_jLabel3MouseClicked
+
+    private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
+        new boatUpdate().setVisible(true);
+    }//GEN-LAST:event_jLabel2MouseClicked
+
+    private void jLabel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel5MouseClicked
+        new boatDelete().setVisible(true);
+    }//GEN-LAST:event_jLabel5MouseClicked
+
+    private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
+        new boatReservation().setVisible(true);
+    }//GEN-LAST:event_jLabel4MouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -205,10 +205,12 @@ public class staffRooms extends javax.swing.JInternalFrame {
             tblroom.getColumnModel().getColumn(0).setResizable(false);
             tblroom.getColumnModel().getColumn(0).setPreferredWidth(5);
             tblroom.getColumnModel().getColumn(1).setResizable(false);
+            tblroom.getColumnModel().getColumn(1).setPreferredWidth(5);
             tblroom.getColumnModel().getColumn(2).setResizable(false);
             tblroom.getColumnModel().getColumn(2).setPreferredWidth(5);
             tblroom.getColumnModel().getColumn(3).setResizable(false);
             tblroom.getColumnModel().getColumn(4).setResizable(false);
+            tblroom.getColumnModel().getColumn(4).setPreferredWidth(5);
             tblroom.getColumnModel().getColumn(5).setResizable(false);
             tblroom.getColumnModel().getColumn(5).setPreferredWidth(5);
         }
@@ -286,6 +288,11 @@ public class staffRooms extends javax.swing.JInternalFrame {
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel4.setText("View Reservation");
+        jLabel4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel4MouseClicked(evt);
+            }
+        });
         jPanel6.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 120, 30));
 
         jPanel3.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(1030, 20, 120, 30));
@@ -297,6 +304,11 @@ public class staffRooms extends javax.swing.JInternalFrame {
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel5.setText("Delete Room");
+        jLabel5.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel5MouseClicked(evt);
+            }
+        });
         jPanel7.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 0, 100, 30));
 
         jPanel3.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(910, 20, 110, 30));
@@ -328,6 +340,14 @@ public class staffRooms extends javax.swing.JInternalFrame {
     private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
         new roomUpdate().setVisible(true);
     }//GEN-LAST:event_jLabel2MouseClicked
+
+    private void jLabel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel5MouseClicked
+        new roomDelete().setVisible(true);
+    }//GEN-LAST:event_jLabel5MouseClicked
+
+    private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
+        new roomReservation().setVisible(true);
+    }//GEN-LAST:event_jLabel4MouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

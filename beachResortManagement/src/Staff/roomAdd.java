@@ -41,6 +41,7 @@ public class roomAdd extends javax.swing.JFrame {
         rSButtonHover1 = new rojeru_san.complementos.RSButtonHover();
         rSButtonHover2 = new rojeru_san.complementos.RSButtonHover();
         rSComboMetro1 = new rojerusan.RSComboMetro();
+        jLabel6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
@@ -51,24 +52,24 @@ public class roomAdd extends javax.swing.JFrame {
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 2, true), "Add Room", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Tahoma", 1, 18))); // NOI18N
+        jPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 0, 0, 0, new java.awt.Color(27, 59, 95)));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
-        jLabel1.setText("ROOM NUMBER");
-        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 70, 122, 30));
+        jLabel1.setText("BOAT NUMBER");
+        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 50, 122, 30));
 
         jTextField1.setForeground(new java.awt.Color(102, 102, 102));
         jTextField1.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jPanel2.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 70, 240, 30));
+        jPanel2.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 50, 240, 30));
 
         jLabel2.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
         jLabel2.setText("ROOM TYPE");
-        jPanel2.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 110, 122, 30));
+        jPanel2.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 90, 122, 30));
 
         jLabel4.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
         jLabel4.setText("MAX OCCUPANCY");
-        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 250, 140, 30));
+        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 230, 140, 30));
 
         jTextArea1.setColumns(20);
         jTextArea1.setForeground(new java.awt.Color(102, 102, 102));
@@ -76,22 +77,22 @@ public class roomAdd extends javax.swing.JFrame {
         jTextArea1.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jScrollPane1.setViewportView(jTextArea1);
 
-        jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 150, 240, -1));
+        jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 130, 240, -1));
 
         jSpinner1.setBorder(null);
-        jPanel2.add(jSpinner1, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 250, 240, 30));
+        jPanel2.add(jSpinner1, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 230, 240, 30));
 
         jLabel5.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
         jLabel5.setText("DESCRIPTION");
-        jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 150, 122, 30));
+        jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 130, 122, 30));
 
         jLabel3.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
         jLabel3.setText("PRICE/DAY");
-        jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 290, 122, 30));
+        jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 270, 122, 30));
 
         jTextField2.setForeground(new java.awt.Color(102, 102, 102));
         jTextField2.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jPanel2.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 290, 240, 30));
+        jPanel2.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 270, 240, 30));
 
         rSButtonHover1.setBackground(new java.awt.Color(27, 59, 95));
         rSButtonHover1.setText("CANCEL");
@@ -100,7 +101,7 @@ public class roomAdd extends javax.swing.JFrame {
                 rSButtonHover1ActionPerformed(evt);
             }
         });
-        jPanel2.add(rSButtonHover1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 340, 160, -1));
+        jPanel2.add(rSButtonHover1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 320, 160, -1));
 
         rSButtonHover2.setBackground(new java.awt.Color(27, 59, 95));
         rSButtonHover2.setText("CONTINUE");
@@ -109,7 +110,7 @@ public class roomAdd extends javax.swing.JFrame {
                 rSButtonHover2ActionPerformed(evt);
             }
         });
-        jPanel2.add(rSButtonHover2, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 340, 240, -1));
+        jPanel2.add(rSButtonHover2, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 320, 240, -1));
 
         rSComboMetro1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Single", "Double", "Suite", " " }));
         rSComboMetro1.setSelectedIndex(-1);
@@ -121,9 +122,14 @@ public class roomAdd extends javax.swing.JFrame {
                 rSComboMetro1ActionPerformed(evt);
             }
         });
-        jPanel2.add(rSComboMetro1, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 110, 240, 30));
+        jPanel2.add(rSComboMetro1, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 90, 240, 30));
 
-        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 30, 560, 440));
+        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, 560, 390));
+
+        jLabel6.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel6.setText("Add Room");
+        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, 560, 60));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 620, 500));
 
@@ -184,6 +190,7 @@ public class roomAdd extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;

@@ -53,6 +53,8 @@ public class staffHome extends javax.swing.JFrame {
         jLabel29 = new javax.swing.JLabel();
         jPanel14 = new javax.swing.JPanel();
         jLabel30 = new javax.swing.JLabel();
+        jPanel15 = new javax.swing.JPanel();
+        jLabel31 = new javax.swing.JLabel();
         pnlmain = new javax.swing.JPanel();
         txtHead = new javax.swing.JLabel();
         pnlCheckin = new javax.swing.JPanel();
@@ -174,7 +176,7 @@ public class staffHome extends javax.swing.JFrame {
 
         jPanel3.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 340, 200, 50));
 
-        jPanel9.setBackground(new java.awt.Color(27, 59, 95));
+        jPanel9.setBackground(null);
         jPanel9.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
@@ -190,16 +192,21 @@ public class staffHome extends javax.swing.JFrame {
 
         jPanel3.add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 390, 200, 50));
 
-        jPanel11.setBackground(new java.awt.Color(27, 59, 95));
+        jPanel11.setBackground(null);
         jPanel11.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel26.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
         jLabel26.setForeground(new java.awt.Color(255, 255, 255));
         jLabel26.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel26.setText("HISTORY LOG");
+        jLabel26.setText("RESERVATION");
+        jLabel26.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel26MouseClicked(evt);
+            }
+        });
         jPanel11.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(28, 0, 140, 50));
 
-        jPanel3.add(jPanel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 490, 200, 50));
+        jPanel3.add(jPanel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 440, 200, 50));
         jPanel3.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 40, 140, 110));
 
         jLabel28.setFont(new java.awt.Font("Tahoma", 1, 30)); // NOI18N
@@ -214,17 +221,38 @@ public class staffHome extends javax.swing.JFrame {
         jLabel29.setText("Beach Resort");
         jPanel3.add(jLabel29, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 200, 220, 20));
 
-        jPanel14.setBackground(new java.awt.Color(27, 59, 95));
+        jPanel14.setBackground(null);
         jPanel14.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel30.setBackground(new java.awt.Color(204, 0, 153));
         jLabel30.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
         jLabel30.setForeground(new java.awt.Color(255, 255, 255));
         jLabel30.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel30.setText("CHECK-OUT");
+        jLabel30.setText("CHECK OUT/IN");
+        jLabel30.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel30MouseClicked(evt);
+            }
+        });
         jPanel14.add(jLabel30, new org.netbeans.lib.awtextra.AbsoluteConstraints(28, 0, 140, 50));
 
-        jPanel3.add(jPanel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 440, 200, 50));
+        jPanel3.add(jPanel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 490, 200, 50));
+
+        jPanel15.setBackground(null);
+        jPanel15.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel31.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        jLabel31.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel31.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel31.setText("HISTORY");
+        jLabel31.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel31MouseClicked(evt);
+            }
+        });
+        jPanel15.add(jLabel31, new org.netbeans.lib.awtextra.AbsoluteConstraints(28, 0, 140, 50));
+
+        jPanel3.add(jPanel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 540, 200, 50));
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 240, 830));
 
@@ -552,6 +580,39 @@ public class staffHome extends javax.swing.JFrame {
    
     }//GEN-LAST:event_jLabel3MouseClicked
 
+    private void jLabel30MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel30MouseClicked
+       
+        staffCheckin checkin = new staffCheckin();
+        pnlmain.removeAll(); // Remove existing components
+        pnlmain.setLayout(new BorderLayout()); // Set the layout
+        pnlmain.add(checkin, BorderLayout.CENTER); // Add new component
+        pnlmain.revalidate(); // Revalidate to reflect changes
+        pnlmain.repaint(); // Repaint the panel to show updates
+        checkin.setVisible(true); 
+        
+    }//GEN-LAST:event_jLabel30MouseClicked
+
+    private void jLabel26MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel26MouseClicked
+        staffReservation reservation = new staffReservation();
+        pnlmain.removeAll(); // Remove existing components
+        pnlmain.setLayout(new BorderLayout()); // Set the layout
+        pnlmain.add(reservation, BorderLayout.CENTER); // Add new component
+        pnlmain.revalidate(); // Revalidate to reflect changes
+        pnlmain.repaint(); // Repaint the panel to show updates
+        reservation.setVisible(true); 
+        
+    }//GEN-LAST:event_jLabel26MouseClicked
+
+    private void jLabel31MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel31MouseClicked
+        staffHistory history = new staffHistory();
+        pnlmain.removeAll(); // Remove existing components
+        pnlmain.setLayout(new BorderLayout()); // Set the layout
+        pnlmain.add(history, BorderLayout.CENTER); // Add new component
+        pnlmain.revalidate(); // Revalidate to reflect changes
+        pnlmain.repaint(); // Repaint the panel to show updates
+        history.setVisible(true); 
+    }//GEN-LAST:event_jLabel31MouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -610,6 +671,7 @@ new staffHome().setVisible(true);
     private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel30;
+    private javax.swing.JLabel jLabel31;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -622,6 +684,7 @@ new staffHome().setVisible(true);
     private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
+    private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel18;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel20;
