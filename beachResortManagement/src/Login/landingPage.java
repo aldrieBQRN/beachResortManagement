@@ -102,13 +102,13 @@ public class landingPage extends javax.swing.JFrame {
         pnllogin.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 540, 150, -1));
 
         jLabel13.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 13)); // NOI18N
-        jLabel13.setText("Sign Up");
+        jLabel13.setText("Register");
         jLabel13.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel13MouseClicked(evt);
             }
         });
-        pnllogin.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 540, 50, -1));
+        pnllogin.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 540, 60, -1));
 
         jLabel12.setFont(new java.awt.Font("New Peninim MT", 0, 13)); // NOI18N
         jLabel12.setText("Email");
@@ -231,7 +231,7 @@ public class landingPage extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel10MouseClicked
 
     private void jLabel13MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel13MouseClicked
-        // TODO add your handling code here:
+       new signUp().setVisible(true);
     }//GEN-LAST:event_jLabel13MouseClicked
 
     /**

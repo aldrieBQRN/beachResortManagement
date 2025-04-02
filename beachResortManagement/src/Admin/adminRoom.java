@@ -96,7 +96,7 @@ public class adminRoom extends javax.swing.JInternalFrame {
                
                 String roomNumber = rs.getString("room_number");
                 String roomType = rs.getString("room_type");
-                double price = rs.getDouble("price");
+                double price = rs.getDouble("room_price");
                 String description = rs.getString("description");
                 int maxOccupancy = rs.getInt("max_occupancy");
                 String createdAt = rs.getString("created_at");

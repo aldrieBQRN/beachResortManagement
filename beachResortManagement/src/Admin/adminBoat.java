@@ -89,7 +89,7 @@ public class adminBoat extends javax.swing.JInternalFrame {
                 String description = rs.getString("description");
                 int capacity = rs.getInt("capacity");
                 String registrationDate = rs.getString("registration_date");
-                double price = rs.getDouble("price");
+                double price = rs.getDouble("tour_price");
 
                 // Add data to the table model
                 boatModel.addRow(new Object[] { boatNumber, registrationDate, boatName, description, capacity, price });

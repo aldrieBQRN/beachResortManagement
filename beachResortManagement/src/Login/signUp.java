@@ -43,6 +43,9 @@ public class signUp extends javax.swing.JFrame {
         jLabel12 = new javax.swing.JLabel();
         txtfname = new javax.swing.JTextField();
         jLabel13 = new javax.swing.JLabel();
+        txtphone1 = new javax.swing.JTextField();
+        txtphone2 = new javax.swing.JTextField();
+        jLabel14 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
@@ -56,12 +59,12 @@ public class signUp extends javax.swing.JFrame {
         jLabel4.setBackground(new java.awt.Color(255, 255, 255));
         jLabel4.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 24)); // NOI18N
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel4.setText("Sign Out");
-        pnlsignout.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 60, 149, -1));
+        jLabel4.setText("Register");
+        pnlsignout.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 40, 149, -1));
 
         jLabel5.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
         jLabel5.setText("Have already an account?");
-        pnlsignout.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 530, 160, -1));
+        pnlsignout.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 600, 160, -1));
 
         rSButtonHover1.setText("CREATE");
         rSButtonHover1.addActionListener(new java.awt.event.ActionListener() {
@@ -69,7 +72,7 @@ public class signUp extends javax.swing.JFrame {
                 rSButtonHover1ActionPerformed(evt);
             }
         });
-        pnlsignout.add(rSButtonHover1, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 470, 130, -1));
+        pnlsignout.add(rSButtonHover1, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 540, 130, -1));
 
         jLabel7.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 13)); // NOI18N
         jLabel7.setText("Sign In");
@@ -78,7 +81,7 @@ public class signUp extends javax.swing.JFrame {
                 jLabel7MouseClicked(evt);
             }
         });
-        pnlsignout.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 530, 50, 20));
+        pnlsignout.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 600, 50, 20));
 
         jLabel8.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
         jLabel8.setText("Phone");
@@ -87,30 +90,30 @@ public class signUp extends javax.swing.JFrame {
 
         jLabel9.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
         jLabel9.setText("Password");
-        pnlsignout.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 320, 110, -1));
-        pnlsignout.add(txtemail, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 270, 330, 40));
+        pnlsignout.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 390, 110, -1));
+        pnlsignout.add(txtemail, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 340, 330, 40));
 
         jLabel10.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
-        jLabel10.setText("Email");
-        pnlsignout.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 250, 110, -1));
+        jLabel10.setText("Address");
+        pnlsignout.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 320, 110, -1));
 
         txtpass.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtpassActionPerformed(evt);
             }
         });
-        pnlsignout.add(txtpass, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 340, 330, 40));
+        pnlsignout.add(txtpass, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 410, 330, 40));
 
         jLabel11.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
         jLabel11.setText("Confirm Password");
-        pnlsignout.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 390, 110, -1));
+        pnlsignout.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 460, 110, -1));
 
         txtconfirm.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtconfirmActionPerformed(evt);
             }
         });
-        pnlsignout.add(txtconfirm, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 410, 330, 40));
+        pnlsignout.add(txtconfirm, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 480, 330, 40));
         pnlsignout.add(txtlname, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 130, 160, 40));
 
         jLabel12.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
@@ -121,8 +124,14 @@ public class signUp extends javax.swing.JFrame {
         jLabel13.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
         jLabel13.setText("First Name");
         pnlsignout.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 110, 110, -1));
+        pnlsignout.add(txtphone1, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 200, 330, 40));
+        pnlsignout.add(txtphone2, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 270, 330, 40));
 
-        getContentPane().add(pnlsignout, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 670, 600));
+        jLabel14.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
+        jLabel14.setText("Phone");
+        pnlsignout.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 250, 110, -1));
+
+        getContentPane().add(pnlsignout, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 670, 670));
 
         pack();
         setLocationRelativeTo(null);
@@ -168,6 +177,7 @@ public class signUp extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel7;
@@ -181,5 +191,7 @@ public class signUp extends javax.swing.JFrame {
     private javax.swing.JTextField txtlname;
     private javax.swing.JPasswordField txtpass;
     private javax.swing.JTextField txtphone;
+    private javax.swing.JTextField txtphone1;
+    private javax.swing.JTextField txtphone2;
     // End of variables declaration//GEN-END:variables
 }
