@@ -12,17 +12,22 @@
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Staff/staffBoats.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Staff/staffRooms.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Database/DatabaseConnection.java</file>
-            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Staff/roomAdd.java</file>
-            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Staff/roomUpdate.java</file>
-            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Staff/boatAdd.java</file>
-            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Staff/boatUpdate.java</file>
-            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Staff/boatDelete.java</file>
-            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Staff/roomDelete.java</file>
-            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Staff/boatReservation.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Staff/roomReservation.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Staff/staffCheckin.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Staff/staffReservation.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Staff/staffHistory.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/adminHome.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/adminRoom.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/adminBoat.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/adminAddRoom.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/adminDeleteRoom.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/adminUpdateRoom.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/adminReservationRoom.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/adminAddBoat.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/adminDeleteBoat.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/adminUpdateBoat.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/adminReservationBoat.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Staff/boatReservation.java</file>
         </group>
     </open-files>
 </project-private>

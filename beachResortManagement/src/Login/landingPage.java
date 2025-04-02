@@ -4,6 +4,8 @@
  */
 package Login;
 
+import Staff.staffHome;
+
 
 /**
  *
@@ -32,23 +34,26 @@ public class landingPage extends javax.swing.JFrame {
 
         jComboBox1 = new javax.swing.JComboBox<>();
         pnlmain = new javax.swing.JPanel();
+        pnllogin = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         txtemail = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         txtpass = new javax.swing.JPasswordField();
         rSButtonHover1 = new rojeru_san.complementos.RSButtonHover();
-        pnllogin = new javax.swing.JPanel();
-        jLabel10 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        jLabel15 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
         pnlgraphics = new javax.swing.JPanel();
         jLabel11 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
-        jLabel6 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
@@ -59,18 +64,22 @@ public class landingPage extends javax.swing.JFrame {
         pnlmain.setBackground(new java.awt.Color(255, 255, 255));
         pnlmain.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        pnllogin.setBackground(new java.awt.Color(255, 255, 255));
+        pnllogin.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 0, 20, new java.awt.Color(27, 59, 95)));
+        pnllogin.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
         jLabel4.setBackground(new java.awt.Color(255, 255, 255));
         jLabel4.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 24)); // NOI18N
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel4.setText("Sign In");
-        pnlmain.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 180, 149, -1));
+        jLabel4.setText("Login");
+        pnllogin.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 290, 149, -1));
 
         txtemail.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
-        pnlmain.add(txtemail, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 250, 330, 40));
+        pnllogin.add(txtemail, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 350, 330, 40));
 
-        jLabel2.setFont(new java.awt.Font("New Peninim MT", 1, 13)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("New Peninim MT", 0, 13)); // NOI18N
         jLabel2.setText("Password");
-        pnlmain.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 300, 110, 20));
+        pnllogin.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 400, 110, 20));
 
         txtpass.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
         txtpass.addActionListener(new java.awt.event.ActionListener() {
@@ -78,7 +87,7 @@ public class landingPage extends javax.swing.JFrame {
                 txtpassActionPerformed(evt);
             }
         });
-        pnlmain.add(txtpass, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 320, 330, 40));
+        pnllogin.add(txtpass, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 420, 330, 40));
 
         rSButtonHover1.setText("LOGIN");
         rSButtonHover1.addActionListener(new java.awt.event.ActionListener() {
@@ -86,28 +95,35 @@ public class landingPage extends javax.swing.JFrame {
                 rSButtonHover1ActionPerformed(evt);
             }
         });
-        pnlmain.add(rSButtonHover1, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 380, 130, -1));
+        pnllogin.add(rSButtonHover1, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 480, 130, -1));
 
-        pnllogin.setBackground(new java.awt.Color(255, 255, 255));
-        pnllogin.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 0, 20, new java.awt.Color(27, 59, 95)));
-        pnllogin.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jLabel14.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
+        jLabel14.setText("Don't have an account?");
+        pnllogin.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 540, 150, -1));
 
-        jLabel10.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
-        jLabel10.setText("Don't have an account?");
-        pnllogin.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 440, 150, -1));
-
-        jLabel5.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 13)); // NOI18N
-        jLabel5.setText("Sign Up");
-        jLabel5.addMouseListener(new java.awt.event.MouseAdapter() {
+        jLabel13.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 13)); // NOI18N
+        jLabel13.setText("Sign Up");
+        jLabel13.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel5MouseClicked(evt);
+                jLabel13MouseClicked(evt);
             }
         });
-        pnllogin.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 440, 50, -1));
+        pnllogin.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 540, 50, -1));
 
-        jLabel3.setFont(new java.awt.Font("New Peninim MT", 1, 13)); // NOI18N
-        jLabel3.setText("Email");
-        pnllogin.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 230, 110, 20));
+        jLabel12.setFont(new java.awt.Font("New Peninim MT", 0, 13)); // NOI18N
+        jLabel12.setText("Email");
+        pnllogin.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 330, 110, 20));
+
+        jLabel15.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel15.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logoFinal.png"))); // NOI18N
+        jLabel15.setText("x");
+        pnllogin.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 510, -1));
+
+        jLabel6.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
+        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel6.setText("Sunlit Shore Resort");
+        jLabel6.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 5, 0, new java.awt.Color(27, 59, 95)));
+        pnllogin.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 170, 360, 60));
 
         pnlmain.add(pnllogin, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 550, 670));
 
@@ -139,12 +155,6 @@ public class landingPage extends javax.swing.JFrame {
         jPanel5.setBackground(new java.awt.Color(27, 59, 95));
         jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel6.setFont(new java.awt.Font("Helvetica Neue", 3, 36)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel6.setText("Aldrie Resort");
-        jPanel5.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, 250, -1));
-
         jLabel1.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("CONTACT");
@@ -175,6 +185,16 @@ public class landingPage extends javax.swing.JFrame {
         });
         jPanel5.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(1190, 40, -1, -1));
 
+        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel3.setText("Welcome,");
+        jPanel5.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 0, 180, 100));
+
+        jLabel5.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel5.setText("enjoy and have fun!");
+        jPanel5.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 50, -1, 20));
+
         getContentPane().add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 100));
 
         pack();
@@ -198,18 +218,21 @@ public class landingPage extends javax.swing.JFrame {
     }//GEN-LAST:event_txtpassActionPerformed
 
     private void rSButtonHover1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSButtonHover1ActionPerformed
-        // TODO add your handling code here:
+        for (java.awt.Window window : java.awt.Window.getWindows()) {
+            window.dispose();
+        }
+        new staffHome().setVisible(true);
     }//GEN-LAST:event_rSButtonHover1ActionPerformed
-
-    private void jLabel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel5MouseClicked
-        new signUp().setVisible(true);
-    }//GEN-LAST:event_jLabel5MouseClicked
 
     private void jLabel10MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel10MouseClicked
 
        
 
     }//GEN-LAST:event_jLabel10MouseClicked
+
+    private void jLabel13MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel13MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jLabel13MouseClicked
 
     /**
      * @param args the command line arguments
@@ -250,8 +273,11 @@ public class landingPage extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

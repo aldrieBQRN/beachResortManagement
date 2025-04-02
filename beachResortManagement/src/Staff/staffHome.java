@@ -4,6 +4,7 @@
  */
 package Staff;
 
+import Login.landingPage;
 import java.awt.BorderLayout;
 import java.beans.PropertyVetoException;
 
@@ -48,13 +49,13 @@ public class staffHome extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         jPanel11 = new javax.swing.JPanel();
         jLabel26 = new javax.swing.JLabel();
-        jPanel6 = new javax.swing.JPanel();
         jLabel28 = new javax.swing.JLabel();
         jLabel29 = new javax.swing.JLabel();
         jPanel14 = new javax.swing.JPanel();
         jLabel30 = new javax.swing.JLabel();
         jPanel15 = new javax.swing.JPanel();
         jLabel31 = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
         pnlmain = new javax.swing.JPanel();
         txtHead = new javax.swing.JLabel();
         pnlCheckin = new javax.swing.JPanel();
@@ -123,6 +124,11 @@ public class staffHome extends javax.swing.JFrame {
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel6.setText("LOGOUT");
+        jLabel6.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel6MouseClicked(evt);
+            }
+        });
         jPanel10.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 90, 30));
 
         jPanel2.add(jPanel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(1090, 20, 90, 30));
@@ -176,7 +182,6 @@ public class staffHome extends javax.swing.JFrame {
 
         jPanel3.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 340, 200, 50));
 
-        jPanel9.setBackground(null);
         jPanel9.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
@@ -192,7 +197,6 @@ public class staffHome extends javax.swing.JFrame {
 
         jPanel3.add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 390, 200, 50));
 
-        jPanel11.setBackground(null);
         jPanel11.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel26.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
@@ -207,21 +211,19 @@ public class staffHome extends javax.swing.JFrame {
         jPanel11.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(28, 0, 140, 50));
 
         jPanel3.add(jPanel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 440, 200, 50));
-        jPanel3.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 40, 140, 110));
 
-        jLabel28.setFont(new java.awt.Font("Tahoma", 1, 30)); // NOI18N
+        jLabel28.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
         jLabel28.setForeground(new java.awt.Color(255, 255, 255));
         jLabel28.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel28.setText("Aldrie");
-        jPanel3.add(jLabel28, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, 220, 30));
+        jLabel28.setText("Sunlit");
+        jPanel3.add(jLabel28, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 160, 220, 40));
 
-        jLabel29.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
+        jLabel29.setFont(new java.awt.Font("Tahoma", 1, 20)); // NOI18N
         jLabel29.setForeground(new java.awt.Color(255, 255, 255));
         jLabel29.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel29.setText("Beach Resort");
+        jLabel29.setText("Shores Resort");
         jPanel3.add(jLabel29, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 200, 220, 20));
 
-        jPanel14.setBackground(null);
         jPanel14.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel30.setBackground(new java.awt.Color(204, 0, 153));
@@ -238,7 +240,6 @@ public class staffHome extends javax.swing.JFrame {
 
         jPanel3.add(jPanel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 490, 200, 50));
 
-        jPanel15.setBackground(null);
         jPanel15.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel31.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
@@ -253,6 +254,10 @@ public class staffHome extends javax.swing.JFrame {
         jPanel15.add(jLabel31, new org.netbeans.lib.awtextra.AbsoluteConstraints(28, 0, 140, 50));
 
         jPanel3.add(jPanel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 540, 200, 50));
+
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logoFinal.png"))); // NOI18N
+        jPanel3.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 160, -1));
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 240, 830));
 
@@ -613,6 +618,13 @@ public class staffHome extends javax.swing.JFrame {
         history.setVisible(true); 
     }//GEN-LAST:event_jLabel31MouseClicked
 
+    private void jLabel6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel6MouseClicked
+       for (java.awt.Window window : java.awt.Window.getWindows()) {
+            window.dispose();
+        }
+        new landingPage().setVisible(true);
+    }//GEN-LAST:event_jLabel6MouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -648,6 +660,7 @@ new staffHome().setVisible(true);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
@@ -694,7 +707,6 @@ new staffHome().setVisible(true);
     private javax.swing.JPanel jPanel28;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
