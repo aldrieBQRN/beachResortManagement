@@ -96,6 +96,7 @@ public class adminHome extends javax.swing.JFrame {
         jPanel10.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(0, 0, 0));
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel6.setText("LOGOUT");
         jLabel6.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -122,13 +123,16 @@ public class adminHome extends javax.swing.JFrame {
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 0, 1200, 70));
 
         jPanel3.setBackground(new java.awt.Color(27, 59, 95));
+        jPanel3.setForeground(new java.awt.Color(0, 0, 0));
         jPanel3.setPreferredSize(new java.awt.Dimension(170, 200));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jPanel7.setBackground(new java.awt.Color(204, 204, 204));
         jPanel7.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 10, 0, 0, new java.awt.Color(39, 114, 160)));
         jPanel7.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("DASHBOARD");
         jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -156,6 +160,7 @@ public class adminHome extends javax.swing.JFrame {
 
         jPanel3.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 340, 200, 50));
 
+        jPanel9.setBackground(new java.awt.Color(27, 59, 95));
         jPanel9.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
@@ -187,6 +192,7 @@ public class adminHome extends javax.swing.JFrame {
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logoFinal.png"))); // NOI18N
         jPanel3.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 160, -1));
 
+        jPanel11.setBackground(new java.awt.Color(27, 59, 95));
         jPanel11.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel26.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
@@ -204,9 +210,11 @@ public class adminHome extends javax.swing.JFrame {
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 240, 830));
 
+        pnlmain.setBackground(new java.awt.Color(242, 242, 242));
         pnlmain.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         txtHead.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
+        txtHead.setForeground(new java.awt.Color(0, 0, 0));
         txtHead.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         txtHead.setText("Beach-Front Resort Managemenr System");
         txtHead.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 3, 0, new java.awt.Color(39, 114, 160)));
@@ -223,9 +231,11 @@ public class adminHome extends javax.swing.JFrame {
         pnlReserveRoom.add(jPanel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 70, 50));
 
         jLabel11.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 13)); // NOI18N
+        jLabel11.setForeground(new java.awt.Color(0, 0, 0));
         jLabel11.setText("Entrance Fee Accumulated");
         pnlReserveRoom.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
 
+        jLabel12.setForeground(new java.awt.Color(0, 0, 0));
         jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel12.setText("00");
         pnlReserveRoom.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 130, 40, -1));
@@ -233,16 +243,19 @@ public class adminHome extends javax.swing.JFrame {
         pnlmain.add(pnlReserveRoom, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 100, 270, 150));
 
         pnlConfirmReservation.setBackground(new java.awt.Color(255, 255, 255));
+        pnlConfirmReservation.setForeground(new java.awt.Color(0, 0, 0));
         pnlConfirmReservation.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel20.setBackground(new java.awt.Color(0, 51, 204));
         pnlConfirmReservation.add(jPanel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 70, 50));
 
+        jLabel14.setForeground(new java.awt.Color(0, 0, 0));
         jLabel14.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel14.setText("00");
         pnlConfirmReservation.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 130, 40, -1));
 
         jLabel19.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 13)); // NOI18N
+        jLabel19.setForeground(new java.awt.Color(0, 0, 0));
         jLabel19.setText("Tour Fee Accumulated");
         pnlConfirmReservation.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
 
@@ -255,9 +268,11 @@ public class adminHome extends javax.swing.JFrame {
         pnlAvailableRoom.add(jPanel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 70, 50));
 
         jLabel15.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 13)); // NOI18N
+        jLabel15.setForeground(new java.awt.Color(0, 0, 0));
         jLabel15.setText("Revenue");
         pnlAvailableRoom.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
 
+        jLabel16.setForeground(new java.awt.Color(0, 0, 0));
         jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel16.setText("00");
         pnlAvailableRoom.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 130, 40, -1));
@@ -272,13 +287,16 @@ public class adminHome extends javax.swing.JFrame {
         pnlCheckin1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel6.setBackground(new java.awt.Color(153, 153, 153));
+        jPanel6.setForeground(new java.awt.Color(0, 0, 0));
         pnlCheckin1.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 70, 50));
 
+        jLabel30.setForeground(new java.awt.Color(0, 0, 0));
         jLabel30.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel30.setText("00");
         pnlCheckin1.add(jLabel30, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 130, 40, -1));
 
         jLabel31.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 13)); // NOI18N
+        jLabel31.setForeground(new java.awt.Color(0, 0, 0));
         jLabel31.setText("Room  Fee Accumulated");
         pnlCheckin1.add(jLabel31, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
 

@@ -4,7 +4,18 @@
  */
 package Login;
 
+import Admin.adminHome;
+import Guest.guestHome;
 import Staff.staffHome;
+import java.awt.Color;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.BorderFactory;
+import javax.swing.JOptionPane;
 
 
 /**
@@ -18,7 +29,38 @@ public class landingPage extends javax.swing.JFrame {
      */
     public landingPage() {
         initComponents();
+        DatabaseConnection();
+        txterror.setText("");
         
+    }
+    
+    java.sql.Connection con; 
+    PreparedStatement pst;
+    ResultSet rs; 
+    
+    public final void DatabaseConnection() {
+          String url = "jdbc:mysql://localhost:3306/beachResortManagement";
+        String user = "root"; // MySQL username
+        String password = ""; // MySQL password
+        
+        // Establishing the connection
+        try {
+            // Load MySQL JDBC driver (optional in newer versions of JDBC)
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            
+            // Create the connection
+            con = DriverManager.getConnection(url, user, password);
+            
+            System.out.println("Connected to the database successfully!");
+
+            // Perform database operations here...
+
+      
+        } catch (SQLException e) {
+            System.out.println("Error connecting to the database: " + e.getMessage());
+        } catch (ClassNotFoundException e) {
+            System.out.println("MySQL JDBC Driver not found: " + e.getMessage());
+        }
     }
     
     
@@ -45,6 +87,8 @@ public class landingPage extends javax.swing.JFrame {
         jLabel12 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
+        txterror = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
         pnlgraphics = new javax.swing.JPanel();
         jLabel11 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
@@ -66,25 +110,52 @@ public class landingPage extends javax.swing.JFrame {
 
         pnllogin.setBackground(new java.awt.Color(255, 255, 255));
         pnllogin.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 0, 20, new java.awt.Color(27, 59, 95)));
+        pnllogin.setForeground(new java.awt.Color(51, 51, 51));
         pnllogin.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel4.setBackground(new java.awt.Color(255, 255, 255));
         jLabel4.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 24)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(0, 0, 0));
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel4.setText("Login");
         pnllogin.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 290, 149, -1));
 
+        txtemail.setBackground(new java.awt.Color(255, 255, 255));
+        txtemail.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
+        txtemail.setForeground(new java.awt.Color(153, 153, 153));
         txtemail.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
+        txtemail.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtemailKeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtemailKeyTyped(evt);
+            }
+        });
         pnllogin.add(txtemail, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 350, 330, 40));
 
         jLabel2.setFont(new java.awt.Font("New Peninim MT", 0, 13)); // NOI18N
-        jLabel2.setText("Password");
-        pnllogin.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 400, 110, 20));
+        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/showpass.png"))); // NOI18N
+        jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel2MouseClicked(evt);
+            }
+        });
+        pnllogin.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 430, 30, 20));
 
+        txtpass.setBackground(new java.awt.Color(255, 255, 255));
+        txtpass.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
         txtpass.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
         txtpass.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtpassActionPerformed(evt);
+            }
+        });
+        txtpass.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtpassKeyReleased(evt);
             }
         });
         pnllogin.add(txtpass, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 420, 330, 40));
@@ -95,13 +166,15 @@ public class landingPage extends javax.swing.JFrame {
                 rSButtonHover1ActionPerformed(evt);
             }
         });
-        pnllogin.add(rSButtonHover1, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 480, 130, -1));
+        pnllogin.add(rSButtonHover1, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 490, 130, -1));
 
         jLabel14.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
+        jLabel14.setForeground(new java.awt.Color(0, 0, 0));
         jLabel14.setText("Don't have an account?");
-        pnllogin.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 540, 150, -1));
+        pnllogin.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 540, 140, -1));
 
         jLabel13.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 13)); // NOI18N
+        jLabel13.setForeground(new java.awt.Color(0, 0, 0));
         jLabel13.setText("Register");
         jLabel13.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -111,6 +184,7 @@ public class landingPage extends javax.swing.JFrame {
         pnllogin.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 540, 60, -1));
 
         jLabel12.setFont(new java.awt.Font("New Peninim MT", 0, 13)); // NOI18N
+        jLabel12.setForeground(new java.awt.Color(0, 0, 0));
         jLabel12.setText("Email");
         pnllogin.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 330, 110, 20));
 
@@ -120,10 +194,23 @@ public class landingPage extends javax.swing.JFrame {
         pnllogin.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 510, -1));
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(0, 0, 0));
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel6.setText("Sunlit Shore Resort");
         jLabel6.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 5, 0, new java.awt.Color(27, 59, 95)));
         pnllogin.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 170, 360, 60));
+
+        txterror.setBackground(new java.awt.Color(255, 0, 51));
+        txterror.setFont(new java.awt.Font("Helvetica Neue", 2, 12)); // NOI18N
+        txterror.setForeground(new java.awt.Color(255, 0, 51));
+        txterror.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        txterror.setText("(error message)");
+        pnllogin.add(txterror, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 463, 320, 20));
+
+        jLabel10.setFont(new java.awt.Font("New Peninim MT", 0, 13)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel10.setText("Password");
+        pnllogin.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 400, 110, 20));
 
         pnlmain.add(pnllogin, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 550, 670));
 
@@ -218,10 +305,91 @@ public class landingPage extends javax.swing.JFrame {
     }//GEN-LAST:event_txtpassActionPerformed
 
     private void rSButtonHover1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSButtonHover1ActionPerformed
-        for (java.awt.Window window : java.awt.Window.getWindows()) {
-            window.dispose();
+       try {
+    // Get input values
+    String email = txtemail.getText().trim();
+    String password = new String(txtpass.getPassword()).trim();
+    
+    if (email.isEmpty() && password.isEmpty()) {
+        txterror.setText("Email and password cannot be empty!");
+        txtemail.setBorder(BorderFactory.createLineBorder(new Color(255,0,51), 1));
+        txtpass.setBorder(BorderFactory.createLineBorder(new Color(255,0,51), 1));
+        txtemail.setForeground(new Color(255,0,51));
+        txtpass.setForeground(new Color(255,0,51));
+        return;
+    }
+    
+    // Validate input fields
+    if (email.isEmpty()) {
+        txterror.setText("Email cannot be empty!");
+        txtemail.setBorder(BorderFactory.createLineBorder(new Color(255,0,51), 1));
+        txtemail.setForeground(new Color(255,0,51));
+        return;
+    }
+    
+    if (password.isEmpty()) {
+        txterror.setText("Password cannot be empty!");
+        txtpass.setBorder(BorderFactory.createLineBorder(new Color(255,0,51), 1));
+        txtpass.setForeground(new Color(255,0,51));
+        return;
+    }
+
+    // First, check if the email exists
+    String emailCheckQuery = "SELECT COUNT(*) FROM user_details WHERE email = ?";
+    try (PreparedStatement emailCheckPst = con.prepareStatement(emailCheckQuery)) {
+        emailCheckPst.setString(1, email);
+        try (ResultSet emailCheckRs = emailCheckPst.executeQuery()) {
+            if (emailCheckRs.next() && emailCheckRs.getInt(1) == 0) {
+                txterror.setText("Email not found!");
+                txtemail.setBorder(BorderFactory.createLineBorder(new Color(255,0,51), 1));
+                txtemail.setForeground(new Color(255,0,51));
+                return;
+            }
         }
-        new staffHome().setVisible(true);
+    }
+
+    // Now, check for correct email-password combination
+    String query = "SELECT full_name, role FROM user_details WHERE email = ? AND password = ? LIMIT 1";
+    try (PreparedStatement pst = con.prepareStatement(query)) {
+        pst.setString(1, email);
+        pst.setString(2, password);
+
+        try (ResultSet rs = pst.executeQuery()) {
+            if (rs.next()) {
+                String userName = rs.getString("full_name");
+                String role = rs.getString("role");
+
+                JOptionPane.showMessageDialog(this, "Welcome, " + userName + "! Login Successful.");
+
+                // Open the appropriate home page based on the role
+                switch (role) {
+                    case "Admin":
+                        new adminHome().setVisible(true);
+                        break;
+                    case "Staff":
+                        new staffHome().setVisible(true);
+                        break;
+                    case "Guest":
+                        new guestHome().setVisible(true);
+                        break;
+                    default:
+                        JOptionPane.showMessageDialog(this, "Unknown role: " + role, "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                }
+
+                this.dispose(); // Close the login window
+            } else {
+                txterror.setText("Incorrect password!");
+                txtpass.setBorder(BorderFactory.createLineBorder(new Color(255,0,51), 1));
+                txtpass.setForeground(new Color(255,0,51));
+            }
+        }
+    }
+} catch (SQLException ex) {
+    Logger.getLogger(landingPage.class.getName()).log(Level.SEVERE, "Login error", ex);
+    JOptionPane.showMessageDialog(this, "An error occurred during login. Please try again.", "Database Error", JOptionPane.ERROR_MESSAGE);
+}
+
     }//GEN-LAST:event_rSButtonHover1ActionPerformed
 
     private void jLabel10MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel10MouseClicked
@@ -231,8 +399,40 @@ public class landingPage extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel10MouseClicked
 
     private void jLabel13MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel13MouseClicked
-       new signUp().setVisible(true);
+        txtemail.setText("");
+        txtpass.setText("");
+        new signUp().setVisible(true);
     }//GEN-LAST:event_jLabel13MouseClicked
+
+    private void txtemailKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtemailKeyReleased
+        txterror.setText("");
+        txtemail.setBorder(BorderFactory.createLineBorder(new Color(204,204,204), 1));
+        txtpass.setBorder(BorderFactory.createLineBorder(new Color(204,204,204), 1));
+        txtemail.setForeground(new Color(153,153,153));
+        txtpass.setForeground(new Color(153,153,153));
+    
+       
+    }//GEN-LAST:event_txtemailKeyReleased
+
+    private void txtpassKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtpassKeyReleased
+       txterror.setText("");
+       txtemail.setBorder(BorderFactory.createLineBorder(new Color(204,204,204), 1));
+       txtpass.setBorder(BorderFactory.createLineBorder(new Color(204,204,204), 1));
+       txtemail.setForeground(new Color(153,153,153));
+       txtpass.setForeground(new Color(153,153,153));
+    }//GEN-LAST:event_txtpassKeyReleased
+
+    private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
+         if (txtpass.getEchoChar() == (char) 0) {
+        txtpass.setEchoChar('*');  // Hide the password
+    } else {
+        txtpass.setEchoChar((char) 0);  // Show the password
+    }
+    }//GEN-LAST:event_jLabel2MouseClicked
+
+    private void txtemailKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtemailKeyTyped
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtemailKeyTyped
 
     /**
      * @param args the command line arguments
@@ -273,6 +473,7 @@ public class landingPage extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
@@ -292,6 +493,7 @@ public class landingPage extends javax.swing.JFrame {
     private javax.swing.JPanel pnlmain;
     private rojeru_san.complementos.RSButtonHover rSButtonHover1;
     private javax.swing.JTextField txtemail;
+    private javax.swing.JLabel txterror;
     private javax.swing.JPasswordField txtpass;
     // End of variables declaration//GEN-END:variables
 }

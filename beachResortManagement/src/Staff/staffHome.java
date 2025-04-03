@@ -21,6 +21,17 @@ public class staffHome extends javax.swing.JFrame {
      */
     public staffHome() {
         initComponents();
+        setMainHome();
+    }
+    
+    public void setMainHome(){
+        staffMainHome boat = new staffMainHome();
+        pnlmain.removeAll(); // Remove existing components
+        pnlmain.setLayout(new BorderLayout()); // Set the layout
+        pnlmain.add(boat, BorderLayout.CENTER); // Add new component
+        pnlmain.revalidate(); // Revalidate to reflect changes
+        pnlmain.repaint(); // Repaint the panel to show updates
+        boat.setVisible(true); 
     }
 
     /**
@@ -57,47 +68,6 @@ public class staffHome extends javax.swing.JFrame {
         jLabel31 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         pnlmain = new javax.swing.JPanel();
-        txtHead = new javax.swing.JLabel();
-        pnlCheckin = new javax.swing.JPanel();
-        jPanel5 = new javax.swing.JPanel();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel17 = new javax.swing.JLabel();
-        pnlWaterActivities = new javax.swing.JPanel();
-        jPanel12 = new javax.swing.JPanel();
-        jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
-        pnlReserveRoom = new javax.swing.JPanel();
-        jPanel18 = new javax.swing.JPanel();
-        jLabel11 = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
-        pnlConfirmReservation = new javax.swing.JPanel();
-        jPanel20 = new javax.swing.JPanel();
-        jLabel14 = new javax.swing.JLabel();
-        jLabel19 = new javax.swing.JLabel();
-        pnlAvailableRoom = new javax.swing.JPanel();
-        jPanel22 = new javax.swing.JPanel();
-        jLabel15 = new javax.swing.JLabel();
-        jLabel16 = new javax.swing.JLabel();
-        pnlAvailableBoat = new javax.swing.JPanel();
-        jPanel24 = new javax.swing.JPanel();
-        jLabel18 = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
-        pnlReserveBoat = new javax.swing.JPanel();
-        jPanel26 = new javax.swing.JPanel();
-        jLabel20 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        pnlCancelReservation = new javax.swing.JPanel();
-        jPanel28 = new javax.swing.JPanel();
-        jLabel21 = new javax.swing.JLabel();
-        jLabel22 = new javax.swing.JLabel();
-        pnlGuest = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        tblbooking1 = new rojerusan.RSTableMetro();
-        jLabel24 = new javax.swing.JLabel();
-        pnlUpcomming = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tblbooking = new rojerusan.RSTableMetro();
-        jLabel23 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
@@ -122,6 +92,7 @@ public class staffHome extends javax.swing.JFrame {
         jPanel10.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(0, 0, 0));
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel6.setText("LOGOUT");
         jLabel6.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -151,10 +122,13 @@ public class staffHome extends javax.swing.JFrame {
         jPanel3.setPreferredSize(new java.awt.Dimension(170, 200));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jPanel7.setBackground(new java.awt.Color(242, 242, 242));
         jPanel7.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 10, 0, 0, new java.awt.Color(39, 114, 160)));
         jPanel7.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jLabel3.setBackground(new java.awt.Color(0, 0, 0));
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("DASHBOARD");
         jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -182,6 +156,7 @@ public class staffHome extends javax.swing.JFrame {
 
         jPanel3.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 340, 200, 50));
 
+        jPanel9.setBackground(new java.awt.Color(27, 59, 95));
         jPanel9.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
@@ -197,8 +172,10 @@ public class staffHome extends javax.swing.JFrame {
 
         jPanel3.add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 390, 200, 50));
 
+        jPanel11.setBackground(new java.awt.Color(27, 59, 95));
         jPanel11.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jLabel26.setBackground(new java.awt.Color(242, 242, 242));
         jLabel26.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
         jLabel26.setForeground(new java.awt.Color(255, 255, 255));
         jLabel26.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -224,6 +201,7 @@ public class staffHome extends javax.swing.JFrame {
         jLabel29.setText("Shores Resort");
         jPanel3.add(jLabel29, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 200, 220, 20));
 
+        jPanel14.setBackground(new java.awt.Color(27, 59, 95));
         jPanel14.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel30.setBackground(new java.awt.Color(204, 0, 153));
@@ -240,6 +218,7 @@ public class staffHome extends javax.swing.JFrame {
 
         jPanel3.add(jPanel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 490, 200, 50));
 
+        jPanel15.setBackground(new java.awt.Color(27, 59, 95));
         jPanel15.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel31.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
@@ -261,261 +240,8 @@ public class staffHome extends javax.swing.JFrame {
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 240, 830));
 
+        pnlmain.setBackground(new java.awt.Color(242, 242, 242));
         pnlmain.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        txtHead.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
-        txtHead.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        txtHead.setText("Beach-Front Resort Managemenr System");
-        txtHead.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 3, 0, new java.awt.Color(39, 114, 160)));
-        pnlmain.add(txtHead, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 1140, 80));
-
-        pnlCheckin.setBackground(new java.awt.Color(255, 255, 255));
-        pnlCheckin.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jPanel5.setBackground(new java.awt.Color(153, 153, 153));
-        pnlCheckin.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 70, 50));
-
-        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel8.setText("00");
-        pnlCheckin.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 40, 40, -1));
-
-        jLabel17.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 13)); // NOI18N
-        jLabel17.setText("Check-in Today");
-        pnlCheckin.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
-
-        pnlmain.add(pnlCheckin, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 100, 270, 70));
-
-        pnlWaterActivities.setBackground(new java.awt.Color(255, 255, 255));
-        pnlWaterActivities.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jPanel12.setBackground(new java.awt.Color(255, 153, 51));
-        pnlWaterActivities.add(jPanel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 70, 50));
-
-        jLabel9.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 13)); // NOI18N
-        jLabel9.setText("Water Activities");
-        pnlWaterActivities.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
-
-        jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel10.setText("00");
-        pnlWaterActivities.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 40, 40, -1));
-
-        pnlmain.add(pnlWaterActivities, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 190, 270, 70));
-
-        pnlReserveRoom.setBackground(new java.awt.Color(255, 255, 255));
-        pnlReserveRoom.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jPanel18.setBackground(new java.awt.Color(51, 204, 0));
-        pnlReserveRoom.add(jPanel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 70, 50));
-
-        jLabel11.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 13)); // NOI18N
-        jLabel11.setText("Reserve Room");
-        pnlReserveRoom.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
-
-        jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel12.setText("00");
-        pnlReserveRoom.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 40, 40, -1));
-
-        pnlmain.add(pnlReserveRoom, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 100, 270, 70));
-
-        pnlConfirmReservation.setBackground(new java.awt.Color(255, 255, 255));
-        pnlConfirmReservation.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jPanel20.setBackground(new java.awt.Color(0, 51, 204));
-        pnlConfirmReservation.add(jPanel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 70, 50));
-
-        jLabel14.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel14.setText("00");
-        pnlConfirmReservation.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 40, 40, -1));
-
-        jLabel19.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 13)); // NOI18N
-        jLabel19.setText("Confirm Reservation");
-        pnlConfirmReservation.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
-
-        pnlmain.add(pnlConfirmReservation, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 100, 270, 70));
-
-        pnlAvailableRoom.setBackground(new java.awt.Color(255, 255, 255));
-        pnlAvailableRoom.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jPanel22.setBackground(new java.awt.Color(204, 0, 51));
-        pnlAvailableRoom.add(jPanel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 70, 50));
-
-        jLabel15.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 13)); // NOI18N
-        jLabel15.setText("Available Room");
-        pnlAvailableRoom.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
-
-        jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel16.setText("00");
-        pnlAvailableRoom.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 40, 40, -1));
-
-        pnlmain.add(pnlAvailableRoom, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 100, 270, 70));
-
-        pnlAvailableBoat.setBackground(new java.awt.Color(255, 255, 255));
-        pnlAvailableBoat.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jPanel24.setBackground(new java.awt.Color(204, 204, 0));
-        pnlAvailableBoat.add(jPanel24, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 70, 50));
-
-        jLabel18.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel18.setText("00");
-        pnlAvailableBoat.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 40, 40, -1));
-
-        jLabel13.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 13)); // NOI18N
-        jLabel13.setText("Available Boat");
-        pnlAvailableBoat.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
-
-        pnlmain.add(pnlAvailableBoat, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 190, 270, 70));
-
-        pnlReserveBoat.setBackground(new java.awt.Color(255, 255, 255));
-        pnlReserveBoat.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jPanel26.setBackground(new java.awt.Color(0, 204, 204));
-        pnlReserveBoat.add(jPanel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 70, 50));
-
-        jLabel20.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel20.setText("00");
-        pnlReserveBoat.add(jLabel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 40, 40, -1));
-
-        jLabel7.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 13)); // NOI18N
-        jLabel7.setText("Reserve Boat");
-        pnlReserveBoat.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
-
-        pnlmain.add(pnlReserveBoat, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 190, 270, 70));
-
-        pnlCancelReservation.setBackground(new java.awt.Color(255, 255, 255));
-        pnlCancelReservation.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jPanel28.setBackground(new java.awt.Color(204, 0, 204));
-        pnlCancelReservation.add(jPanel28, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 70, 50));
-
-        jLabel21.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 13)); // NOI18N
-        jLabel21.setText("Cancel Reservation");
-        pnlCancelReservation.add(jLabel21, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
-
-        jLabel22.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel22.setText("00");
-        pnlCancelReservation.add(jLabel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 40, 40, -1));
-
-        pnlmain.add(pnlCancelReservation, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 190, 270, 70));
-
-        pnlGuest.setBackground(new java.awt.Color(255, 255, 255));
-        pnlGuest.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        tblbooking1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null},
-                {null},
-                {null},
-                {null},
-                {null},
-                {null},
-                {null},
-                {null},
-                {null},
-                {null}
-            },
-            new String [] {
-                "Guest Name"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        tblbooking1.setToolTipText("");
-        tblbooking1.setColorBackgoundHead(new java.awt.Color(255, 255, 255));
-        tblbooking1.setColorBordeFilas(new java.awt.Color(255, 255, 255));
-        tblbooking1.setColorBordeHead(new java.awt.Color(255, 255, 255));
-        tblbooking1.setColorFilasBackgound2(new java.awt.Color(255, 255, 255));
-        tblbooking1.setColorFilasForeground1(new java.awt.Color(27, 59, 95));
-        tblbooking1.setColorFilasForeground2(new java.awt.Color(27, 59, 95));
-        tblbooking1.setColorForegroundHead(new java.awt.Color(0, 0, 0));
-        tblbooking1.setColorSelBackgound(new java.awt.Color(27, 59, 95));
-        tblbooking1.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
-        tblbooking1.setFuenteFilas(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        tblbooking1.setFuenteFilasSelect(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        tblbooking1.setGridColor(new java.awt.Color(204, 204, 204));
-        tblbooking1.setRowHeight(30);
-        tblbooking1.setSelectionBackground(new java.awt.Color(27, 59, 95));
-        tblbooking1.setSelectionForeground(new java.awt.Color(255, 255, 255));
-        tblbooking1.setShowGrid(false);
-        tblbooking1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tblbooking1MouseClicked(evt);
-            }
-        });
-        jScrollPane2.setViewportView(tblbooking1);
-
-        pnlGuest.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 230, 380));
-
-        jLabel24.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 14)); // NOI18N
-        jLabel24.setText("Currently Check-in");
-        pnlGuest.add(jLabel24, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 16, -1, 30));
-
-        pnlmain.add(pnlGuest, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 280, 270, 460));
-
-        pnlUpcomming.setBackground(new java.awt.Color(255, 255, 255));
-        pnlUpcomming.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        tblbooking.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
-            },
-            new String [] {
-                "Reservation ID", "Customer Name", "Room Number", "Check-in", "Check-out"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, true, false, true, true
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        tblbooking.setColorBackgoundHead(new java.awt.Color(255, 255, 255));
-        tblbooking.setColorBordeFilas(new java.awt.Color(255, 255, 255));
-        tblbooking.setColorBordeHead(new java.awt.Color(255, 255, 255));
-        tblbooking.setColorFilasBackgound2(new java.awt.Color(255, 255, 255));
-        tblbooking.setColorFilasForeground1(new java.awt.Color(27, 59, 95));
-        tblbooking.setColorFilasForeground2(new java.awt.Color(27, 59, 95));
-        tblbooking.setColorForegroundHead(new java.awt.Color(0, 0, 0));
-        tblbooking.setColorSelBackgound(new java.awt.Color(27, 59, 95));
-        tblbooking.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
-        tblbooking.setFuenteFilas(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        tblbooking.setFuenteFilasSelect(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        tblbooking.setGridColor(new java.awt.Color(204, 204, 204));
-        tblbooking.setRowHeight(30);
-        tblbooking.setSelectionBackground(new java.awt.Color(27, 59, 95));
-        tblbooking.setSelectionForeground(new java.awt.Color(255, 255, 255));
-        tblbooking.setShowGrid(false);
-        tblbooking.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tblbookingMouseClicked(evt);
-            }
-        });
-        jScrollPane1.setViewportView(tblbooking);
-
-        pnlUpcomming.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 810, 380));
-
-        jLabel23.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 14)); // NOI18N
-        jLabel23.setText("Upcomming Check-In");
-        pnlUpcomming.add(jLabel23, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 16, -1, 30));
-
-        pnlmain.add(pnlUpcomming, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 280, 850, 460));
-
         jPanel1.add(pnlmain, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 70, 1200, 760));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 830));
@@ -523,15 +249,6 @@ public class staffHome extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void tblbookingMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblbookingMouseClicked
-       
-        
-    }//GEN-LAST:event_tblbookingMouseClicked
-
-    private void tblbooking1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblbooking1MouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_tblbooking1MouseClicked
 
     private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
         staffRooms room = new staffRooms();
@@ -554,35 +271,14 @@ public class staffHome extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel5MouseClicked
 
     private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
-    // Clear the panel
-    pnlmain.removeAll();
-    pnlmain.revalidate();
-    pnlmain.repaint();
-
-    // Set the background color of pnlmain
-    pnlmain.setBackground(new java.awt.Color(242, 242, 242)); // Set the background color to light gray
-    pnlmain.setOpaque(true); // Ensure the panel is opaque
-
-    // Add all your components to pnlmain
-    pnlmain.add(txtHead);
-    pnlmain.add(pnlUpcomming); 
-    pnlmain.add(pnlGuest);
-    pnlmain.add(pnlCancelReservation); 
-    pnlmain.add(pnlCheckin); 
-    pnlmain.add(pnlAvailableRoom); 
-    pnlmain.add(pnlReserveRoom); 
-    pnlmain.add(pnlAvailableBoat); 
-    pnlmain.add(pnlReserveBoat); 
-    pnlmain.add(pnlWaterActivities); 
-    pnlmain.add(pnlConfirmReservation);
-
-    // Revalidate and repaint to reflect the changes
-    pnlmain.revalidate();
-    pnlmain.repaint();
-
-
     
-   
+        staffMainHome boat = new staffMainHome();
+        pnlmain.removeAll(); // Remove existing components
+        pnlmain.setLayout(new BorderLayout()); // Set the layout
+        pnlmain.add(boat, BorderLayout.CENTER); // Add new component
+        pnlmain.revalidate(); // Revalidate to reflect changes
+        pnlmain.repaint(); // Repaint the panel to show updates
+        boat.setVisible(true); 
     }//GEN-LAST:event_jLabel3MouseClicked
 
     private void jLabel30MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel30MouseClicked
@@ -661,22 +357,7 @@ new staffHome().setVisible(true);
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel16;
-    private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel18;
-    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel20;
-    private javax.swing.JLabel jLabel21;
-    private javax.swing.JLabel jLabel22;
-    private javax.swing.JLabel jLabel23;
-    private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
@@ -688,43 +369,17 @@ new staffHome().setVisible(true);
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
-    private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
-    private javax.swing.JPanel jPanel18;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel20;
-    private javax.swing.JPanel jPanel22;
-    private javax.swing.JPanel jPanel24;
-    private javax.swing.JPanel jPanel26;
-    private javax.swing.JPanel jPanel28;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JPanel pnlAvailableBoat;
-    private javax.swing.JPanel pnlAvailableRoom;
-    private javax.swing.JPanel pnlCancelReservation;
-    private javax.swing.JPanel pnlCheckin;
-    private javax.swing.JPanel pnlConfirmReservation;
-    private javax.swing.JPanel pnlGuest;
-    private javax.swing.JPanel pnlReserveBoat;
-    private javax.swing.JPanel pnlReserveRoom;
-    private javax.swing.JPanel pnlUpcomming;
-    private javax.swing.JPanel pnlWaterActivities;
     private javax.swing.JPanel pnlmain;
-    private rojerusan.RSTableMetro tblbooking;
-    private rojerusan.RSTableMetro tblbooking1;
-    private javax.swing.JLabel txtHead;
     // End of variables declaration//GEN-END:variables
 }

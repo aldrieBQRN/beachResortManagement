@@ -31,7 +31,7 @@ public class adminRoom extends javax.swing.JInternalFrame {
         initComponents();
         removeBackground();
         DatabaseConnection();
-        showRoom();
+        showRoomDetails();
         
  
     }
@@ -71,7 +71,7 @@ public class adminRoom extends javax.swing.JInternalFrame {
         UI.setNorthPane(null); 
     }
     
-    public final void showRoom(){
+    public final void showRoomDetails(){
    
         
         try {
@@ -144,8 +144,10 @@ public class adminRoom extends javax.swing.JInternalFrame {
         jPanel7 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
 
+        setBackground(new java.awt.Color(242, 242, 242));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jPanel1.setBackground(new java.awt.Color(242, 242, 242));
         jPanel1.setPreferredSize(new java.awt.Dimension(1170, 740));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -153,6 +155,7 @@ public class adminRoom extends javax.swing.JInternalFrame {
         jPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, new java.awt.Color(204, 204, 204)));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        tblroom.setBackground(new java.awt.Color(242, 242, 242));
         tblroom.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
         tblroom.setForeground(new java.awt.Color(255, 255, 255));
         tblroom.setModel(new javax.swing.table.DefaultTableModel(
@@ -218,6 +221,7 @@ public class adminRoom extends javax.swing.JInternalFrame {
 
         jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 1120, 570));
 
+        txtsearch.setBackground(new java.awt.Color(255, 255, 255));
         txtsearch.setForeground(new java.awt.Color(102, 102, 102));
         txtsearch.setText("Seach here...");
         txtsearch.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
@@ -335,16 +339,49 @@ public class adminRoom extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_txtsearchActionPerformed
 
     private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
-        new adminAddRoom().setVisible(true);
+        
+        adminAddRoom room = new adminAddRoom();
+        room.setVisible(true);
+
+        // Add a WindowListener to call showBoatDetails when the adminAddBoat window is closed/disposed
+        room.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                // Call showBoatDetails after adminAddBoat is closed
+                showRoomDetails();
+            }
+        });
     }//GEN-LAST:event_jLabel3MouseClicked
 
     private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
-         new adminUpdateRoom().setVisible(true);
+        
+        adminUpdateRoom room = new adminUpdateRoom();
+        room.setVisible(true);
+
+        // Add a WindowListener to call showBoatDetails when the adminAddBoat window is closed/disposed
+        room.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                // Call showBoatDetails after adminAddBoat is closed
+                showRoomDetails();
+            }
+        });
     }//GEN-LAST:event_jLabel2MouseClicked
 
     private void jLabel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel5MouseClicked
        
-        new adminDeleteRoom().setVisible(true);
+       
+        adminDeleteRoom room = new adminDeleteRoom();
+        room.setVisible(true);
+
+        // Add a WindowListener to call showBoatDetails when the adminAddBoat window is closed/disposed
+        room.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                // Call showBoatDetails after adminAddBoat is closed
+                showRoomDetails();
+            }
+        });
     }//GEN-LAST:event_jLabel5MouseClicked
 
     private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked

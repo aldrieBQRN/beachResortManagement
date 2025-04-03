@@ -139,6 +139,7 @@ public class staffRooms extends javax.swing.JInternalFrame {
 
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jPanel1.setBackground(new java.awt.Color(242, 242, 242));
         jPanel1.setPreferredSize(new java.awt.Dimension(1170, 740));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -146,6 +147,7 @@ public class staffRooms extends javax.swing.JInternalFrame {
         jPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, new java.awt.Color(204, 204, 204)));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        tblroom.setBackground(new java.awt.Color(255, 255, 255));
         tblroom.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
         tblroom.setForeground(new java.awt.Color(255, 255, 255));
         tblroom.setModel(new javax.swing.table.DefaultTableModel(
@@ -211,6 +213,7 @@ public class staffRooms extends javax.swing.JInternalFrame {
 
         jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 1120, 570));
 
+        txtsearch.setBackground(new java.awt.Color(255, 255, 255));
         txtsearch.setForeground(new java.awt.Color(102, 102, 102));
         txtsearch.setText("Seach here...");
         txtsearch.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
@@ -240,6 +243,7 @@ public class staffRooms extends javax.swing.JInternalFrame {
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
         jLabel1.setText("List of Rooms");
         jPanel3.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, 40));
 
@@ -262,15 +266,15 @@ public class staffRooms extends javax.swing.JInternalFrame {
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 1160, 60));
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1200, 820));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1200, 760));
         jPanel1.getAccessibleContext().setAccessibleName("");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void tblroomMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblroomMouseClicked
-
-    }//GEN-LAST:event_tblroomMouseClicked
+    private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
+        new roomReservation().setVisible(true);
+    }//GEN-LAST:event_jLabel4MouseClicked
 
     private void rSComboMetro1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSComboMetro1ActionPerformed
         // TODO add your handling code here:
@@ -280,9 +284,9 @@ public class staffRooms extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtsearchActionPerformed
 
-    private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
-        new roomReservation().setVisible(true);
-    }//GEN-LAST:event_jLabel4MouseClicked
+    private void tblroomMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblroomMouseClicked
+
+    }//GEN-LAST:event_tblroomMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

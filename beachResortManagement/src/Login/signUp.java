@@ -58,11 +58,13 @@ public class signUp extends javax.swing.JFrame {
 
         jLabel4.setBackground(new java.awt.Color(255, 255, 255));
         jLabel4.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 24)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(0, 0, 0));
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel4.setText("Register");
         pnlsignout.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 40, 149, -1));
 
         jLabel5.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(0, 0, 0));
         jLabel5.setText("Have already an account?");
         pnlsignout.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 600, 160, -1));
 
@@ -75,6 +77,7 @@ public class signUp extends javax.swing.JFrame {
         pnlsignout.add(rSButtonHover1, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 540, 130, -1));
 
         jLabel7.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 13)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(0, 0, 0));
         jLabel7.setText("Sign In");
         jLabel7.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -84,19 +87,30 @@ public class signUp extends javax.swing.JFrame {
         pnlsignout.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 600, 50, 20));
 
         jLabel8.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(0, 0, 0));
         jLabel8.setText("Phone");
         pnlsignout.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 180, 110, -1));
+
+        txtphone.setBackground(new java.awt.Color(255, 255, 255));
+        txtphone.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
         pnlsignout.add(txtphone, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 200, 330, 40));
 
         jLabel9.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(0, 0, 0));
         jLabel9.setText("Password");
         pnlsignout.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 390, 110, -1));
+
+        txtemail.setBackground(new java.awt.Color(255, 255, 255));
+        txtemail.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
         pnlsignout.add(txtemail, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 340, 330, 40));
 
         jLabel10.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(0, 0, 0));
         jLabel10.setText("Address");
         pnlsignout.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 320, 110, -1));
 
+        txtpass.setBackground(new java.awt.Color(255, 255, 255));
+        txtpass.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
         txtpass.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtpassActionPerformed(evt);
@@ -105,29 +119,44 @@ public class signUp extends javax.swing.JFrame {
         pnlsignout.add(txtpass, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 410, 330, 40));
 
         jLabel11.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
+        jLabel11.setForeground(new java.awt.Color(0, 0, 0));
         jLabel11.setText("Confirm Password");
         pnlsignout.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 460, 110, -1));
 
+        txtconfirm.setBackground(new java.awt.Color(255, 255, 255));
+        txtconfirm.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
         txtconfirm.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtconfirmActionPerformed(evt);
             }
         });
         pnlsignout.add(txtconfirm, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 480, 330, 40));
+
+        txtlname.setBackground(new java.awt.Color(255, 255, 255));
+        txtlname.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
         pnlsignout.add(txtlname, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 130, 160, 40));
 
         jLabel12.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
+        jLabel12.setForeground(new java.awt.Color(0, 0, 0));
         jLabel12.setText("Last Name");
         pnlsignout.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 110, 110, -1));
+
+        txtfname.setBackground(new java.awt.Color(255, 255, 255));
+        txtfname.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
         pnlsignout.add(txtfname, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 130, 160, 40));
 
         jLabel13.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
+        jLabel13.setForeground(new java.awt.Color(0, 0, 0));
         jLabel13.setText("First Name");
         pnlsignout.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 110, 110, -1));
         pnlsignout.add(txtphone1, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 200, 330, 40));
+
+        txtphone2.setBackground(new java.awt.Color(255, 255, 255));
+        txtphone2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
         pnlsignout.add(txtphone2, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 270, 330, 40));
 
         jLabel14.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
+        jLabel14.setForeground(new java.awt.Color(0, 0, 0));
         jLabel14.setText("Phone");
         pnlsignout.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 250, 110, -1));
 

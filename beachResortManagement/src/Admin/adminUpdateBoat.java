@@ -5,6 +5,11 @@
 package Admin;
 
 import Staff.*;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -17,7 +22,63 @@ public class adminUpdateBoat extends javax.swing.JFrame {
      */
     public adminUpdateBoat() {
         initComponents();
+        DatabaseConnection();
+        populateBoatNumbersComboBox();
     }
+    
+    java.sql.Connection con; 
+    PreparedStatement pst;
+    ResultSet rs; 
+    
+    public final void DatabaseConnection() {
+          String url = "jdbc:mysql://localhost:3306/beachResortManagement";
+        String user = "root"; // MySQL username
+        String password = ""; // MySQL password
+        
+        // Establishing the connection
+        try {
+            // Load MySQL JDBC driver (optional in newer versions of JDBC)
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            
+            // Create the connection
+            con = DriverManager.getConnection(url, user, password);
+            
+            System.out.println("Connected to the database successfully!");
+
+            // Perform database operations here...
+
+      
+        } catch (SQLException e) {
+            System.out.println("Error connecting to the database: " + e.getMessage());
+        } catch (ClassNotFoundException e) {
+            System.out.println("MySQL JDBC Driver not found: " + e.getMessage());
+        }
+    }
+    
+    private void populateBoatNumbersComboBox() {
+        // Clear the combo box before adding items
+       cmbBoatNumbers.removeAllItems();
+
+    // Add the default entry (null or a placeholder)
+        cmbBoatNumbers.addItem("Select a Boat Number");
+
+        try {
+            // SQL query to fetch all boat numbers from the boat table
+            String sql = "SELECT boat_number FROM boat";
+            pst = con.prepareStatement(sql);
+            rs = pst.executeQuery();
+
+            // Populate combo box with boat numbers
+            while (rs.next()) {
+                String boatNumber = rs.getString("boat_number");
+                cmbBoatNumbers.addItem(boatNumber); // Add each boat number to the combo box
+            }
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error fetching boat numbers: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -31,18 +92,18 @@ public class adminUpdateBoat extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        txtBoatName = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-        jSpinner1 = new javax.swing.JSpinner();
+        txtDescription = new javax.swing.JTextArea();
+        spinnerCapacity = new javax.swing.JSpinner();
         jLabel5 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
+        txtTourPrice = new javax.swing.JTextField();
         rSButtonHover1 = new rojeru_san.complementos.RSButtonHover();
         rSButtonHover2 = new rojeru_san.complementos.RSButtonHover();
-        jTextField3 = new javax.swing.JTextField();
+        cmbBoatNumbers = new rojerusan.RSComboMetro();
         jLabel6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -61,9 +122,10 @@ public class adminUpdateBoat extends javax.swing.JFrame {
         jLabel1.setText("BOAT NUMBER");
         jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 50, 122, 30));
 
-        jTextField1.setForeground(new java.awt.Color(102, 102, 102));
-        jTextField1.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jPanel2.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 90, 240, 30));
+        txtBoatName.setBackground(new java.awt.Color(242, 242, 242));
+        txtBoatName.setForeground(new java.awt.Color(102, 102, 102));
+        txtBoatName.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
+        jPanel2.add(txtBoatName, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 90, 240, 30));
 
         jLabel2.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
         jLabel2.setText("BOAT NAME");
@@ -73,16 +135,17 @@ public class adminUpdateBoat extends javax.swing.JFrame {
         jLabel4.setText("CAPACITY");
         jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 230, 140, 30));
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setForeground(new java.awt.Color(102, 102, 102));
-        jTextArea1.setRows(5);
-        jTextArea1.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jScrollPane1.setViewportView(jTextArea1);
+        txtDescription.setBackground(new java.awt.Color(242, 242, 242));
+        txtDescription.setColumns(20);
+        txtDescription.setForeground(new java.awt.Color(102, 102, 102));
+        txtDescription.setRows(5);
+        txtDescription.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
+        jScrollPane1.setViewportView(txtDescription);
 
         jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 130, 240, -1));
 
-        jSpinner1.setBorder(null);
-        jPanel2.add(jSpinner1, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 230, 240, 30));
+        spinnerCapacity.setBorder(null);
+        jPanel2.add(spinnerCapacity, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 230, 240, 30));
 
         jLabel5.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
         jLabel5.setText("DESCRIPTION");
@@ -92,9 +155,10 @@ public class adminUpdateBoat extends javax.swing.JFrame {
         jLabel3.setText("PRICE/TOUR");
         jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 270, 122, 30));
 
-        jTextField2.setForeground(new java.awt.Color(102, 102, 102));
-        jTextField2.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jPanel2.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 270, 240, 30));
+        txtTourPrice.setBackground(new java.awt.Color(242, 242, 242));
+        txtTourPrice.setForeground(new java.awt.Color(102, 102, 102));
+        txtTourPrice.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
+        jPanel2.add(txtTourPrice, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 270, 240, 30));
 
         rSButtonHover1.setBackground(new java.awt.Color(27, 59, 95));
         rSButtonHover1.setText("CANCEL");
@@ -114,13 +178,35 @@ public class adminUpdateBoat extends javax.swing.JFrame {
         });
         jPanel2.add(rSButtonHover2, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 320, 240, -1));
 
-        jTextField3.setForeground(new java.awt.Color(102, 102, 102));
-        jTextField3.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jPanel2.add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 50, 240, 30));
+        cmbBoatNumbers.setColorArrow(new java.awt.Color(27, 59, 95));
+        cmbBoatNumbers.setColorBorde(new java.awt.Color(39, 114, 160));
+        cmbBoatNumbers.setColorFondo(new java.awt.Color(39, 114, 160));
+        cmbBoatNumbers.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cmbBoatNumbersItemStateChanged(evt);
+            }
+        });
+        cmbBoatNumbers.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                cmbBoatNumbersMousePressed(evt);
+            }
+        });
+        cmbBoatNumbers.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbBoatNumbersActionPerformed(evt);
+            }
+        });
+        cmbBoatNumbers.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                cmbBoatNumbersPropertyChange(evt);
+            }
+        });
+        jPanel2.add(cmbBoatNumbers, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 50, 240, 30));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, 560, 390));
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(0, 0, 0));
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel6.setText("Update Boat Details");
         jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, 560, 60));
@@ -132,12 +218,137 @@ public class adminUpdateBoat extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void rSButtonHover1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSButtonHover1ActionPerformed
-        // TODO add your handling code here:
+        this.dispose();
     }//GEN-LAST:event_rSButtonHover1ActionPerformed
 
     private void rSButtonHover2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSButtonHover2ActionPerformed
-        // TODO add your handling code here:
+         // Get selected boat number from the combo box
+        String selectedBoatNumber = (String) cmbBoatNumbers.getSelectedItem();
+
+        // Get other details from the text fields
+        String boatName = txtBoatName.getText().trim();
+        String description = txtDescription.getText().trim();
+        int capacity;
+        double tourPrice;
+
+        // Validate required fields
+        if (selectedBoatNumber == null || selectedBoatNumber.isEmpty() || boatName.isEmpty() || description.isEmpty() || txtTourPrice.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "All fields must be filled!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return; // Stop execution if fields are empty
+        }
+
+        try {
+            // Validate Capacity
+            capacity = (int) spinnerCapacity.getValue();
+            if (capacity <= 0) {
+                JOptionPane.showMessageDialog(this, "Capacity must be greater than 0!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Validate Tour Price
+            tourPrice = Double.parseDouble(txtTourPrice.getText().trim());
+            if (tourPrice <= 0) {
+                JOptionPane.showMessageDialog(this, "Tour price must be a positive number!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Confirmation Dialog before updating the boat
+            int confirm = JOptionPane.showConfirmDialog(this, 
+                "Are you sure you want to update the boat information?", 
+                "Confirm Update", 
+                JOptionPane.YES_NO_OPTION);
+
+            // Proceed with the update if user clicks "Yes"
+            if (confirm == JOptionPane.YES_OPTION) {
+                // Ensure Database Connection is Open
+                if (con == null || con.isClosed()) {
+                    JOptionPane.showMessageDialog(this, "Database connection is not available!", "Database Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Database Update Query using boat_number (unique)
+                String sql = "UPDATE boat SET boat_name = ?, description = ?, capacity = ?, tour_price = ? WHERE boat_number = ?";
+                pst = con.prepareStatement(sql);
+                pst.setString(1, boatName);
+                pst.setString(2, description);
+                pst.setInt(3, capacity);
+                pst.setDouble(4, tourPrice);
+                pst.setString(5, selectedBoatNumber); // Using selectedBoatNumber to identify the boat
+
+                int rowsUpdated = pst.executeUpdate();
+                if (rowsUpdated > 0) {
+                    JOptionPane.showMessageDialog(this, "Boat details updated successfully!");
+                    this.dispose(); // Close the update window
+                }
+            }
+
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid input! Ensure Capacity and Price are numbers.", "Input Error", JOptionPane.ERROR_MESSAGE);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+
+
+        
+
+
+
     }//GEN-LAST:event_rSButtonHover2ActionPerformed
+
+    private void cmbBoatNumbersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbBoatNumbersActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbBoatNumbersActionPerformed
+
+    private void cmbBoatNumbersPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_cmbBoatNumbersPropertyChange
+    
+    }//GEN-LAST:event_cmbBoatNumbersPropertyChange
+
+    private void cmbBoatNumbersMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cmbBoatNumbersMousePressed
+        
+    }//GEN-LAST:event_cmbBoatNumbersMousePressed
+
+    private void cmbBoatNumbersItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbBoatNumbersItemStateChanged
+        
+        // Only proceed if an item is selected and it's not the default empty value (-1 or null)
+        String selectedBoatNumber = (String) cmbBoatNumbers.getSelectedItem();
+
+        // If no boat number is selected (empty or null), do nothing
+        if (selectedBoatNumber == null || selectedBoatNumber.isEmpty() || selectedBoatNumber.equals("Select a Boat Number")) {
+         // Reset to "Select a Boat Number" or default value
+
+        // Clear the text fields
+            txtBoatName.setText("");   // Reset boat name
+            txtDescription.setText("");  // Reset description
+            txtTourPrice.setText("");  // Reset tour price
+
+            // Clear the spinner
+            spinnerCapacity.setValue(0); 
+            return;
+        }
+
+        try {
+            // Prepare the SQL query to fetch the boat details using the selected boat number
+            String sql = "SELECT boat_name, description, capacity, tour_price FROM boat WHERE boat_number = ?";
+            pst = con.prepareStatement(sql);
+            pst.setString(1, selectedBoatNumber); // Use selected boat number in query
+
+            // Execute the query
+            rs = pst.executeQuery();
+
+            // Check if the boat exists in the database
+            if (rs.next()) {
+                // Set the values of the text fields and spinner with the retrieved details
+                txtBoatName.setText(rs.getString("boat_name"));
+                txtDescription.setText(rs.getString("description"));
+                spinnerCapacity.setValue(rs.getInt("capacity"));
+                txtTourPrice.setText(String.valueOf(rs.getDouble("tour_price")));
+            } 
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        } 
+
+    }//GEN-LAST:event_cmbBoatNumbersItemStateChanged
 
     /**
      * @param args the command line arguments
@@ -182,6 +393,7 @@ public class adminUpdateBoat extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private rojerusan.RSComboMetro cmbBoatNumbers;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -191,12 +403,11 @@ public class adminUpdateBoat extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JSpinner jSpinner1;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
     private rojeru_san.complementos.RSButtonHover rSButtonHover1;
     private rojeru_san.complementos.RSButtonHover rSButtonHover2;
+    private javax.swing.JSpinner spinnerCapacity;
+    private javax.swing.JTextField txtBoatName;
+    private javax.swing.JTextArea txtDescription;
+    private javax.swing.JTextField txtTourPrice;
     // End of variables declaration//GEN-END:variables
 }

@@ -5,6 +5,11 @@
 package Admin;
 
 import Staff.*;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -17,7 +22,38 @@ public class adminAddRoom extends javax.swing.JFrame {
      */
     public adminAddRoom() {
         initComponents();
+        DatabaseConnection();
     }
+    
+    java.sql.Connection con; 
+    PreparedStatement pst;
+    ResultSet rs; 
+    
+    public final void DatabaseConnection() {
+        String url = "jdbc:mysql://localhost:3306/beachResortManagement";
+        String user = "root"; // MySQL username
+        String password = ""; // MySQL password
+        
+        // Establishing the connection
+        try {
+            // Load MySQL JDBC driver (optional in newer versions of JDBC)
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            
+            // Create the connection
+            con = DriverManager.getConnection(url, user, password);
+            
+            System.out.println("Connected to the database successfully!");
+
+            // Perform database operations here...
+
+      
+        } catch (SQLException e) {
+            System.out.println("Error connecting to the database: " + e.getMessage());
+        } catch (ClassNotFoundException e) {
+            System.out.println("MySQL JDBC Driver not found: " + e.getMessage());
+        }
+    }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -31,18 +67,18 @@ public class adminAddRoom extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        txtRoomNumber = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-        jSpinner1 = new javax.swing.JSpinner();
+        txtDescription = new javax.swing.JTextArea();
+        spinnerMaxOccupancy = new javax.swing.JSpinner();
         jLabel5 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
+        txtRoomPrice = new javax.swing.JTextField();
         rSButtonHover1 = new rojeru_san.complementos.RSButtonHover();
         rSButtonHover2 = new rojeru_san.complementos.RSButtonHover();
-        rSComboMetro1 = new rojerusan.RSComboMetro();
+        cmbRoomType = new rojerusan.RSComboMetro();
         jLabel6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -58,43 +94,51 @@ public class adminAddRoom extends javax.swing.JFrame {
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
         jLabel1.setText("BOAT NUMBER");
         jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 50, 122, 30));
 
-        jTextField1.setForeground(new java.awt.Color(102, 102, 102));
-        jTextField1.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jPanel2.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 50, 240, 30));
+        txtRoomNumber.setBackground(new java.awt.Color(255, 255, 255));
+        txtRoomNumber.setForeground(new java.awt.Color(102, 102, 102));
+        txtRoomNumber.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
+        jPanel2.add(txtRoomNumber, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 50, 240, 30));
 
         jLabel2.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
         jLabel2.setText("ROOM TYPE");
         jPanel2.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 90, 122, 30));
 
         jLabel4.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(0, 0, 0));
         jLabel4.setText("MAX OCCUPANCY");
         jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 230, 140, 30));
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setForeground(new java.awt.Color(102, 102, 102));
-        jTextArea1.setRows(5);
-        jTextArea1.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jScrollPane1.setViewportView(jTextArea1);
+        txtDescription.setBackground(new java.awt.Color(255, 255, 255));
+        txtDescription.setColumns(20);
+        txtDescription.setForeground(new java.awt.Color(102, 102, 102));
+        txtDescription.setRows(5);
+        txtDescription.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
+        jScrollPane1.setViewportView(txtDescription);
 
         jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 130, 240, -1));
 
-        jSpinner1.setBorder(null);
-        jPanel2.add(jSpinner1, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 230, 240, 30));
+        spinnerMaxOccupancy.setBorder(null);
+        jPanel2.add(spinnerMaxOccupancy, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 230, 240, 30));
 
         jLabel5.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(0, 0, 0));
         jLabel5.setText("DESCRIPTION");
         jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 130, 122, 30));
 
         jLabel3.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
         jLabel3.setText("PRICE/DAY");
         jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 270, 122, 30));
 
-        jTextField2.setForeground(new java.awt.Color(102, 102, 102));
-        jTextField2.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jPanel2.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 270, 240, 30));
+        txtRoomPrice.setBackground(new java.awt.Color(255, 255, 255));
+        txtRoomPrice.setForeground(new java.awt.Color(102, 102, 102));
+        txtRoomPrice.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
+        jPanel2.add(txtRoomPrice, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 270, 240, 30));
 
         rSButtonHover1.setBackground(new java.awt.Color(27, 59, 95));
         rSButtonHover1.setText("CANCEL");
@@ -114,21 +158,22 @@ public class adminAddRoom extends javax.swing.JFrame {
         });
         jPanel2.add(rSButtonHover2, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 320, 240, -1));
 
-        rSComboMetro1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Single", "Double", "Suite", " " }));
-        rSComboMetro1.setSelectedIndex(-1);
-        rSComboMetro1.setColorArrow(new java.awt.Color(27, 59, 95));
-        rSComboMetro1.setColorBorde(new java.awt.Color(39, 114, 160));
-        rSComboMetro1.setColorFondo(new java.awt.Color(39, 114, 160));
-        rSComboMetro1.addActionListener(new java.awt.event.ActionListener() {
+        cmbRoomType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Single", "Double", "Suite", " " }));
+        cmbRoomType.setSelectedIndex(-1);
+        cmbRoomType.setColorArrow(new java.awt.Color(27, 59, 95));
+        cmbRoomType.setColorBorde(new java.awt.Color(39, 114, 160));
+        cmbRoomType.setColorFondo(new java.awt.Color(39, 114, 160));
+        cmbRoomType.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rSComboMetro1ActionPerformed(evt);
+                cmbRoomTypeActionPerformed(evt);
             }
         });
-        jPanel2.add(rSComboMetro1, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 90, 240, 30));
+        jPanel2.add(cmbRoomType, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 90, 240, 30));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, 560, 390));
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(0, 0, 0));
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel6.setText("Add Room");
         jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, 560, 60));
@@ -144,12 +189,77 @@ public class adminAddRoom extends javax.swing.JFrame {
     }//GEN-LAST:event_rSButtonHover1ActionPerformed
 
     private void rSButtonHover2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSButtonHover2ActionPerformed
-        // TODO add your handling code here:
+       
+
+        String roomNumber = txtRoomNumber.getText().trim();
+        String roomType = (String) cmbRoomType.getSelectedItem();  // Get selected item from combo box
+        String description = txtDescription.getText().trim();
+        int maxOccupancy;
+        double roomPrice;
+
+        // Validate required fields
+        if (roomNumber.isEmpty() || roomType == null || roomType.isEmpty() || description.isEmpty() || txtRoomPrice.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "All fields must be filled!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try {
+            // Validate Max Occupancy
+            maxOccupancy = (int) spinnerMaxOccupancy.getValue();
+            if (maxOccupancy <= 0) {
+                JOptionPane.showMessageDialog(this, "Max Occupancy must be greater than 0!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Validate Room Price
+            roomPrice = Double.parseDouble(txtRoomPrice.getText().trim());
+            if (roomPrice <= 0) {
+                JOptionPane.showMessageDialog(this, "Room price must be a positive number!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Confirmation before insertion
+            int confirm = JOptionPane.showConfirmDialog(this, 
+                    "Are you sure you want to register this room?\n\n" + 
+                    "Room Number: " + roomNumber + "\n" + 
+                    "Room Type: " + roomType + "\n" + 
+                    "Description: " + description + "\n" + 
+                    "Max Occupancy: " + maxOccupancy + "\n" + 
+                    "Room Price: $" + roomPrice, 
+                    "Confirm Registration", JOptionPane.YES_NO_OPTION);
+
+            if (confirm != JOptionPane.YES_OPTION) {
+                return;
+            }
+
+            // Database Insertion
+            String sql = "INSERT INTO room (room_number, room_type, description, max_occupancy, room_price) VALUES (?, ?, ?, ?, ?)";
+            pst = con.prepareStatement(sql);
+            pst.setString(1, roomNumber);
+            pst.setString(2, roomType);  // Insert selected room type
+            pst.setString(3, description);
+            pst.setInt(4, maxOccupancy);
+            pst.setDouble(5, roomPrice);
+
+            int rowsInserted = pst.executeUpdate();
+            if (rowsInserted > 0) {
+                JOptionPane.showMessageDialog(this, "Room registered successfully!");
+                this.dispose();
+            }
+
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid input! Ensure Max Occupancy and Room Price are numbers.", "Input Error", JOptionPane.ERROR_MESSAGE);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+
+
     }//GEN-LAST:event_rSButtonHover2ActionPerformed
 
-    private void rSComboMetro1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSComboMetro1ActionPerformed
+    private void cmbRoomTypeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbRoomTypeActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_rSComboMetro1ActionPerformed
+    }//GEN-LAST:event_cmbRoomTypeActionPerformed
 
     /**
      * @param args the command line arguments
@@ -188,6 +298,7 @@ public class adminAddRoom extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private rojerusan.RSComboMetro cmbRoomType;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -197,12 +308,11 @@ public class adminAddRoom extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JSpinner jSpinner1;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
     private rojeru_san.complementos.RSButtonHover rSButtonHover1;
     private rojeru_san.complementos.RSButtonHover rSButtonHover2;
-    private rojerusan.RSComboMetro rSComboMetro1;
+    private javax.swing.JSpinner spinnerMaxOccupancy;
+    private javax.swing.JTextArea txtDescription;
+    private javax.swing.JTextField txtRoomNumber;
+    private javax.swing.JTextField txtRoomPrice;
     // End of variables declaration//GEN-END:variables
 }

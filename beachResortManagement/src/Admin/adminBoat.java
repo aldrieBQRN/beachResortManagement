@@ -130,6 +130,7 @@ public class adminBoat extends javax.swing.JInternalFrame {
 
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jPanel1.setBackground(new java.awt.Color(242, 242, 242));
         jPanel1.setPreferredSize(new java.awt.Dimension(1170, 740));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -137,6 +138,7 @@ public class adminBoat extends javax.swing.JInternalFrame {
         jPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, new java.awt.Color(204, 204, 204)));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        tblBoatDetails.setBackground(new java.awt.Color(242, 242, 242));
         tblBoatDetails.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
         tblBoatDetails.setForeground(new java.awt.Color(255, 255, 255));
         tblBoatDetails.setModel(new javax.swing.table.DefaultTableModel(
@@ -196,6 +198,7 @@ public class adminBoat extends javax.swing.JInternalFrame {
 
         jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 1120, 570));
 
+        jTextField1.setBackground(new java.awt.Color(255, 255, 255));
         jTextField1.setText("Seach here...");
         jTextField1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
         jPanel2.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 20, 270, 40));
@@ -303,15 +306,47 @@ public class adminBoat extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_rSComboMetro1ActionPerformed
 
     private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
-       new adminAddBoat().setVisible(true);
+        adminAddBoat addBoatWindow = new adminAddBoat();
+        addBoatWindow.setVisible(true);
+
+        // Add a WindowListener to call showBoatDetails when the adminAddBoat window is closed/disposed
+        addBoatWindow.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                // Call showBoatDetails after adminAddBoat is closed
+                showBoatDetails();
+            }
+        });
     }//GEN-LAST:event_jLabel3MouseClicked
 
     private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
-        new adminUpdateBoat().setVisible(true);
+        
+        adminUpdateBoat updateBoatWindow = new adminUpdateBoat();
+        updateBoatWindow.setVisible(true);
+
+        // Add a WindowListener to call showBoatDetails when the adminAddBoat window is closed/disposed
+        updateBoatWindow.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                // Call showBoatDetails after adminAddBoat is closed
+                showBoatDetails();
+            }
+        });
     }//GEN-LAST:event_jLabel2MouseClicked
 
     private void jLabel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel5MouseClicked
-        new adminDeleteBoat().setVisible(true);
+       
+        adminDeleteBoat delete = new adminDeleteBoat();
+        delete.setVisible(true);
+
+        // Add a WindowListener to call showBoatDetails when the adminAddBoat window is closed/disposed
+        delete.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                // Call showBoatDetails after adminAddBoat is closed
+                showBoatDetails();
+            }
+        });
     }//GEN-LAST:event_jLabel5MouseClicked
 
     private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked

@@ -60,26 +60,32 @@ public class adminUpdateUser extends javax.swing.JFrame {
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(0, 0, 0));
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel6.setText("Update User Details");
         jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, 560, 60));
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
         jPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 0, 0, 0, new java.awt.Color(27, 59, 95)));
+        jPanel2.setForeground(new java.awt.Color(0, 0, 0));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
         jLabel1.setText("FIRST NAME");
         jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 100, 90, 30));
 
+        jTextField1.setBackground(new java.awt.Color(255, 255, 255));
         jTextField1.setForeground(new java.awt.Color(102, 102, 102));
         jTextField1.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jPanel2.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 60, 170, 30));
 
         jLabel2.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
         jLabel2.setText("ADDRESS");
         jPanel2.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 140, 100, 30));
 
+        jTextArea1.setBackground(new java.awt.Color(255, 255, 255));
         jTextArea1.setColumns(20);
         jTextArea1.setForeground(new java.awt.Color(102, 102, 102));
         jTextArea1.setRows(5);
@@ -89,6 +95,7 @@ public class adminUpdateUser extends javax.swing.JFrame {
         jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 140, 170, 90));
 
         jLabel5.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(0, 0, 0));
         jLabel5.setText("ROLE");
         jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 60, 90, 30));
 
@@ -110,47 +117,58 @@ public class adminUpdateUser extends javax.swing.JFrame {
         });
         jPanel2.add(rSButtonHover2, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 300, 240, -1));
 
+        jTextField3.setBackground(new java.awt.Color(255, 255, 255));
         jTextField3.setForeground(new java.awt.Color(102, 102, 102));
         jTextField3.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jPanel2.add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 60, 170, 30));
 
+        jTextField4.setBackground(new java.awt.Color(255, 255, 255));
         jTextField4.setForeground(new java.awt.Color(102, 102, 102));
         jTextField4.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jPanel2.add(jTextField4, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 100, 170, 30));
 
         jLabel7.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(0, 0, 0));
         jLabel7.setText("LAST NAME");
         jPanel2.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 100, 100, 30));
 
+        jTextField5.setBackground(new java.awt.Color(255, 255, 255));
         jTextField5.setForeground(new java.awt.Color(102, 102, 102));
         jTextField5.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jPanel2.add(jTextField5, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 100, 170, 30));
 
+        jTextField7.setBackground(new java.awt.Color(255, 255, 255));
         jTextField7.setForeground(new java.awt.Color(102, 102, 102));
         jTextField7.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jPanel2.add(jTextField7, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 240, 170, 30));
 
         jLabel8.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(0, 0, 0));
         jLabel8.setText("EMAIL");
         jPanel2.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 240, 90, 30));
 
         jLabel10.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(0, 0, 0));
         jLabel10.setText("PASSWORD");
         jPanel2.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 240, 90, 30));
 
+        jTextField8.setBackground(new java.awt.Color(255, 255, 255));
         jTextField8.setForeground(new java.awt.Color(102, 102, 102));
         jTextField8.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jPanel2.add(jTextField8, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 240, 170, 30));
 
         jLabel9.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(0, 0, 0));
         jLabel9.setText("PHONE");
         jPanel2.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 140, 100, 30));
 
+        jTextField6.setBackground(new java.awt.Color(255, 255, 255));
         jTextField6.setForeground(new java.awt.Color(102, 102, 102));
         jTextField6.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jPanel2.add(jTextField6, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 140, 170, 30));
 
         jLabel11.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel11.setForeground(new java.awt.Color(0, 0, 0));
         jLabel11.setText("USER ID");
         jPanel2.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 60, 90, 30));
 

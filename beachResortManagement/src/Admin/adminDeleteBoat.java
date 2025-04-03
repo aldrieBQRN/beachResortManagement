@@ -5,6 +5,11 @@
 package Admin;
 
 import Staff.*;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -17,6 +22,36 @@ public class adminDeleteBoat extends javax.swing.JFrame {
      */
     public adminDeleteBoat() {
         initComponents();
+        DatabaseConnection();
+    }
+    
+    java.sql.Connection con; 
+    PreparedStatement pst;
+    ResultSet rs; 
+    
+    public final void DatabaseConnection() {
+          String url = "jdbc:mysql://localhost:3306/beachResortManagement";
+        String user = "root"; // MySQL username
+        String password = ""; // MySQL password
+        
+        // Establishing the connection
+        try {
+            // Load MySQL JDBC driver (optional in newer versions of JDBC)
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            
+            // Create the connection
+            con = DriverManager.getConnection(url, user, password);
+            
+            System.out.println("Connected to the database successfully!");
+
+            // Perform database operations here...
+
+      
+        } catch (SQLException e) {
+            System.out.println("Error connecting to the database: " + e.getMessage());
+        } catch (ClassNotFoundException e) {
+            System.out.println("MySQL JDBC Driver not found: " + e.getMessage());
+        }
     }
 
     /**
@@ -30,7 +65,7 @@ public class adminDeleteBoat extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        jTextField3 = new javax.swing.JTextField();
+        txtBoatNumber = new javax.swing.JTextField();
         rSButtonHover3 = new rojeru_san.complementos.RSButtonHover();
         rSButtonHover5 = new rojeru_san.complementos.RSButtonHover();
         jLabel6 = new javax.swing.JLabel();
@@ -47,10 +82,11 @@ public class adminDeleteBoat extends javax.swing.JFrame {
         jPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 0, 0, 0, new java.awt.Color(27, 59, 95)));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jTextField3.setForeground(new java.awt.Color(102, 102, 102));
-        jTextField3.setText("Enter boat number here...");
-        jTextField3.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jPanel2.add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 80, 290, 50));
+        txtBoatNumber.setBackground(new java.awt.Color(255, 255, 255));
+        txtBoatNumber.setForeground(new java.awt.Color(102, 102, 102));
+        txtBoatNumber.setText("Enter boat number here...");
+        txtBoatNumber.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
+        jPanel2.add(txtBoatNumber, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 80, 290, 50));
 
         rSButtonHover3.setBackground(new java.awt.Color(27, 59, 95));
         rSButtonHover3.setText("CANCEL");
@@ -72,7 +108,9 @@ public class adminDeleteBoat extends javax.swing.JFrame {
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, 560, 390));
 
+        jLabel6.setBackground(new java.awt.Color(0, 0, 0));
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(0, 0, 0));
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel6.setText("Unregister Boat");
         jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, 560, 60));
@@ -84,11 +122,44 @@ public class adminDeleteBoat extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void rSButtonHover3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSButtonHover3ActionPerformed
-        // TODO add your handling code here:
+        this.dispose();
     }//GEN-LAST:event_rSButtonHover3ActionPerformed
 
     private void rSButtonHover5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSButtonHover5ActionPerformed
-        // TODO add your handling code here:
+        // TODO add your handling code here:// Get the boat number from the text field
+        String boatNumber = txtBoatNumber.getText().trim();
+
+        // Check if the boat number is entered
+        if (boatNumber.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter a valid boat number to delete.", "Warning", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Confirm the deletion
+        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to unregistered this boat?", "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        try {
+            // SQL query to delete the selected boat
+            String sql = "DELETE FROM boat WHERE boat_number = ?";
+            pst = con.prepareStatement(sql);
+            pst.setString(1, boatNumber);
+
+            int rowsAffected = pst.executeUpdate(); // Execute the delete query
+
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(this, "Boat unregistered successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                this.dispose();
+
+            } else {
+                JOptionPane.showMessageDialog(this, "Boat not found or could not be deleted.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error deleting boat: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_rSButtonHover5ActionPerformed
 
     /**
@@ -134,10 +205,8 @@ public class adminDeleteBoat extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new adminDeleteBoat().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new adminDeleteBoat().setVisible(true);
         });
     }
 
@@ -145,8 +214,8 @@ public class adminDeleteBoat extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JTextField jTextField3;
     private rojeru_san.complementos.RSButtonHover rSButtonHover3;
     private rojeru_san.complementos.RSButtonHover rSButtonHover5;
+    private javax.swing.JTextField txtBoatNumber;
     // End of variables declaration//GEN-END:variables
 }

@@ -4,6 +4,12 @@
  */
 package Admin;
 
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author yeojvaldez
@@ -15,7 +21,38 @@ public class adminDeleteRoom extends javax.swing.JFrame {
      */
     public adminDeleteRoom() {
         initComponents();
+        DatabaseConnection();
     }
+    
+    java.sql.Connection con; 
+    PreparedStatement pst;
+    ResultSet rs; 
+    
+    public final void DatabaseConnection() {
+          String url = "jdbc:mysql://localhost:3306/beachResortManagement";
+        String user = "root"; // MySQL username
+        String password = ""; // MySQL password
+        
+        // Establishing the connection
+        try {
+            // Load MySQL JDBC driver (optional in newer versions of JDBC)
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            
+            // Create the connection
+            con = DriverManager.getConnection(url, user, password);
+            
+            System.out.println("Connected to the database successfully!");
+
+            // Perform database operations here...
+
+      
+        } catch (SQLException e) {
+            System.out.println("Error connecting to the database: " + e.getMessage());
+        } catch (ClassNotFoundException e) {
+            System.out.println("MySQL JDBC Driver not found: " + e.getMessage());
+        }
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -28,7 +65,7 @@ public class adminDeleteRoom extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        jTextField3 = new javax.swing.JTextField();
+        txtRoomNumber = new javax.swing.JTextField();
         rSButtonHover3 = new rojeru_san.complementos.RSButtonHover();
         rSButtonHover5 = new rojeru_san.complementos.RSButtonHover();
         jLabel6 = new javax.swing.JLabel();
@@ -45,15 +82,16 @@ public class adminDeleteRoom extends javax.swing.JFrame {
         jPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 0, 0, 0, new java.awt.Color(27, 59, 95)));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jTextField3.setForeground(new java.awt.Color(102, 102, 102));
-        jTextField3.setText("Enter room number here...");
-        jTextField3.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jTextField3.addActionListener(new java.awt.event.ActionListener() {
+        txtRoomNumber.setBackground(new java.awt.Color(255, 255, 255));
+        txtRoomNumber.setForeground(new java.awt.Color(102, 102, 102));
+        txtRoomNumber.setText("Enter room number here...");
+        txtRoomNumber.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
+        txtRoomNumber.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField3ActionPerformed(evt);
+                txtRoomNumberActionPerformed(evt);
             }
         });
-        jPanel2.add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 80, 290, 50));
+        jPanel2.add(txtRoomNumber, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 80, 290, 50));
 
         rSButtonHover3.setBackground(new java.awt.Color(27, 59, 95));
         rSButtonHover3.setText("CANCEL");
@@ -75,7 +113,9 @@ public class adminDeleteRoom extends javax.swing.JFrame {
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, 560, 390));
 
+        jLabel6.setBackground(new java.awt.Color(0, 0, 0));
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(0, 0, 0));
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel6.setText("Remove Room");
         jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, 560, 60));
@@ -91,12 +131,48 @@ public class adminDeleteRoom extends javax.swing.JFrame {
     }//GEN-LAST:event_rSButtonHover3ActionPerformed
 
     private void rSButtonHover5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSButtonHover5ActionPerformed
-        // TODO add your handling code here:
+       
+    // Get the room number from the text field
+    String selectedRoomNumber = txtRoomNumber.getText().trim();
+    // If the room number is empty or the default value (empty), do nothing
+    if (selectedRoomNumber.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please enter a room number to delete.", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // Confirm the deletion
+   int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to remove this room?", "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+
+
+    if (confirm == JOptionPane.YES_OPTION) {
+        // Prepare the SQL query to delete the room
+        String sql = "DELETE FROM room WHERE room_number = ?";
+        try {
+            pst = con.prepareStatement(sql);
+            pst.setString(1, selectedRoomNumber);  // Use the room number from text field
+
+            // Execute the query
+            int rowsDeleted = pst.executeUpdate();
+
+            if (rowsDeleted > 0) {
+                JOptionPane.showMessageDialog(this, "Room remove successfully.");
+               this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Room not found or could not be remove.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    
+}
+
+
     }//GEN-LAST:event_rSButtonHover5ActionPerformed
 
-    private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
+    private void txtRoomNumberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtRoomNumberActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField3ActionPerformed
+    }//GEN-LAST:event_txtRoomNumberActionPerformed
 
     /**
      * @param args the command line arguments
@@ -168,8 +244,8 @@ public class adminDeleteRoom extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JTextField jTextField3;
     private rojeru_san.complementos.RSButtonHover rSButtonHover3;
     private rojeru_san.complementos.RSButtonHover rSButtonHover5;
+    private javax.swing.JTextField txtRoomNumber;
     // End of variables declaration//GEN-END:variables
 }

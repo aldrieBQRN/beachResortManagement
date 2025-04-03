@@ -95,7 +95,7 @@ public class staffReservation extends javax.swing.JInternalFrame {
                
                 String roomNumber = rs.getString("room_number");
                 String roomType = rs.getString("room_type");
-                double price = rs.getDouble("price");
+                double price = rs.getDouble("room_price");
                 String description = rs.getString("description");
                 int maxOccupancy = rs.getInt("max_occupancy");
                 String createdAt = rs.getString("created_at");
@@ -141,6 +141,7 @@ public class staffReservation extends javax.swing.JInternalFrame {
 
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jPanel1.setBackground(new java.awt.Color(242, 242, 242));
         jPanel1.setPreferredSize(new java.awt.Dimension(1170, 740));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -148,6 +149,7 @@ public class staffReservation extends javax.swing.JInternalFrame {
         jPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, new java.awt.Color(204, 204, 204)));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        tblroom.setBackground(new java.awt.Color(242, 242, 242));
         tblroom.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
         tblroom.setForeground(new java.awt.Color(255, 255, 255));
         tblroom.setModel(new javax.swing.table.DefaultTableModel(
@@ -203,6 +205,7 @@ public class staffReservation extends javax.swing.JInternalFrame {
 
         jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 1120, 570));
 
+        txtsearch.setBackground(new java.awt.Color(255, 255, 255));
         txtsearch.setForeground(new java.awt.Color(102, 102, 102));
         txtsearch.setText("Seach here...");
         txtsearch.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));

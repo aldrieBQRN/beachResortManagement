@@ -5,6 +5,12 @@
 package Admin;
 
 import Staff.*;
+import com.sun.jdi.connect.spi.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -17,7 +23,38 @@ public class adminAddBoat extends javax.swing.JFrame {
      */
     public adminAddBoat() {
         initComponents();
+        DatabaseConnection();
     }
+    
+    java.sql.Connection con; 
+    PreparedStatement pst;
+    ResultSet rs; 
+    
+    public final void DatabaseConnection() {
+          String url = "jdbc:mysql://localhost:3306/beachResortManagement";
+        String user = "root"; // MySQL username
+        String password = ""; // MySQL password
+        
+        // Establishing the connection
+        try {
+            // Load MySQL JDBC driver (optional in newer versions of JDBC)
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            
+            // Create the connection
+            con = DriverManager.getConnection(url, user, password);
+            
+            System.out.println("Connected to the database successfully!");
+
+            // Perform database operations here...
+
+      
+        } catch (SQLException e) {
+            System.out.println("Error connecting to the database: " + e.getMessage());
+        } catch (ClassNotFoundException e) {
+            System.out.println("MySQL JDBC Driver not found: " + e.getMessage());
+        }
+    }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -31,18 +68,18 @@ public class adminAddBoat extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        txtBoatName = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-        jSpinner1 = new javax.swing.JSpinner();
+        txtDescription = new javax.swing.JTextArea();
+        spinnerCapacity = new javax.swing.JSpinner();
         jLabel5 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
+        txtTourPrice = new javax.swing.JTextField();
         rSButtonHover1 = new rojeru_san.complementos.RSButtonHover();
         rSButtonHover2 = new rojeru_san.complementos.RSButtonHover();
-        jTextField3 = new javax.swing.JTextField();
+        txtBoatNumber = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -58,43 +95,56 @@ public class adminAddBoat extends javax.swing.JFrame {
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
         jLabel1.setText("BOAT NUMBER");
         jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 50, 122, 30));
 
-        jTextField1.setForeground(new java.awt.Color(102, 102, 102));
-        jTextField1.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jPanel2.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 90, 240, 30));
+        txtBoatName.setBackground(new java.awt.Color(242, 242, 242));
+        txtBoatName.setForeground(new java.awt.Color(102, 102, 102));
+        txtBoatName.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
+        txtBoatName.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtBoatNameActionPerformed(evt);
+            }
+        });
+        jPanel2.add(txtBoatName, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 90, 240, 30));
 
         jLabel2.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
         jLabel2.setText("BOAT NAME");
         jPanel2.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 90, 122, 30));
 
         jLabel4.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(0, 0, 0));
         jLabel4.setText("CAPACITY");
         jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 230, 140, 30));
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setForeground(new java.awt.Color(102, 102, 102));
-        jTextArea1.setRows(5);
-        jTextArea1.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jScrollPane1.setViewportView(jTextArea1);
+        txtDescription.setBackground(new java.awt.Color(242, 242, 242));
+        txtDescription.setColumns(20);
+        txtDescription.setForeground(new java.awt.Color(102, 102, 102));
+        txtDescription.setRows(5);
+        txtDescription.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
+        jScrollPane1.setViewportView(txtDescription);
 
         jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 130, 240, -1));
 
-        jSpinner1.setBorder(null);
-        jPanel2.add(jSpinner1, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 230, 240, 30));
+        spinnerCapacity.setBorder(null);
+        jPanel2.add(spinnerCapacity, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 230, 240, 30));
 
         jLabel5.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(0, 0, 0));
         jLabel5.setText("DESCRIPTION");
         jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 130, 122, 30));
 
         jLabel3.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
         jLabel3.setText("PRICE/RIDE");
         jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 270, 122, 30));
 
-        jTextField2.setForeground(new java.awt.Color(102, 102, 102));
-        jTextField2.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jPanel2.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 270, 240, 30));
+        txtTourPrice.setBackground(new java.awt.Color(242, 242, 242));
+        txtTourPrice.setForeground(new java.awt.Color(102, 102, 102));
+        txtTourPrice.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
+        jPanel2.add(txtTourPrice, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 270, 240, 30));
 
         rSButtonHover1.setBackground(new java.awt.Color(27, 59, 95));
         rSButtonHover1.setText("CANCEL");
@@ -114,14 +164,16 @@ public class adminAddBoat extends javax.swing.JFrame {
         });
         jPanel2.add(rSButtonHover2, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 320, 240, -1));
 
-        jTextField3.setForeground(new java.awt.Color(102, 102, 102));
-        jTextField3.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jPanel2.add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 50, 240, 30));
+        txtBoatNumber.setBackground(new java.awt.Color(242, 242, 242));
+        txtBoatNumber.setForeground(new java.awt.Color(102, 102, 102));
+        txtBoatNumber.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
+        jPanel2.add(txtBoatNumber, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 50, 240, 30));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, 560, 390));
 
         jLabel6.setBackground(new java.awt.Color(255, 0, 0));
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(0, 0, 0));
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel6.setText("Register Boat");
         jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, 560, 60));
@@ -133,12 +185,81 @@ public class adminAddBoat extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void rSButtonHover1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSButtonHover1ActionPerformed
-        // TODO add your handling code here:
+        this.dispose();
     }//GEN-LAST:event_rSButtonHover1ActionPerformed
 
     private void rSButtonHover2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSButtonHover2ActionPerformed
-        // TODO add your handling code here:
+
+        String boatNumber = txtBoatNumber.getText().trim();
+        String boatName = txtBoatName.getText().trim();
+        String description = txtDescription.getText().trim();
+        int capacity;
+        double tourPrice;
+
+        // Validate required fields
+        if (boatNumber.isEmpty() || boatName.isEmpty() || description.isEmpty() || txtTourPrice.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "All fields must be filled!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return; // Stop execution if fields are empty
+        }
+
+        try {
+            // Validate Capacity
+            capacity = (int) spinnerCapacity.getValue();
+            if (capacity <= 0) {
+                JOptionPane.showMessageDialog(this, "Capacity must be greater than 0!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Validate Tour Price
+            tourPrice = Double.parseDouble(txtTourPrice.getText().trim());
+            if (tourPrice <= 0) {
+                JOptionPane.showMessageDialog(this, "Tour price must be a positive number!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Confirmation before insertion
+            int confirm = JOptionPane.showConfirmDialog(this, 
+                "Are you sure you want to register this boat?\n\n" + 
+                "Boat Number: " + boatNumber + "\n" + 
+                "Boat Name: " + boatName + "\n" + 
+                "Description: " + description + "\n" + 
+                "Capacity: " + capacity + "\n" + 
+                "Tour Price: $" + tourPrice, 
+                "Confirm Registration", JOptionPane.YES_NO_OPTION);
+
+            if (confirm != JOptionPane.YES_OPTION) {
+                return; // Stop execution if user cancels
+            }
+
+            // Database Insertion
+            String sql = "INSERT INTO boat (boat_number, boat_name, description, capacity, tour_price) VALUES (?, ?, ?, ?, ?)";
+            pst = con.prepareStatement(sql);
+            pst.setString(1, boatNumber);
+            pst.setString(2, boatName);
+            pst.setString(3, description);
+            pst.setInt(4, capacity);
+            pst.setDouble(5, tourPrice);
+
+            int rowsInserted = pst.executeUpdate();
+            if (rowsInserted > 0) {
+                JOptionPane.showMessageDialog(this, "Boat registered successfully!");
+                this.dispose();
+            }
+
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid input! Ensure Capacity and Price are numbers.", "Input Error", JOptionPane.ERROR_MESSAGE);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+
+
+    
     }//GEN-LAST:event_rSButtonHover2ActionPerformed
+
+    private void txtBoatNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBoatNameActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtBoatNameActionPerformed
 
     /**
      * @param args the command line arguments
@@ -188,12 +309,12 @@ public class adminAddBoat extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JSpinner jSpinner1;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
     private rojeru_san.complementos.RSButtonHover rSButtonHover1;
     private rojeru_san.complementos.RSButtonHover rSButtonHover2;
+    private javax.swing.JSpinner spinnerCapacity;
+    private javax.swing.JTextField txtBoatName;
+    private javax.swing.JTextField txtBoatNumber;
+    private javax.swing.JTextArea txtDescription;
+    private javax.swing.JTextField txtTourPrice;
     // End of variables declaration//GEN-END:variables
 }
