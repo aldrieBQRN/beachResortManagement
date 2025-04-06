@@ -5,9 +5,11 @@
 package Login;
 
 import Admin.adminHome;
+
 import Guest.guestHome;
 import Staff.staffHome;
 import java.awt.Color;
+import java.awt.Graphics;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,7 +17,9 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 
 /**
@@ -62,6 +66,22 @@ public class landingPage extends javax.swing.JFrame {
             System.out.println("MySQL JDBC Driver not found: " + e.getMessage());
         }
     }
+    
+    private void setFrameDarkness(float darkness) {
+    // darkness should be between 0 (black) and 1 (original brightness)
+    if (getContentPane() instanceof JPanel) {
+        JPanel panel = (JPanel) getContentPane();
+        Color original = panel.getBackground();
+        
+        // Calculate darker color
+        int r = (int)(original.getRed() * darkness);
+        int g = (int)(original.getGreen() * darkness);
+        int b = (int)(original.getBlue() * darkness);
+        
+        panel.setBackground(new Color(r, g, b));
+        panel.repaint();
+    }
+}
     
     
 
@@ -304,7 +324,8 @@ public class landingPage extends javax.swing.JFrame {
     }//GEN-LAST:event_txtpassActionPerformed
 
     private void rSButtonHover1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSButtonHover1ActionPerformed
-       try {
+      
+        try {
     // Get input values
     String email = txtemail.getText().trim();
     String password = new String(txtpass.getPassword()).trim();
@@ -398,8 +419,11 @@ public class landingPage extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel10MouseClicked
 
     private void jLabel13MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel13MouseClicked
+   
+
         txtemail.setText("");
         txtpass.setText("");
+        new Background().setVisible(true);
         new signUp().setVisible(true);
     }//GEN-LAST:event_jLabel13MouseClicked
 

@@ -185,7 +185,7 @@ public class adminAddRoom extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void rSButtonHover1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSButtonHover1ActionPerformed
-        // TODO add your handling code here:
+        this.dispose();
     }//GEN-LAST:event_rSButtonHover1ActionPerformed
 
     private void rSButtonHover2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSButtonHover2ActionPerformed

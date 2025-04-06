@@ -29,30 +29,23 @@ public class signUp extends javax.swing.JFrame {
         pnlsignout = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        rSButtonHover1 = new rojeru_san.complementos.RSButtonHover();
         jLabel7 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        txtphone = new javax.swing.JTextField();
-        jLabel9 = new javax.swing.JLabel();
-        txtemail = new javax.swing.JTextField();
-        jLabel10 = new javax.swing.JLabel();
-        txtpass = new javax.swing.JPasswordField();
-        jLabel11 = new javax.swing.JLabel();
-        txtconfirm = new javax.swing.JPasswordField();
-        txtlname = new javax.swing.JTextField();
-        jLabel12 = new javax.swing.JLabel();
-        txtfname = new javax.swing.JTextField();
-        jLabel13 = new javax.swing.JLabel();
-        txtphone1 = new javax.swing.JTextField();
-        txtphone2 = new javax.swing.JTextField();
-        jLabel14 = new javax.swing.JLabel();
+        textField1 = new textfield.TextField();
+        textField2 = new textfield.TextField();
+        textField3 = new textfield.TextField();
+        textField4 = new textfield.TextField();
+        textField5 = new textfield.TextField();
+        passwordField1 = new textfield.PasswordField();
+        passwordField2 = new textfield.PasswordField();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         pnlsignout.setBackground(new java.awt.Color(255, 255, 255));
-        pnlsignout.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(27, 59, 95), 15));
+        pnlsignout.setBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED, new java.awt.Color(255, 255, 255), new java.awt.Color(0, 0, 0)));
         pnlsignout.setPreferredSize(new java.awt.Dimension(550, 670));
         pnlsignout.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -60,21 +53,13 @@ public class signUp extends javax.swing.JFrame {
         jLabel4.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 24)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(0, 0, 0));
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel4.setText("Register");
-        pnlsignout.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 40, 149, -1));
+        jLabel4.setText("Create your Account");
+        pnlsignout.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 80, 240, -1));
 
         jLabel5.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(0, 0, 0));
         jLabel5.setText("Have already an account?");
-        pnlsignout.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 600, 160, -1));
-
-        rSButtonHover1.setText("CREATE");
-        rSButtonHover1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rSButtonHover1ActionPerformed(evt);
-            }
-        });
-        pnlsignout.add(rSButtonHover1, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 540, 130, -1));
+        pnlsignout.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 550, 160, -1));
 
         jLabel7.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 13)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(0, 0, 0));
@@ -84,81 +69,58 @@ public class signUp extends javax.swing.JFrame {
                 jLabel7MouseClicked(evt);
             }
         });
-        pnlsignout.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 600, 50, 20));
+        pnlsignout.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 550, 50, 20));
 
-        jLabel8.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
-        jLabel8.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel8.setText("Phone");
-        pnlsignout.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 180, 110, -1));
+        textField1.setBackground(new java.awt.Color(255, 255, 255));
+        textField1.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        textField1.setLabelText("Last Name");
+        pnlsignout.add(textField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 130, 160, 45));
 
-        txtphone.setBackground(new java.awt.Color(255, 255, 255));
-        txtphone.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
-        pnlsignout.add(txtphone, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 200, 330, 40));
+        textField2.setBackground(new java.awt.Color(255, 255, 255));
+        textField2.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        textField2.setLabelText("Email");
+        pnlsignout.add(textField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 310, 330, 45));
 
-        jLabel9.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
-        jLabel9.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel9.setText("Password");
-        pnlsignout.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 390, 110, -1));
+        textField3.setBackground(new java.awt.Color(255, 255, 255));
+        textField3.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        textField3.setLabelText("First Name");
+        pnlsignout.add(textField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 130, 160, 45));
 
-        txtemail.setBackground(new java.awt.Color(255, 255, 255));
-        txtemail.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
-        pnlsignout.add(txtemail, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 340, 330, 40));
+        textField4.setBackground(new java.awt.Color(255, 255, 255));
+        textField4.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        textField4.setLabelText("Phone");
+        pnlsignout.add(textField4, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 190, 330, 45));
 
-        jLabel10.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
-        jLabel10.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel10.setText("Address");
-        pnlsignout.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 320, 110, -1));
+        textField5.setBackground(new java.awt.Color(255, 255, 255));
+        textField5.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        textField5.setLabelText("Address");
+        pnlsignout.add(textField5, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 250, 330, 45));
 
-        txtpass.setBackground(new java.awt.Color(255, 255, 255));
-        txtpass.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
-        txtpass.addActionListener(new java.awt.event.ActionListener() {
+        passwordField1.setBackground(new java.awt.Color(255, 255, 255));
+        passwordField1.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        passwordField1.setLabelText("Password");
+        pnlsignout.add(passwordField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 370, 330, 45));
+
+        passwordField2.setBackground(new java.awt.Color(255, 255, 255));
+        passwordField2.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        passwordField2.setLabelText("Confirm Password");
+        passwordField2.setShowAndHide(true);
+        passwordField2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtpassActionPerformed(evt);
+                passwordField2ActionPerformed(evt);
             }
         });
-        pnlsignout.add(txtpass, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 410, 330, 40));
+        pnlsignout.add(passwordField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 430, 330, 45));
 
-        jLabel11.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
-        jLabel11.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel11.setText("Confirm Password");
-        pnlsignout.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 460, 110, -1));
+        jPanel1.setBackground(new java.awt.Color(39, 114, 160));
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        txtconfirm.setBackground(new java.awt.Color(255, 255, 255));
-        txtconfirm.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
-        txtconfirm.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtconfirmActionPerformed(evt);
-            }
-        });
-        pnlsignout.add(txtconfirm, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 480, 330, 40));
+        jLabel1.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("CREATE");
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(44, 5, -1, 30));
 
-        txtlname.setBackground(new java.awt.Color(255, 255, 255));
-        txtlname.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
-        pnlsignout.add(txtlname, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 130, 160, 40));
-
-        jLabel12.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
-        jLabel12.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel12.setText("Last Name");
-        pnlsignout.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 110, 110, -1));
-
-        txtfname.setBackground(new java.awt.Color(255, 255, 255));
-        txtfname.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
-        pnlsignout.add(txtfname, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 130, 160, 40));
-
-        jLabel13.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
-        jLabel13.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel13.setText("First Name");
-        pnlsignout.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 110, 110, -1));
-        pnlsignout.add(txtphone1, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 200, 330, 40));
-
-        txtphone2.setBackground(new java.awt.Color(255, 255, 255));
-        txtphone2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
-        pnlsignout.add(txtphone2, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 270, 330, 40));
-
-        jLabel14.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
-        jLabel14.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel14.setText("Phone");
-        pnlsignout.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 250, 110, -1));
+        pnlsignout.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 500, 140, 40));
 
         getContentPane().add(pnlsignout, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 670, 670));
 
@@ -166,21 +128,13 @@ public class signUp extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void rSButtonHover1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSButtonHover1ActionPerformed
-        
-    }//GEN-LAST:event_rSButtonHover1ActionPerformed
-
     private void jLabel7MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel7MouseClicked
 
     }//GEN-LAST:event_jLabel7MouseClicked
 
-    private void txtpassActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtpassActionPerformed
+    private void passwordField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordField2ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtpassActionPerformed
-
-    private void txtconfirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtconfirmActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtconfirmActionPerformed
+    }//GEN-LAST:event_passwordField2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -202,25 +156,18 @@ public class signUp extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel1;
+    private textfield.PasswordField passwordField1;
+    private textfield.PasswordField passwordField2;
     private javax.swing.JPanel pnlsignout;
-    private rojeru_san.complementos.RSButtonHover rSButtonHover1;
-    private javax.swing.JPasswordField txtconfirm;
-    private javax.swing.JTextField txtemail;
-    private javax.swing.JTextField txtfname;
-    private javax.swing.JTextField txtlname;
-    private javax.swing.JPasswordField txtpass;
-    private javax.swing.JTextField txtphone;
-    private javax.swing.JTextField txtphone1;
-    private javax.swing.JTextField txtphone2;
+    private textfield.TextField textField1;
+    private textfield.TextField textField2;
+    private textfield.TextField textField3;
+    private textfield.TextField textField4;
+    private textfield.TextField textField5;
     // End of variables declaration//GEN-END:variables
 }

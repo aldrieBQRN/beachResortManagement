@@ -4,9 +4,21 @@
  */
 package Guest;
 
-import Admin.*;
-import Login.landingPage;
-import java.awt.BorderLayout;
+import Guest.guestSearch;
+import java.awt.Color;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import com.raven.datechooser.EventDateChooser;
+import com.raven.datechooser.SelectedAction;
+import com.raven.datechooser.SelectedDate;
+import com.toedter.calendar.JCalendar;
+import java.awt.HeadlessException;
+import java.util.Date;
+import java.util.Locale;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 
 
@@ -17,18 +29,101 @@ import java.awt.BorderLayout;
 public class guestHome extends javax.swing.JFrame {
 
     /**
-     * Creates new form custormerHOME
+     * Creates new form signIN
      */
     public guestHome() {
         initComponents();
-        guestMainHome home = new guestMainHome();
-        pnlmain.removeAll(); // Remove existing components
-        pnlmain.setLayout(new BorderLayout()); // Set the layout
-        pnlmain.add(home, BorderLayout.CENTER); // Add new component
-        pnlmain.revalidate(); // Revalidate to reflect changes
-        pnlmain.repaint(); // Repaint the panel to show updates
-        home.setVisible(true);  
+       
+        DatabaseConnection();
+
+        
+        
     }
+    
+  
+
+
+    
+    java.sql.Connection con; 
+    PreparedStatement pst;
+    ResultSet rs; 
+    
+    public final void DatabaseConnection() {
+          String url = "jdbc:mysql://localhost:3306/beachResortManagement";
+        String user = "root"; // MySQL username
+        String password = ""; // MySQL password
+        
+        // Establishing the connection
+        try {
+            // Load MySQL JDBC driver (optional in newer versions of JDBC)
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            
+            // Create the connection
+            con = DriverManager.getConnection(url, user, password);
+            
+            System.out.println("Connected to the database successfully!");
+
+            // Perform database operations here...
+
+      
+        } catch (SQLException e) {
+            System.out.println("Error connecting to the database: " + e.getMessage());
+        } catch (ClassNotFoundException e) {
+            System.out.println("MySQL JDBC Driver not found: " + e.getMessage());
+        }
+    }
+    
+    
+    private void searchAvailableRooms(Date checkIn, Date checkOut, int totalGuests, int adults, int children) {
+    try {
+        java.sql.Date sqlCheckIn = new java.sql.Date(checkIn.getTime());
+        java.sql.Date sqlCheckOut = new java.sql.Date(checkOut.getTime());
+        
+
+        // Fixed SQL query
+        String query = "SELECT r.room_number, r.room_type, r.max_occupancy, r.room_price " +
+                       "FROM room r " +
+                       "WHERE r.max_occupancy >= ? " +
+                       "AND r.room_number NOT IN (" +
+                       "   SELECT room_number FROM room_reservation " +
+                       "   WHERE (? < check_out_date AND ? > check_in_date)" +
+                       ") " + // <== don't forget to close subquery
+                       "ORDER BY r.room_price ASC";
+
+        pst = con.prepareStatement(query);
+        pst.setInt(1, totalGuests);
+        pst.setDate(2, sqlCheckIn);
+        pst.setDate(3, sqlCheckOut);
+
+        rs = pst.executeQuery();
+
+        boolean found = false;
+
+        while (rs.next()) {
+            found = true;
+            String roomNumber = rs.getString("room_number");
+            String roomType = rs.getString("room_type");
+            int maxOccupancy = rs.getInt("max_occupancy");
+            double price = rs.getDouble("room_price");
+
+            // You can display the result in a table or console for now
+            System.out.println("Room: " + roomNumber + " | Type: " + roomType + " | Capacity: " + maxOccupancy + " | ₱" + price);
+        }
+
+        if (!found) {
+            JOptionPane.showMessageDialog(this, "No available rooms found.");
+        } else {
+             
+            new guestSearch(checkIn, checkOut, adults, children).setVisible(true);
+        }
+
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage());
+    }
+}
+
+    
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -40,180 +135,275 @@ public class guestHome extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        jPanel13 = new javax.swing.JPanel();
-        jLabel27 = new javax.swing.JLabel();
-        jPanel10 = new javax.swing.JPanel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel25 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
-        jPanel7 = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
-        jPanel8 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        rsDateChooserCheckIn = new rojeru_san.componentes.RSDateChooser();
+        jLabel2 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
+        rsDateChooserCheckOut = new rojeru_san.componentes.RSDateChooser();
+        jLabel6 = new javax.swing.JLabel();
+        adultSpinner = new spinner.Spinner();
+        jLabel10 = new javax.swing.JLabel();
+        childSpinner = new spinner.Spinner();
+        jLabel11 = new javax.swing.JLabel();
+        jPanel8 = new javax.swing.JPanel();
+        jLabel12 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jPanel5 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jPanel11 = new javax.swing.JPanel();
-        jLabel26 = new javax.swing.JLabel();
-        pnlmain = new javax.swing.JPanel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jPanel10 = new javax.swing.JPanel();
+        jLabel14 = new javax.swing.JLabel();
+        jPanel6 = new javax.swing.JPanel();
+        jPanel7 = new javax.swing.JPanel();
+        jLabel13 = new javax.swing.JLabel();
+        jPanel4 = new javax.swing.JPanel();
+        jPanel9 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel1.setBackground(new java.awt.Color(0, 0, 0));
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel2.setBackground(new java.awt.Color(39, 114, 160));
-        jPanel2.setPreferredSize(new java.awt.Dimension(80, 80));
-        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jPanel13.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel27.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel27.setText("Logout");
-        jPanel13.add(jLabel27, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 100, 30));
-
-        jPanel2.add(jPanel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 440, -1, 30));
-
-        jPanel10.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel10.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel6.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel6.setText("LOGOUT");
-        jLabel6.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel6MouseClicked(evt);
-            }
-        });
-        jPanel10.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 90, 30));
-
-        jPanel2.add(jPanel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(1090, 20, 90, 30));
-
-        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 30)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("WELCOME,");
-        jPanel2.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 220, 50));
-
-        jLabel25.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
-        jLabel25.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel25.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel25.setText("Default Name");
-        jPanel2.add(jLabel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 20, 220, 40));
-
-        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 0, 1200, 70));
-
-        jPanel3.setBackground(new java.awt.Color(27, 59, 95));
-        jPanel3.setPreferredSize(new java.awt.Dimension(170, 200));
+        jPanel3.setBackground(new java.awt.Color(242, 242, 242));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel7.setBackground(new java.awt.Color(204, 204, 204));
-        jPanel7.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 10, 0, 0, new java.awt.Color(39, 114, 160)));
-        jPanel7.setForeground(new java.awt.Color(0, 0, 0));
-        jPanel7.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setText("HOME");
-        jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
+        rsDateChooserCheckIn.setPlaceholder("");
+        jPanel2.add(rsDateChooserCheckIn, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 80, -1, -1));
+
+        jLabel2.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel2.setText("Adult");
+        jPanel2.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 140, -1, -1));
+
+        jLabel4.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel4.setText("Check-out Date");
+        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 60, -1, -1));
+
+        rsDateChooserCheckOut.setPlaceholder("");
+        jPanel2.add(rsDateChooserCheckOut, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 80, -1, -1));
+
+        jLabel6.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel6.setText("Duration");
+        jPanel2.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 60, -1, -1));
+
+        adultSpinner.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        adultSpinner.setLabelText("");
+        jPanel2.add(adultSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 160, 240, 40));
+
+        jLabel10.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel10.setText("Check-in Date");
+        jPanel2.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 60, -1, -1));
+
+        childSpinner.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        childSpinner.setLabelText("");
+        jPanel2.add(childSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 160, 240, 40));
+
+        jLabel11.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        jLabel11.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel11.setText("Child");
+        jPanel2.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 140, -1, -1));
+
+        jPanel8.setBackground(new java.awt.Color(39, 114, 160));
+        jPanel8.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel3MouseClicked(evt);
+                jPanel8MouseClicked(evt);
             }
         });
-        jPanel7.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(28, 0, 140, 50));
-
-        jPanel3.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 190, 200, 50));
-
-        jPanel8.setBackground(new java.awt.Color(27, 59, 95));
         jPanel8.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel4.setText("RESERVATION");
-        jLabel4.addMouseListener(new java.awt.event.MouseAdapter() {
+        jLabel12.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel12.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
+        jLabel12.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel12.setText("SEACH");
+        jLabel12.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel4MouseClicked(evt);
+                jLabel12MouseClicked(evt);
             }
         });
-        jPanel8.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(18, 0, 160, 50));
+        jPanel8.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(25, 0, 70, 40));
 
-        jPanel3.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 240, 200, 50));
+        jPanel2.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 160, 130, 40));
 
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logoFinal.png"))); // NOI18N
-        jPanel3.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 160, -1));
+        jLabel7.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel7.setText("3 Nigths");
+        jPanel2.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 80, 90, 50));
 
-        jPanel11.setBackground(new java.awt.Color(27, 59, 95));
-        jPanel11.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jPanel3.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 0, 740, 280));
 
-        jLabel26.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
-        jLabel26.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel26.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel26.setText("HISTORY");
-        jLabel26.addMouseListener(new java.awt.event.MouseAdapter() {
+        jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 390, 1440, 400));
+
+        jPanel5.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel1.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel1.setText("CONTACT");
+        jLabel1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel26MouseClicked(evt);
+                jLabel1MouseClicked(evt);
             }
         });
-        jPanel11.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(28, 0, 140, 50));
+        jPanel5.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1230, 0, -1, 60));
 
-        jPanel3.add(jPanel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 290, 200, 50));
+        jLabel8.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel8.setText("HOME");
+        jLabel8.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel8MouseClicked(evt);
+            }
+        });
+        jPanel5.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(1090, 0, -1, 60));
 
-        jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 240, 830));
+        jLabel9.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel9.setText("ABOUT");
+        jLabel9.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel9MouseClicked(evt);
+            }
+        });
+        jPanel5.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(1160, 0, -1, 60));
 
-        pnlmain.setBackground(new java.awt.Color(242, 242, 242));
-        pnlmain.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        jPanel1.add(pnlmain, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 70, 1200, 760));
+        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 30)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel3.setText("Welcome,");
+        jPanel5.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 0, 180, 60));
+
+        jLabel5.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel5.setText("enjoy and have fun!");
+        jPanel5.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 20, -1, 30));
+
+        jPanel10.setBackground(new java.awt.Color(0, 153, 255));
+        jPanel10.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel14.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 15)); // NOI18N
+        jLabel14.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel14.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel14.setText("Log out");
+        jPanel10.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 100, 20));
+
+        jPanel5.add(jPanel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(1320, 10, 100, 40));
+
+        jPanel1.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1490, 60));
+
+        jPanel6.setBackground(new java.awt.Color(27, 59, 95));
+        jPanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jPanel7.setBackground(new java.awt.Color(242, 242, 242));
+        jPanel7.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel13.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
+        jLabel13.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel13.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel13.setText("Reserve your dates");
+        jPanel7.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 740, 40));
+
+        jPanel6.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 270, 740, 60));
+
+        jPanel1.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 60, 1440, 330));
+
+        jPanel4.setBackground(new java.awt.Color(39, 114, 160));
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 1440, Short.MAX_VALUE)
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 40, Short.MAX_VALUE)
+        );
+
+        jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 790, 1440, 40));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 830));
+
+        jPanel9.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel9.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        getContentPane().add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 70, 1440, 720));
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
-        guestReservation reservation = new guestReservation();
-        pnlmain.removeAll(); // Remove existing components
-        pnlmain.setLayout(new BorderLayout()); // Set the layout
-        pnlmain.add(reservation, BorderLayout.CENTER); // Add new component
-        pnlmain.revalidate(); // Revalidate to reflect changes
-        pnlmain.repaint(); // Repaint the panel to show updates
-        reservation.setVisible(true);  
-    }//GEN-LAST:event_jLabel4MouseClicked
+    private void jLabel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseClicked
+  
+    }//GEN-LAST:event_jLabel1MouseClicked
 
-    private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
-        guestMainHome home = new guestMainHome();
-        pnlmain.removeAll(); // Remove existing components
-        pnlmain.setLayout(new BorderLayout()); // Set the layout
-        pnlmain.add(home, BorderLayout.CENTER); // Add new component
-        pnlmain.revalidate(); // Revalidate to reflect changes
-        pnlmain.repaint(); // Repaint the panel to show updates
-        home.setVisible(true);  
-    
-   
-    }//GEN-LAST:event_jLabel3MouseClicked
+    private void jLabel8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel8MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jLabel8MouseClicked
 
-    private void jLabel6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel6MouseClicked
-       for (java.awt.Window window : java.awt.Window.getWindows()) {
-            window.dispose();
+    private void jLabel9MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel9MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jLabel9MouseClicked
+
+    private void jLabel10MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel10MouseClicked
+
+       
+
+    }//GEN-LAST:event_jLabel10MouseClicked
+
+    private void jPanel8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel8MouseClicked
+      
+    }//GEN-LAST:event_jPanel8MouseClicked
+
+    private void jLabel12MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel12MouseClicked
+
+    try {
+        // 1. Get selected dates
+        Date checkInDate = rsDateChooserCheckIn.getDatoFecha();
+        Date checkOutDate = rsDateChooserCheckOut.getDatoFecha();
+
+        // 2. Get number of guests
+        int adults = (Integer) adultSpinner.getValue();
+        int children = (Integer) childSpinner.getValue();
+        int totalGuests = adults + children;
+
+        // 3. Validate inputs
+        if (checkInDate == null || checkOutDate == null) {
+            JOptionPane.showMessageDialog(this, "Please select both check-in and check-out dates");
+            return;
         }
-        new landingPage().setVisible(true);
-    }//GEN-LAST:event_jLabel6MouseClicked
 
-    private void jLabel26MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel26MouseClicked
-        adminBoat boat = new adminBoat();
-        pnlmain.removeAll(); // Remove existing components
-        pnlmain.setLayout(new BorderLayout()); // Set the layout
-        pnlmain.add(boat, BorderLayout.CENTER); // Add new component
-        pnlmain.revalidate(); // Revalidate to reflect changes
-        pnlmain.repaint(); // Repaint the panel to show updates
-        boat.setVisible(true); 
-    }//GEN-LAST:event_jLabel26MouseClicked
+        if (checkOutDate.before(checkInDate)) {
+            JOptionPane.showMessageDialog(this, "Check-out date must be after check-in date");
+            return;
+        }
+
+        if (totalGuests <= 0) {
+            JOptionPane.showMessageDialog(this, "Please select at least one guest");
+            return;
+        }
+
+        // 4. Search for available rooms
+        searchAvailableRooms(checkInDate, checkOutDate, totalGuests, adults, children);
+
+    } catch (HeadlessException e) {
+        JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+    }
+
+
+
+
+
+    }//GEN-LAST:event_jLabel12MouseClicked
 
     /**
      * @param args the command line arguments
@@ -248,30 +438,49 @@ public class guestHome extends javax.swing.JFrame {
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
-new guestHome().setVisible(true);
+            new guestHome().setVisible(true);
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private spinner.Spinner adultSpinner;
+    private spinner.Spinner childSpinner;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel25;
-    private javax.swing.JLabel jLabel26;
-    private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
-    private javax.swing.JPanel jPanel11;
-    private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
-    private javax.swing.JPanel pnlmain;
+    private javax.swing.JPanel jPanel9;
+    private rojeru_san.componentes.RSDateChooser rsDateChooserCheckIn;
+    private rojeru_san.componentes.RSDateChooser rsDateChooserCheckOut;
     // End of variables declaration//GEN-END:variables
 }

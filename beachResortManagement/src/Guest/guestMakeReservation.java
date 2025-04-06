@@ -110,7 +110,6 @@ public class guestMakeReservation extends javax.swing.JFrame {
         jLabel10 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
-        jSpinner1 = new javax.swing.JSpinner();
         AdultNumber = new javax.swing.JSpinner();
         jLabel13 = new javax.swing.JLabel();
         checkInDate = new com.toedter.calendar.JDateChooser();
@@ -156,6 +155,7 @@ public class guestMakeReservation extends javax.swing.JFrame {
         checkOutDate = new com.toedter.calendar.JDateChooser();
         txtErrorMessage1 = new javax.swing.JLabel();
         txtvalue = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
         jLayeredPane1 = new javax.swing.JLayeredPane();
 
@@ -189,7 +189,6 @@ public class guestMakeReservation extends javax.swing.JFrame {
         jLabel12.setForeground(new java.awt.Color(0, 0, 0));
         jLabel12.setText("Chldren");
         panel.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 160, 110, -1));
-        panel.add(jSpinner1, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 180, 160, 30));
 
         AdultNumber.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -462,6 +461,14 @@ public class guestMakeReservation extends javax.swing.JFrame {
         txtvalue.setText("jLabel4");
         panel.add(txtvalue, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 220, -1, -1));
 
+        jButton1.setText("jButton1");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        panel.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 190, -1, -1));
+
         jPanel1.add(panel, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, 820, 440));
 
         jLabel7.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
@@ -501,7 +508,7 @@ private int counter = 0;
 
     private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
   
-                 new guestRoomUnavailableDate().setVisible(true);
+                
     }//GEN-LAST:event_jLabel2MouseClicked
 
     private void checkInDatePropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_checkInDatePropertyChange
@@ -642,6 +649,10 @@ private int counter = 0;
          int value = (Integer) AdultNumber.getValue();
         txtvalue.setText(String.valueOf(value)); 
     }//GEN-LAST:event_AdultNumberStateChanged
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        System.out.println(AdultNumber.getValue());
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -810,6 +821,7 @@ private int counter = 0;
     private com.toedter.calendar.JDateChooser checkInDate;
     private com.toedter.calendar.JDateChooser checkOutDate;
     private rojerusan.RSComboMetro cmbRoomNumber;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -851,7 +863,6 @@ private int counter = 0;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JRadioButton jRadioButton1;
     private javax.swing.JRadioButton jRadioButton2;
-    private javax.swing.JSpinner jSpinner1;
     private javax.swing.JSpinner jSpinner3;
     private javax.swing.JPanel panel;
     private rojerusan.RSComboMetro rSComboMetro2;
