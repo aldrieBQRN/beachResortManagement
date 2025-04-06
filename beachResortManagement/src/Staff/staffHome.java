@@ -279,6 +279,7 @@ public class staffHome extends javax.swing.JFrame {
         pnlmain.revalidate(); // Revalidate to reflect changes
         pnlmain.repaint(); // Repaint the panel to show updates
         boat.setVisible(true); 
+        
     }//GEN-LAST:event_jLabel3MouseClicked
 
     private void jLabel30MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel30MouseClicked

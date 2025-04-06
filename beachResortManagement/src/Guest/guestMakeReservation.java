@@ -7,19 +7,93 @@ package Guest;
 import Staff.*;
 import Admin.*;
 import Staff.*;
+import java.awt.Color;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author yeojvaldez
  */
 public class guestMakeReservation extends javax.swing.JFrame {
-
+    
+    int value = 0;
     /**
      * Creates new form roomAdd
      */
     public guestMakeReservation() {
         initComponents();
+        DatabaseConnection();
+        populateRoomNumbersComboBox();
+        
+        
     }
+    
+    Connection con; 
+    PreparedStatement pst;
+    ResultSet rs; 
+    
+    public final void DatabaseConnection() {
+        String url = "jdbc:mysql://localhost:3306/beachResortManagement";
+        String user = "root"; // MySQL username
+        String password = ""; // MySQL password
+        
+        // Establishing the connection
+        try {
+            // Load MySQL JDBC driver (optional in newer versions of JDBC)
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            
+            // Create the connection
+            con = DriverManager.getConnection(url, user, password);
+            
+            System.out.println("Connected to the database successfully!");
+
+            // Perform database operations here...
+
+      
+        } catch (SQLException e) {
+            System.out.println("Error connecting to the database: " + e.getMessage());
+        } catch (ClassNotFoundException e) {
+            System.out.println("MySQL JDBC Driver not found: " + e.getMessage());
+        }
+    }
+    
+    
+    
+    private void populateRoomNumbersComboBox() {
+        // Clear the combo box before adding items
+        cmbRoomNumber.removeAllItems();
+
+        // Add the default entry (null or a placeholder)
+        cmbRoomNumber.addItem("Select a Room Number");
+
+        try {
+            // SQL query to fetch all room numbers from the room table
+            String sql = "SELECT room_number FROM room";
+            pst = con.prepareStatement(sql);
+            rs = pst.executeQuery();
+
+            // Populate combo box with room numbers
+            while (rs.next()) {
+                String roomNumber = rs.getString("room_number");
+                cmbRoomNumber.addItem(roomNumber); // Add each room number to the combo box
+            }
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error fetching room numbers: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -31,16 +105,15 @@ public class guestMakeReservation extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jPanel3 = new javax.swing.JPanel();
+        panel = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
         jSpinner1 = new javax.swing.JSpinner();
-        jSpinner2 = new javax.swing.JSpinner();
+        AdultNumber = new javax.swing.JSpinner();
         jLabel13 = new javax.swing.JLabel();
-        jDateChooser3 = new com.toedter.calendar.JDateChooser();
-        jDateChooser4 = new com.toedter.calendar.JDateChooser();
+        checkInDate = new com.toedter.calendar.JDateChooser();
         jLabel9 = new javax.swing.JLabel();
         txtphone1 = new javax.swing.JTextField();
         jLabel14 = new javax.swing.JLabel();
@@ -49,7 +122,7 @@ public class guestMakeReservation extends javax.swing.JFrame {
         jRadioButton2 = new javax.swing.JRadioButton();
         jLabel1 = new javax.swing.JLabel();
         jSpinner3 = new javax.swing.JSpinner();
-        rSComboMetro1 = new rojerusan.RSComboMetro();
+        cmbRoomNumber = new rojerusan.RSComboMetro();
         jLabel17 = new javax.swing.JLabel();
         rSComboMetro2 = new rojerusan.RSComboMetro();
         jPanel2 = new javax.swing.JPanel();
@@ -71,7 +144,6 @@ public class guestMakeReservation extends javax.swing.JFrame {
         jLabel36 = new javax.swing.JLabel();
         jLabel38 = new javax.swing.JLabel();
         jLabel40 = new javax.swing.JLabel();
-        txterror = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
@@ -80,6 +152,10 @@ public class guestMakeReservation extends javax.swing.JFrame {
         jLabel41 = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
         jLabel39 = new javax.swing.JLabel();
+        txtErrorMessage = new javax.swing.JLabel();
+        checkOutDate = new com.toedter.calendar.JDateChooser();
+        txtErrorMessage1 = new javax.swing.JLabel();
+        txtvalue = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLayeredPane1 = new javax.swing.JLayeredPane();
 
@@ -90,58 +166,69 @@ public class guestMakeReservation extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel3.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 0, 0, 0, new java.awt.Color(27, 59, 95)));
-        jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        panel.setBackground(new java.awt.Color(255, 255, 255));
+        panel.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 0, 0, 0, new java.awt.Color(27, 59, 95)));
+        panel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel8.setFont(new java.awt.Font("Arial Unicode MS", 0, 12)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(0, 0, 0));
         jLabel8.setText("Boat Tour");
-        jPanel3.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 210, 110, -1));
+        panel.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 220, 110, -1));
 
         jLabel10.setFont(new java.awt.Font("Arial Unicode MS", 0, 12)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(0, 0, 0));
         jLabel10.setText("Check-In");
-        jPanel3.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 90, 110, -1));
+        panel.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 90, 110, -1));
 
         jLabel11.setFont(new java.awt.Font("Arial Unicode MS", 0, 12)); // NOI18N
         jLabel11.setForeground(new java.awt.Color(0, 0, 0));
         jLabel11.setText("Check-Out");
-        jPanel3.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 90, 110, -1));
+        panel.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 90, 110, -1));
 
         jLabel12.setFont(new java.awt.Font("Arial Unicode MS", 0, 12)); // NOI18N
         jLabel12.setForeground(new java.awt.Color(0, 0, 0));
         jLabel12.setText("Chldren");
-        jPanel3.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 160, 110, -1));
-        jPanel3.add(jSpinner1, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 180, 160, 30));
-        jPanel3.add(jSpinner2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 180, 160, 30));
+        panel.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 160, 110, -1));
+        panel.add(jSpinner1, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 180, 160, 30));
+
+        AdultNumber.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                AdultNumberStateChanged(evt);
+            }
+        });
+        panel.add(AdultNumber, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 180, 160, 30));
 
         jLabel13.setFont(new java.awt.Font("Arial Unicode MS", 0, 12)); // NOI18N
         jLabel13.setForeground(new java.awt.Color(0, 0, 0));
         jLabel13.setText("Adult");
-        jPanel3.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 160, 110, -1));
-        jPanel3.add(jDateChooser3, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 110, 160, 30));
-        jPanel3.add(jDateChooser4, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 110, 160, 30));
+        panel.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 160, 110, -1));
+
+        checkInDate.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                checkInDatePropertyChange(evt);
+            }
+        });
+        panel.add(checkInDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 110, 160, 30));
 
         jLabel9.setFont(new java.awt.Font("Arial Unicode MS", 0, 12)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(0, 0, 0));
         jLabel9.setText("Room Number");
-        jPanel3.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 290, 110, -1));
+        panel.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 290, 110, -1));
 
         txtphone1.setBackground(new java.awt.Color(255, 255, 255));
         txtphone1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
-        jPanel3.add(txtphone1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 310, 330, 30));
+        panel.add(txtphone1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 310, 330, 30));
 
         jLabel14.setFont(new java.awt.Font("Arial Unicode MS", 0, 12)); // NOI18N
         jLabel14.setForeground(new java.awt.Color(0, 0, 0));
         jLabel14.setText("Time");
-        jPanel3.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 350, 110, -1));
+        panel.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 350, 110, -1));
 
         jLabel16.setFont(new java.awt.Font("Arial Unicode MS", 0, 12)); // NOI18N
         jLabel16.setForeground(new java.awt.Color(0, 0, 0));
         jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel16.setText("Unavailable Date");
-        jPanel3.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 30, 100, -1));
+        panel.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 30, 100, -1));
 
         jRadioButton1.setText("Yes");
         jRadioButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -149,30 +236,34 @@ public class guestMakeReservation extends javax.swing.JFrame {
                 jRadioButton1ActionPerformed(evt);
             }
         });
-        jPanel3.add(jRadioButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 240, 80, -1));
+        panel.add(jRadioButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 240, 80, -1));
 
         jRadioButton2.setText("No");
-        jPanel3.add(jRadioButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 240, -1, -1));
+        panel.add(jRadioButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 240, -1, -1));
 
         jLabel1.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(204, 204, 204)));
-        jPanel3.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 260, 330, 10));
-        jPanel3.add(jSpinner3, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 370, 70, 30));
+        panel.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 260, 330, 10));
+        panel.add(jSpinner3, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 370, 70, 30));
 
-        rSComboMetro1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Select room number" }));
-        rSComboMetro1.setColorArrow(new java.awt.Color(27, 59, 95));
-        rSComboMetro1.setColorBorde(new java.awt.Color(39, 114, 160));
-        rSComboMetro1.setColorFondo(new java.awt.Color(39, 114, 160));
-        rSComboMetro1.addActionListener(new java.awt.event.ActionListener() {
+        cmbRoomNumber.setColorArrow(new java.awt.Color(27, 59, 95));
+        cmbRoomNumber.setColorBorde(new java.awt.Color(39, 114, 160));
+        cmbRoomNumber.setColorFondo(new java.awt.Color(39, 114, 160));
+        cmbRoomNumber.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rSComboMetro1ActionPerformed(evt);
+                cmbRoomNumberActionPerformed(evt);
             }
         });
-        jPanel3.add(rSComboMetro1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 50, 220, 30));
+        cmbRoomNumber.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                cmbRoomNumberPropertyChange(evt);
+            }
+        });
+        panel.add(cmbRoomNumber, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 50, 220, 30));
 
         jLabel17.setFont(new java.awt.Font("Arial Unicode MS", 0, 12)); // NOI18N
         jLabel17.setForeground(new java.awt.Color(0, 0, 0));
         jLabel17.setText("Date");
-        jPanel3.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 350, 110, -1));
+        panel.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 350, 110, -1));
 
         rSComboMetro2.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "AM", "PM" }));
         rSComboMetro2.setColorArrow(new java.awt.Color(27, 59, 95));
@@ -183,7 +274,7 @@ public class guestMakeReservation extends javax.swing.JFrame {
                 rSComboMetro2ActionPerformed(evt);
             }
         });
-        jPanel3.add(rSComboMetro2, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 370, 80, 30));
+        panel.add(rSComboMetro2, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 370, 80, 30));
 
         jPanel2.setBackground(new java.awt.Color(242, 242, 242));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -293,27 +384,28 @@ public class guestMakeReservation extends javax.swing.JFrame {
         jLabel40.setText("Total:");
         jPanel2.add(jLabel40, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 240, 110, -1));
 
-        jPanel3.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 30, 340, 310));
-
-        txterror.setBackground(new java.awt.Color(255, 0, 51));
-        txterror.setFont(new java.awt.Font("Helvetica Neue", 2, 12)); // NOI18N
-        txterror.setForeground(new java.awt.Color(255, 0, 51));
-        txterror.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jPanel3.add(txterror, new org.netbeans.lib.awtextra.AbsoluteConstraints(-50, 140, 320, -1));
+        panel.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 30, 340, 310));
 
         jPanel4.setBackground(new java.awt.Color(51, 204, 0));
+        jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel2.setBackground(new java.awt.Color(255, 255, 255));
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("Show");
-        jPanel4.add(jLabel2);
+        jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel2MouseClicked(evt);
+            }
+        });
+        jPanel4.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 5, 90, 20));
 
-        jPanel3.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 50, 100, 30));
+        panel.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 50, 100, 30));
 
         jLabel18.setFont(new java.awt.Font("Arial Unicode MS", 0, 12)); // NOI18N
         jLabel18.setForeground(new java.awt.Color(0, 0, 0));
         jLabel18.setText("Room Number");
-        jPanel3.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 30, 110, -1));
+        panel.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 30, 110, -1));
 
         rSComboMetro3.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Select Date" }));
         rSComboMetro3.setColorArrow(new java.awt.Color(27, 59, 95));
@@ -324,7 +416,7 @@ public class guestMakeReservation extends javax.swing.JFrame {
                 rSComboMetro3ActionPerformed(evt);
             }
         });
-        jPanel3.add(rSComboMetro3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 370, 160, 30));
+        panel.add(rSComboMetro3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 370, 160, 30));
 
         jPanel5.setBackground(new java.awt.Color(204, 0, 0));
         jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -335,7 +427,7 @@ public class guestMakeReservation extends javax.swing.JFrame {
         jLabel41.setText("Cancel");
         jPanel5.add(jLabel41, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 5, 70, 20));
 
-        jPanel3.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 360, 90, 30));
+        panel.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 360, 90, 30));
 
         jPanel6.setBackground(new java.awt.Color(27, 59, 95));
         jPanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -346,9 +438,31 @@ public class guestMakeReservation extends javax.swing.JFrame {
         jLabel39.setText("Confirm");
         jPanel6.add(jLabel39, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 5, 70, 20));
 
-        jPanel3.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 360, 90, 30));
+        panel.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 360, 90, 30));
 
-        jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, 820, 440));
+        txtErrorMessage.setFont(new java.awt.Font("Helvetica Neue", 0, 10)); // NOI18N
+        txtErrorMessage.setForeground(new java.awt.Color(255, 0, 0));
+        txtErrorMessage.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        txtErrorMessage.setText("(error message)");
+        panel.add(txtErrorMessage, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 140, 160, 10));
+
+        checkOutDate.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                checkOutDatePropertyChange(evt);
+            }
+        });
+        panel.add(checkOutDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 110, 160, 30));
+
+        txtErrorMessage1.setFont(new java.awt.Font("Helvetica Neue", 0, 10)); // NOI18N
+        txtErrorMessage1.setForeground(new java.awt.Color(255, 0, 0));
+        txtErrorMessage1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        txtErrorMessage1.setText("(error message)");
+        panel.add(txtErrorMessage1, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 140, 160, 10));
+
+        txtvalue.setText("jLabel4");
+        panel.add(txtvalue, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 220, -1, -1));
+
+        jPanel1.add(panel, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, 820, 440));
 
         jLabel7.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(0, 0, 0));
@@ -366,10 +480,16 @@ public class guestMakeReservation extends javax.swing.JFrame {
     private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jRadioButton1ActionPerformed
-
-    private void rSComboMetro1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSComboMetro1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_rSComboMetro1ActionPerformed
+private int counter = 0;
+    private void cmbRoomNumberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbRoomNumberActionPerformed
+        txtErrorMessage1.setText(""); 
+        txtErrorMessage.setText("");
+        checkInDate.setDate(null);
+        checkOutDate.setDate(null);
+        counter = 0;
+        
+        
+    }//GEN-LAST:event_cmbRoomNumberActionPerformed
 
     private void rSComboMetro2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSComboMetro2ActionPerformed
         // TODO add your handling code here:
@@ -378,6 +498,150 @@ public class guestMakeReservation extends javax.swing.JFrame {
     private void rSComboMetro3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSComboMetro3ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_rSComboMetro3ActionPerformed
+
+    private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
+  
+                 new guestRoomUnavailableDate().setVisible(true);
+    }//GEN-LAST:event_jLabel2MouseClicked
+
+    private void checkInDatePropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_checkInDatePropertyChange
+    txtErrorMessage.setText("");                             
+    // Only proceed if the date property changed
+    if (!"date".equals(evt.getPropertyName())) {
+        return;
+    }
+
+    // Get the selected check-in date
+    java.util.Date checkInUtilDate = checkInDate.getDate();
+    if (checkInUtilDate == null) {
+       
+        return;
+    }
+
+    // Get selected room number
+    String roomNumber = (String) cmbRoomNumber.getSelectedItem(); 
+    if (roomNumber == null || roomNumber.isEmpty() || "Select a Room Number".equals(roomNumber)) {
+        txtErrorMessage.setText("Select a room number");
+        return;
+    }
+
+    // Convert to SQL date
+    java.sql.Date sqlCheckIn = new java.sql.Date(checkInUtilDate.getTime());
+
+    try {
+        // Query to check room availability on the check-in date
+        String query = "SELECT COUNT(*) FROM room_reservation WHERE room_number = ? " +
+                      "AND ? BETWEEN check_in_date AND check_out_date";
+        
+        pst = con.prepareStatement(query);
+        pst.setString(1, roomNumber);
+        pst.setDate(2, sqlCheckIn);
+        
+        rs = pst.executeQuery();
+        if (rs.next()) {
+            int count = rs.getInt(1);
+            if (count > 0) {
+                txtErrorMessage.setText("Room #" + roomNumber + " not available on " + 
+                    new SimpleDateFormat("MMM dd, yyyy").format(checkInUtilDate));
+                txtErrorMessage.setForeground(Color.RED);
+            } 
+        }
+    } catch (SQLException ex) {
+        txtErrorMessage.setText("Error checking room availability");
+        System.err.println("Database error: " + ex.getMessage());
+    } 
+
+    }//GEN-LAST:event_checkInDatePropertyChange
+
+    
+    private void checkOutDatePropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_checkOutDatePropertyChange
+        txtErrorMessage1.setText(""); 
+        if (!"date".equals(evt.getPropertyName())) {
+        return;
+    }
+        
+
+    // Get selected dates
+    java.util.Date checkInUtilDate = checkInDate.getDate();
+    java.util.Date checkOutUtilDate = checkOutDate.getDate();
+    
+    // Validate check-in date is selected
+    if (checkInUtilDate == null && counter > 1) {
+        
+        txtErrorMessage1.setText("Select a check-in date first");
+        txtErrorMessage1.setForeground(Color.RED);
+        return;
+    } else {
+        counter++;
+    }
+    
+    // Validate check-out date is selected
+    if (checkOutUtilDate == null) {
+        return;
+    }
+    
+    // Get selected room number
+    String roomNumber = (String) cmbRoomNumber.getSelectedItem(); 
+    if (roomNumber == null || roomNumber.isEmpty() || roomNumber.equals("Select a Room Number")) {
+        txtErrorMessage1.setText("Select a room number");
+        txtErrorMessage1.setForeground(Color.RED);
+        return;
+    }
+
+    // Validate check-out is after check-in
+    if (checkOutUtilDate.before(checkInUtilDate)) {
+        txtErrorMessage1.setText("Check-out must be after check-in");
+        txtErrorMessage1.setForeground(Color.RED);
+        return;
+    }
+
+    // Convert to SQL dates
+    java.sql.Date sqlCheckIn = new java.sql.Date(checkInUtilDate.getTime());
+    java.sql.Date sqlCheckOut = new java.sql.Date(checkOutUtilDate.getTime());
+
+    try {
+        // Query to check for conflicting reservations
+        String query = "SELECT COUNT(*) FROM room_reservation WHERE room_number = ? " +
+                     "AND ((check_in_date <= ? AND check_out_date >= ?) OR " +  // New dates within existing
+                     "(check_in_date BETWEEN ? AND ?) OR " +                   // Existing starts during new
+                     "(check_out_date BETWEEN ? AND ?))";                      // Existing ends during new
+        
+        pst = con.prepareStatement(query);
+        pst.setString(1, roomNumber);
+        pst.setDate(2, sqlCheckOut);  // Note parameter order matches query
+        pst.setDate(3, sqlCheckIn);
+        pst.setDate(4, sqlCheckIn);
+        pst.setDate(5, sqlCheckOut);
+        pst.setDate(6, sqlCheckIn);
+        pst.setDate(7, sqlCheckOut);
+        
+        rs = pst.executeQuery();
+        if (rs.next()) {
+            int count = rs.getInt(1);
+            if (count > 0) {
+                txtErrorMessage1.setText("Room not available for selected dates");
+                txtErrorMessage1.setForeground(Color.RED);
+            } 
+        }
+    } catch (SQLException ex) {
+        txtErrorMessage1.setText("Error checking availability");
+        System.err.println("Database error: " + ex.getMessage());
+    } 
+
+      
+    }//GEN-LAST:event_checkOutDatePropertyChange
+
+    private void cmbRoomNumberPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_cmbRoomNumberPropertyChange
+       txtErrorMessage1.setText(""); 
+        txtErrorMessage.setText(""); 
+        
+    }//GEN-LAST:event_cmbRoomNumberPropertyChange
+
+    private void AdultNumberStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_AdultNumberStateChanged
+       
+         int value = (Integer) AdultNumber.getValue();
+        txtvalue.setText(String.valueOf(value)); 
+    }//GEN-LAST:event_AdultNumberStateChanged
 
     /**
      * @param args the command line arguments
@@ -542,8 +806,10 @@ public class guestMakeReservation extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private com.toedter.calendar.JDateChooser jDateChooser3;
-    private com.toedter.calendar.JDateChooser jDateChooser4;
+    private javax.swing.JSpinner AdultNumber;
+    private com.toedter.calendar.JDateChooser checkInDate;
+    private com.toedter.calendar.JDateChooser checkOutDate;
+    private rojerusan.RSComboMetro cmbRoomNumber;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -580,19 +846,19 @@ public class guestMakeReservation extends javax.swing.JFrame {
     private javax.swing.JLayeredPane jLayeredPane1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JRadioButton jRadioButton1;
     private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JSpinner jSpinner1;
-    private javax.swing.JSpinner jSpinner2;
     private javax.swing.JSpinner jSpinner3;
-    private rojerusan.RSComboMetro rSComboMetro1;
+    private javax.swing.JPanel panel;
     private rojerusan.RSComboMetro rSComboMetro2;
     private rojerusan.RSComboMetro rSComboMetro3;
-    private javax.swing.JLabel txterror;
+    private javax.swing.JLabel txtErrorMessage;
+    private javax.swing.JLabel txtErrorMessage1;
     private javax.swing.JTextField txtphone1;
+    private javax.swing.JLabel txtvalue;
     // End of variables declaration//GEN-END:variables
 }

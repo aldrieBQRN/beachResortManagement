@@ -90,7 +90,7 @@ public class landingPage extends javax.swing.JFrame {
         txterror = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         pnlgraphics = new javax.swing.JPanel();
-        jLabel11 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -109,7 +109,6 @@ public class landingPage extends javax.swing.JFrame {
         pnlmain.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         pnllogin.setBackground(new java.awt.Color(255, 255, 255));
-        pnllogin.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 0, 20, new java.awt.Color(27, 59, 95)));
         pnllogin.setForeground(new java.awt.Color(51, 51, 51));
         pnllogin.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -137,7 +136,7 @@ public class landingPage extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("New Peninim MT", 0, 13)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(0, 0, 0));
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/showpass.png"))); // NOI18N
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/show.png"))); // NOI18N
         jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel2MouseClicked(evt);
@@ -216,15 +215,15 @@ public class landingPage extends javax.swing.JFrame {
 
         pnlgraphics.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/background.png"))); // NOI18N
-        jLabel11.setText("jLabel11");
-        pnlgraphics.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(-40, 0, -1, -1));
+        jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/background copy.png"))); // NOI18N
+        jLabel7.setText("jLabel7");
+        pnlgraphics.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(-30, 0, -1, -1));
 
         pnlmain.add(pnlgraphics, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 0, 890, 670));
 
-        getContentPane().add(pnlmain, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 100, 1440, 670));
+        getContentPane().add(pnlmain, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 70, 1440, 720));
 
-        jPanel4.setBackground(new java.awt.Color(27, 59, 95));
+        jPanel4.setBackground(new java.awt.Color(39, 114, 160));
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -234,10 +233,10 @@ public class landingPage extends javax.swing.JFrame {
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 60, Short.MAX_VALUE)
+            .addGap(0, 40, Short.MAX_VALUE)
         );
 
-        getContentPane().add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 770, 1440, 60));
+        getContentPane().add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 790, 1440, 40));
 
         jPanel5.setBackground(new java.awt.Color(27, 59, 95));
         jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -250,7 +249,7 @@ public class landingPage extends javax.swing.JFrame {
                 jLabel1MouseClicked(evt);
             }
         });
-        jPanel5.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1290, 40, -1, -1));
+        jPanel5.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1290, 1, -1, 70));
 
         jLabel8.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 18)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
@@ -260,7 +259,7 @@ public class landingPage extends javax.swing.JFrame {
                 jLabel8MouseClicked(evt);
             }
         });
-        jPanel5.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(1100, 40, -1, -1));
+        jPanel5.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(1100, 1, -1, 70));
 
         jLabel9.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 18)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(255, 255, 255));
@@ -270,19 +269,19 @@ public class landingPage extends javax.swing.JFrame {
                 jLabel9MouseClicked(evt);
             }
         });
-        jPanel5.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(1190, 40, -1, -1));
+        jPanel5.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(1190, 1, -1, 70));
 
-        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 30)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Welcome,");
-        jPanel5.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 0, 180, 100));
+        jPanel5.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 0, 180, 70));
 
         jLabel5.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setText("enjoy and have fun!");
-        jPanel5.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 50, -1, 20));
+        jPanel5.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 30, -1, 20));
 
-        getContentPane().add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 100));
+        getContentPane().add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 70));
 
         pack();
         setLocationRelativeTo(null);
@@ -474,7 +473,6 @@ public class landingPage extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
@@ -484,6 +482,7 @@ public class landingPage extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel4;

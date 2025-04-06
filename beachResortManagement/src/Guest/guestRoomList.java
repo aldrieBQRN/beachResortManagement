@@ -14,9 +14,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 import Database.DatabaseConnection; 
+import java.awt.Component;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.DefaultCellEditor;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 
 /**
  *
@@ -71,46 +80,119 @@ public class guestRoomList extends javax.swing.JInternalFrame {
         UI.setNorthPane(null); 
     }
     
-    public final void showRoom(){
-   
+    public final void showRoom() {
+    try {
+        pst = con.prepareStatement("SELECT * FROM room");
+        rs = pst.executeQuery();
         
-        try {
-    
-           
-            
-            // Prepare the SQL query to select all rooms from the table
-            pst = con.prepareStatement("SELECT * FROM room");
-            
-            // Execute the query and get the results
-            rs = pst.executeQuery();
-            
-            // Set up the table model to display the data in the JTable
-            DefaultTableModel roomModel = (DefaultTableModel) tblroom.getModel();
-            
-            // Clear any previous rows
-            roomModel.setRowCount(0);
-            
-           
-            // Iterate over the result set and add data to the table
-            while (rs.next()) {
-               
-                String roomNumber = rs.getString("room_number");
-                String roomType = rs.getString("room_type");
-                double price = rs.getDouble("room_price");
-                String description = rs.getString("description");
-                int maxOccupancy = rs.getInt("max_occupancy");
-                String createdAt = rs.getString("created_at");
-
-                // Add data to the table model
-                roomModel.addRow(new Object[] { roomNumber, createdAt, roomType, description, maxOccupancy, price });
+        // Create table model with delete column
+        DefaultTableModel roomModel = new DefaultTableModel(
+            new Object[]{"Room Number", "Room Type", "Description", "Max Occupancy", "Price", "Action"}, 
+            0
+        ) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                // Only make the action column editable
+                return column == 5;
             }
-        } catch (SQLException ex) {
-            // Handle any SQL exceptions
-            Logger.getLogger(guestRoomList.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("Error fetching room data: " + ex.getMessage());
+        };
+        
+        tblroom.setModel(roomModel);
+        
+        while (rs.next()) {
+            String roomNumber = rs.getString("room_number");
+            String roomType = rs.getString("room_type");
+            double price = rs.getDouble("room_price");
+            String description = rs.getString("description");
+            int maxOccupancy = rs.getInt("max_occupancy");
+            
+            // Add row with delete button
+            roomModel.addRow(new Object[]{
+                roomNumber, 
+                roomType, 
+                description, 
+                maxOccupancy, 
+                price,
+                "Delete" // This will be rendered as a button
+            });
         }
         
+        // Add button renderer and editor
+        tblroom.getColumnModel().getColumn(5).setCellRenderer(new ButtonRenderer());
+        tblroom.getColumnModel().getColumn(5).setCellEditor(new ButtonEditor(new JCheckBox()));
+        
+    } catch (SQLException ex) {
+        Logger.getLogger(guestRoomList.class.getName()).log(Level.SEVERE, null, ex);
+        System.out.println("Error fetching room data: " + ex.getMessage());
     }
+}
+
+// Button Renderer Class
+class ButtonRenderer extends JButton implements TableCellRenderer {
+    public ButtonRenderer() {
+        setOpaque(true);
+    }
+    
+    public Component getTableCellRendererComponent(JTable table, Object value,
+            boolean isSelected, boolean hasFocus, int row, int column) {
+        setText((value == null) ? "" : value.toString());
+        return this;
+    }
+}
+
+// Button Editor Class
+class ButtonEditor extends DefaultCellEditor {
+    private String label;
+    private JButton button;
+    private int clickedRow;
+    
+    public ButtonEditor(JCheckBox checkBox) {
+        super(checkBox);
+        button = new JButton();
+        button.setOpaque(true);
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                fireEditingStopped();
+                deleteRoom(clickedRow);
+            }
+        });
+    }
+    
+    public Component getTableCellEditorComponent(JTable table, Object value,
+            boolean isSelected, int row, int column) {
+        label = (value == null) ? "" : value.toString();
+        button.setText(label);
+        clickedRow = row;
+        return button;
+    }
+    
+    public Object getCellEditorValue() {
+        return label;
+    }
+}
+
+// Delete Room Method
+private void deleteRoom(int row) {
+    String roomNumber = (String) tblroom.getValueAt(row, 0);
+    int confirm = JOptionPane.showConfirmDialog(
+        this, 
+        "Are you sure you want to delete room " + roomNumber + "?", 
+        "Confirm Delete", 
+        JOptionPane.YES_NO_OPTION
+    );
+    
+    if (confirm == JOptionPane.YES_OPTION) {
+        try {
+            pst = con.prepareStatement("DELETE FROM room WHERE room_number = ?");
+            pst.setString(1, roomNumber);
+            pst.executeUpdate();
+            showRoom(); // Refresh the table
+            JOptionPane.showMessageDialog(this, "Room deleted successfully!");
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error deleting room: " + ex.getMessage());
+        }
+    }
+}
     
    
 
@@ -146,23 +228,23 @@ public class guestRoomList extends javax.swing.JInternalFrame {
         tblroom.setForeground(new java.awt.Color(255, 255, 255));
         tblroom.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Room Number", "Date Created", "Type", "Description", "Max Occupancy", "Price/Day"
+                "Room Number", "Room Type", "Description", "Max Occupancy", "Price/Day"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {

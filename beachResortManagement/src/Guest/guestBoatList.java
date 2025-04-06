@@ -31,6 +31,7 @@ public class guestBoatList extends javax.swing.JInternalFrame {
         initComponents();
         removeBackground();
         DatabaseConnection();
+        showBoatDetails();
         
         
  
@@ -64,6 +65,41 @@ public class guestBoatList extends javax.swing.JInternalFrame {
             System.out.println("MySQL JDBC Driver not found: " + e.getMessage());
         }
     }
+    
+    public final void showBoatDetails() {
+        try {
+            // Prepare the SQL query to select all boats from the boat_details table
+            pst = con.prepareStatement("SELECT * FROM boat");
+
+            // Execute the query and get the results
+            rs = pst.executeQuery();
+
+            // Set up the table model to display the data in the JTable
+            DefaultTableModel boatModel = (DefaultTableModel) tblBoatDetails.getModel();
+
+            // Clear any previous rows
+            boatModel.setRowCount(0);
+
+            // Iterate over the result set and add data to the table
+            while (rs.next()) {
+                // Fetch the boat details from the result set
+                String boatNumber = rs.getString("boat_number");
+                String boatName = rs.getString("boat_name");
+                String description = rs.getString("description");
+                int capacity = rs.getInt("capacity");
+               
+                double price = rs.getDouble("tour_price");
+
+                // Add data to the table model
+                boatModel.addRow(new Object[] { boatNumber, boatName, description, capacity, price });
+            }
+        } catch (SQLException ex) {
+            // Handle any SQL exceptions
+            Logger.getLogger(staffBoats.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Error fetching boat details: " + ex.getMessage());
+        }
+    }
+
     
     public final void removeBackground(){
         this.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
@@ -103,23 +139,23 @@ public class guestBoatList extends javax.swing.JInternalFrame {
         tblBoatDetails.setForeground(new java.awt.Color(255, 255, 255));
         tblBoatDetails.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Boat Number", "Registration Date", "Name", "Details", "Capacity", "Price/Tour"
+                "Boat Number", "Name", "Description", "Capacity", "Price/Tour"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
