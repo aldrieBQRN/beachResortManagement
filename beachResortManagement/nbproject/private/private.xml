@@ -25,7 +25,7 @@
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/adminAddBoat.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/adminAddUser.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/adminDeleteRoom.java</file>
-            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Guest/test2.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Guest/guestHome.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/textfield/Main.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/textfield/PasswordField.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/textfield/TextField.java</file>
@@ -38,9 +38,13 @@
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/spinner/Test.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/spinner/Spinner.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Staff/staffHistory.java</file>
-            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Guest/test3.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Guest/guestSelectRoom.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/adminReservationBoat.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/adminHome.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Guest/guestProcess.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Guest/guestGcashPayment.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Guest/guestSelectBoat.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/spinner/SpinnerUI.java</file>
         </group>
     </open-files>
 </project-private>

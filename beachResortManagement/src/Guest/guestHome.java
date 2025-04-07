@@ -4,7 +4,7 @@
  */
 package Guest;
 
-import Guest.guestSearch;
+import Guest.guestSelectRoom;
 import java.awt.Color;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -80,14 +80,14 @@ public class guestHome extends javax.swing.JFrame {
         java.sql.Date sqlCheckOut = new java.sql.Date(checkOut.getTime());
         
 
-        // Fixed SQL query
-        String query = "SELECT r.room_number, r.room_type, r.max_occupancy, r.room_price " +
+       String query = "SELECT r.room_number, r.room_type, r.max_occupancy, r.room_price " +
                        "FROM room r " +
                        "WHERE r.max_occupancy >= ? " +
                        "AND r.room_number NOT IN (" +
                        "   SELECT room_number FROM room_reservation " +
-                       "   WHERE (? < check_out_date AND ? > check_in_date)" +
-                       ") " + // <== don't forget to close subquery
+                       "   WHERE status = 'Reserved' " +
+                       "   AND (? < check_out_date AND ? > check_in_date)" +
+                       ") " +
                        "ORDER BY r.room_price ASC";
 
         pst = con.prepareStatement(query);
@@ -105,16 +105,18 @@ public class guestHome extends javax.swing.JFrame {
             String roomType = rs.getString("room_type");
             int maxOccupancy = rs.getInt("max_occupancy");
             double price = rs.getDouble("room_price");
+            
+             System.out.println("Room: " + roomNumber + " | Type: " + roomType + " | Capacity: " + maxOccupancy + " | ₱" + price);
 
             // You can display the result in a table or console for now
-            System.out.println("Room: " + roomNumber + " | Type: " + roomType + " | Capacity: " + maxOccupancy + " | ₱" + price);
+            
         }
 
         if (!found) {
             JOptionPane.showMessageDialog(this, "No available rooms found.");
         } else {
              
-            new guestSearch(checkIn, checkOut, adults, children).setVisible(true);
+            new guestSelectRoom(checkIn, checkOut, adults, children).setVisible(true);
         }
 
     } catch (SQLException ex) {
