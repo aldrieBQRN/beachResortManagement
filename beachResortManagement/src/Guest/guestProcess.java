@@ -32,7 +32,9 @@ import javax.swing.table.DefaultTableModel;
  */
 public class guestProcess extends javax.swing.JFrame {
 
-   private Date checkInDate;
+    private int numChildren;
+    private int numAdults;
+    private Date checkInDate;
     private Date checkOutDate;
     private String roomNumber;
     private String roomType;
@@ -45,12 +47,15 @@ public class guestProcess extends javax.swing.JFrame {
     private double boatPrice;
 
     // Constructor to initialize guestProcess with all the parameters
-    public guestProcess(Date checkInDate, Date checkOutDate, String roomNumber, String roomType, 
-                        String roomDescription, double roomPrice, java.sql.Date sqlDate, 
-                        java.sql.Time sqlStartTime, java.sql.Time sqlEndTime, String boatName, 
-                        double boatPrice) {
+   public guestProcess(Date checkInDate, Date checkOutDate, String roomNumber, String roomType, 
+                    String roomDescription, double roomPrice, java.sql.Date sqlDate, 
+                    java.sql.Time sqlStartTime, java.sql.Time sqlEndTime, String boatName, 
+                    double boatPrice, int numAdult, int numChildren) {
+
+
         
         initComponents();  // Initialize UI components (if any)
+        DatabaseConnection();
 
         // Store the parameters in the instance variables
         this.checkInDate = checkInDate;
@@ -64,6 +69,8 @@ public class guestProcess extends javax.swing.JFrame {
         this.sqlEndTime = sqlEndTime;
         this.boatName = boatName;
         this.boatPrice = boatPrice;
+        this.numAdults = numAdult;
+        this.numChildren = numChildren;     
         
        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM d", Locale.ENGLISH);
         SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a"); // "hh" for 12-hour format with leading zero, "a" for AM/PM
@@ -78,11 +85,11 @@ public class guestProcess extends javax.swing.JFrame {
         long numberOfNights = TimeUnit.MILLISECONDS.toDays(diffInMillies);
 
         // Display the number of nights (you can set it to a label or print it)
-        System.out.println("Number of Nights: " + numberOfNights);
-        lblNumberOfNights.setText("Number of Nights: " + numberOfNights);
+       
+        lblNumberOfNights.setText("" + numberOfNights);
 
     // Format and display the room details
-    lblRoomNumber.setText(roomNumber != null ? roomNumber : "N/A");
+        lblRoomNumber.setText(roomNumber != null ? roomNumber : "N/A");
         lblRoomNumber.setText(roomNumber != null ? roomNumber : "N/A");
         lblRoomType.setText(roomType != null ? roomType : "N/A");
         lblRoomDescription.setText(roomDescription != null ? roomDescription : "N/A");
@@ -90,6 +97,49 @@ public class guestProcess extends javax.swing.JFrame {
         lblSqlDate.setText(sqlDate != null ? dateFormat.format(sqlDate) : "N/A");
         lblStartTime.setText(sqlStartTime != null ? timeFormat.format(sqlStartTime) : "N/A");
         lblEndTime.setText(sqlEndTime != null ? timeFormat.format(sqlEndTime) : "N/A");
+        
+        String reservationNumber = generateReservationNumber();
+        lblReservationNumber.setText("" + reservationNumber);
+        String guestInfo;
+        if (numChildren > 0) {
+            guestInfo = numAdults + " Adult" + (numAdults > 1 ? "s" : "") + ", " + numChildren + " Child" + (numChildren > 1 ? "ren" : "");
+        } else {
+            guestInfo = numAdults + " Adult" + (numAdults > 1 ? "s" : "");
+        }
+        lblGuestInfo.setText(guestInfo);  // Make sure lblGuestInfo exists in your form
+        double totalRoomPrice = roomPrice * numberOfNights;
+
+        // Format to 2 decimal places (optional)
+        String formattedTotalRoomPrice = String.format("₱%.2f", totalRoomPrice);
+
+        // Display total room price
+        lblTotalRoomPrice.setText(formattedTotalRoomPrice);
+        
+        String formattedBoatPrice = String.format("₱%.2f", boatPrice);
+        
+        lblBoatPrice.setText(formattedBoatPrice);
+        
+        int totalGuests = numAdults + numChildren;
+        double entranceFee = 100.0 * totalGuests;
+
+        // Format entrance fee
+        String formattedEntranceFee = String.format("₱%.2f", entranceFee);
+
+        // Display entrance fee
+        lblEntranceFee.setText(formattedEntranceFee); 
+        
+        double ecologicalFee = 20.0 * totalGuests;
+
+// Format ecological fee
+        String formattedEcoFee = String.format("₱%.2f", ecologicalFee);
+
+        // Display ecological fee
+        lblEcologicalFee.setText(formattedEcoFee);
+        
+        double grandTotal = totalRoomPrice + boatPrice + entranceFee + ecologicalFee;
+        lblGrandTotal.setText(String.format("₱%.2f", grandTotal));
+
+
 
         
     }
@@ -132,55 +182,48 @@ public class guestProcess extends javax.swing.JFrame {
     }
     
     
-    private void searchAvailableRooms(Date checkIn, Date checkOut, int totalGuests, int adults, int children) {
-    try {
-        java.sql.Date sqlCheckIn = new java.sql.Date(checkIn.getTime());
-        java.sql.Date sqlCheckOut = new java.sql.Date(checkOut.getTime());
-        
+   public String generateReservationNumber() {
+        String reservationNumber = "";
 
-        // Fixed SQL query
-        String query = "SELECT r.room_number, r.room_type, r.max_occupancy, r.room_price " +
-                       "FROM room r " +
-                       "WHERE r.max_occupancy >= ? " +
-                       "AND r.room_number NOT IN (" +
-                       "   SELECT room_number FROM room_reservation " +
-                       "   WHERE (? < check_out_date AND ? > check_in_date)" +
-                       ") " + // <== don't forget to close subquery
-                       "ORDER BY r.room_price ASC";
-
-        pst = con.prepareStatement(query);
-        pst.setInt(1, totalGuests);
-        pst.setDate(2, sqlCheckIn);
-        pst.setDate(3, sqlCheckOut);
-
-        rs = pst.executeQuery();
-
-        boolean found = false;
-
-        while (rs.next()) {
-            found = true;
-            String roomNumber = rs.getString("room_number");
-            String roomType = rs.getString("room_type");
-            int maxOccupancy = rs.getInt("max_occupancy");
-            double price = rs.getDouble("room_price");
-
-            // You can display the result in a table or console for now
-            System.out.println("Room: " + roomNumber + " | Type: " + roomType + " | Capacity: " + maxOccupancy + " | ₱" + price);
+        // Ensure that the connection is not null
+        if (con == null) {
+            System.out.println("Database connection is not initialized!");
+            return reservationNumber;
         }
 
-        if (!found) {
-            JOptionPane.showMessageDialog(this, "No available rooms found.");
-        } else {
-             
-            new guestSelectRoom(checkIn, checkOut, adults, children).setVisible(true);
-        }
+        try {
+            // Query to get the last reservation number from the database
+            String query = "SELECT reservation_number FROM reservation ORDER BY reservation_id DESC LIMIT 1";
+            pst = con.prepareStatement(query); // Use prepared statement
+            rs = pst.executeQuery();
 
-    } catch (SQLException ex) {
-        JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage());
+            // Get the last reservation number if available
+            if (rs.next()) {
+                String lastReservationNumber = rs.getString("reservation_number");
+                // Extract the numeric part (assuming format is like "RES-YYYYMMDD-001")
+                String lastNumberPart = lastReservationNumber.substring(lastReservationNumber.lastIndexOf("-") + 1);
+                int lastNumber = Integer.parseInt(lastNumberPart);
+                // Increment it for the new reservation
+                lastNumber++;
+                reservationNumber = "RES-" + getCurrentDateString() + "-" + String.format("%03d", lastNumber);
+            } else {
+                // If no reservations exist, start from 001
+                reservationNumber = "RES-" + getCurrentDateString() + "-001";
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } 
+        return reservationNumber;
     }
-}
+
+    // Get the current date in the format YYYYMMDD
+    private String getCurrentDateString() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        return dateFormat.format(new Date());
+    }
 
     
+   
     
 
     /**
@@ -211,20 +254,22 @@ public class guestProcess extends javax.swing.JFrame {
         lblEndTime = new javax.swing.JLabel();
         jLabel29 = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
-        txtRoomPrice = new javax.swing.JLabel();
+        lblTotalRoomPrice = new javax.swing.JLabel();
         jLabel35 = new javax.swing.JLabel();
-        txtEcological = new javax.swing.JLabel();
-        txtWaterActivityPrice = new javax.swing.JLabel();
-        jLabel40 = new javax.swing.JLabel();
-        txtEntrace = new javax.swing.JLabel();
+        lblEcologicalFee = new javax.swing.JLabel();
+        lblBoatPrice = new javax.swing.JLabel();
+        lblEntranceFee = new javax.swing.JLabel();
         jLabel45 = new javax.swing.JLabel();
-        textReservation = new javax.swing.JLabel();
         jPanel7 = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
+        lblGrandTotal = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel42 = new javax.swing.JLabel();
         jLabel47 = new javax.swing.JLabel();
         jLabel36 = new javax.swing.JLabel();
+        lblReservationNumber = new javax.swing.JLabel();
+        lblGuestInfo = new javax.swing.JLabel();
+        jLabel46 = new javax.swing.JLabel();
+        jLabel48 = new javax.swing.JLabel();
         jPanel8 = new javax.swing.JPanel();
         lblNumberOfNights = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
@@ -375,63 +420,51 @@ public class guestProcess extends javax.swing.JFrame {
         jPanel6.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jPanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        txtRoomPrice.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
-        txtRoomPrice.setForeground(new java.awt.Color(0, 0, 0));
-        txtRoomPrice.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        txtRoomPrice.setText("00.00");
-        jPanel6.add(txtRoomPrice, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 40, 110, -1));
+        lblTotalRoomPrice.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
+        lblTotalRoomPrice.setForeground(new java.awt.Color(0, 0, 0));
+        lblTotalRoomPrice.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lblTotalRoomPrice.setText("00.00");
+        jPanel6.add(lblTotalRoomPrice, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 70, 110, -1));
 
-        jLabel35.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
+        jLabel35.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         jLabel35.setForeground(new java.awt.Color(0, 0, 0));
         jLabel35.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel35.setText("Others:");
-        jPanel6.add(jLabel35, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, 150, -1));
+        jPanel6.add(jLabel35, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 110, 150, -1));
 
-        txtEcological.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
-        txtEcological.setForeground(new java.awt.Color(0, 0, 0));
-        txtEcological.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        txtEcological.setText("00.00");
-        jPanel6.add(txtEcological, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 120, 110, -1));
+        lblEcologicalFee.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
+        lblEcologicalFee.setForeground(new java.awt.Color(0, 0, 0));
+        lblEcologicalFee.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lblEcologicalFee.setText("00.00");
+        jPanel6.add(lblEcologicalFee, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 150, 110, -1));
 
-        txtWaterActivityPrice.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
-        txtWaterActivityPrice.setForeground(new java.awt.Color(0, 0, 0));
-        txtWaterActivityPrice.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        txtWaterActivityPrice.setText("00.00");
-        jPanel6.add(txtWaterActivityPrice, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 60, 110, -1));
+        lblBoatPrice.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
+        lblBoatPrice.setForeground(new java.awt.Color(0, 0, 0));
+        lblBoatPrice.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lblBoatPrice.setText("00.00");
+        jPanel6.add(lblBoatPrice, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 90, 110, -1));
 
-        jLabel40.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
-        jLabel40.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel40.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel40.setText("Reservation Number");
-        jPanel6.add(jLabel40, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, 150, -1));
+        lblEntranceFee.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
+        lblEntranceFee.setForeground(new java.awt.Color(0, 0, 0));
+        lblEntranceFee.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lblEntranceFee.setText("00.00");
+        jPanel6.add(lblEntranceFee, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 130, 110, -1));
 
-        txtEntrace.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
-        txtEntrace.setForeground(new java.awt.Color(0, 0, 0));
-        txtEntrace.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        txtEntrace.setText("00.00");
-        jPanel6.add(txtEntrace, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 100, 110, -1));
-
-        jLabel45.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
+        jLabel45.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         jLabel45.setForeground(new java.awt.Color(0, 0, 0));
         jLabel45.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel45.setText("Total Room Price");
-        jPanel6.add(jLabel45, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 40, 110, -1));
-
-        textReservation.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
-        textReservation.setForeground(new java.awt.Color(0, 0, 0));
-        textReservation.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        textReservation.setText("00.00");
-        jPanel6.add(textReservation, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 20, 110, -1));
+        jPanel6.add(jLabel45, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 70, 110, -1));
 
         jPanel7.setBackground(new java.awt.Color(255, 255, 255));
         jPanel7.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jPanel7.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel2.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel2.setText("00.00");
-        jPanel7.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 10, 100, -1));
+        lblGrandTotal.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
+        lblGrandTotal.setForeground(new java.awt.Color(0, 0, 0));
+        lblGrandTotal.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lblGrandTotal.setText("00.00");
+        jPanel7.add(lblGrandTotal, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 10, 100, -1));
 
         jLabel3.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(0, 0, 0));
@@ -440,23 +473,47 @@ public class guestProcess extends javax.swing.JFrame {
 
         jPanel6.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 180, 470, 40));
 
-        jLabel42.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
+        jLabel42.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         jLabel42.setForeground(new java.awt.Color(0, 0, 0));
         jLabel42.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel42.setText("Total Ecological Fee");
-        jPanel6.add(jLabel42, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 120, 190, -1));
+        jPanel6.add(jLabel42, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 150, 190, -1));
 
-        jLabel47.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
+        jLabel47.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         jLabel47.setForeground(new java.awt.Color(0, 0, 0));
         jLabel47.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel47.setText("Total Entrance Fee");
-        jPanel6.add(jLabel47, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 100, 190, -1));
+        jPanel6.add(jLabel47, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 130, 190, -1));
 
-        jLabel36.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
+        jLabel36.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         jLabel36.setForeground(new java.awt.Color(0, 0, 0));
         jLabel36.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel36.setText("Water Activity Price");
-        jPanel6.add(jLabel36, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 60, 150, -1));
+        jPanel6.add(jLabel36, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 90, 150, -1));
+
+        lblReservationNumber.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
+        lblReservationNumber.setForeground(new java.awt.Color(0, 0, 0));
+        lblReservationNumber.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        lblReservationNumber.setText("0000001");
+        jPanel6.add(lblReservationNumber, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 20, 270, -1));
+
+        lblGuestInfo.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
+        lblGuestInfo.setForeground(new java.awt.Color(0, 0, 0));
+        lblGuestInfo.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        lblGuestInfo.setText("2 Adults, 1 Children");
+        jPanel6.add(lblGuestInfo, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 40, 140, -1));
+
+        jLabel46.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
+        jLabel46.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel46.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel46.setText("Guest Count:");
+        jPanel6.add(jLabel46, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 40, 90, -1));
+
+        jLabel48.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
+        jLabel48.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel48.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel48.setText("Reservation Number:");
+        jPanel6.add(jLabel48, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, 130, -1));
 
         jPanel11.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(940, 470, 470, 220));
 
@@ -763,22 +820,23 @@ public class guestProcess extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
             
-            
-           Date checkInDate = null;         // Null check-in date
-    Date checkOutDate = null;        // Null check-out date
-    String roomNumber = null;        // Null room number
-    String roomType = null;          // Null room type
-    String roomDescription = null;   // Null room description
-    double roomPrice = 0.0;         // Null room price
-    java.sql.Date sqlDate = null;    // Null SQL date
-    java.sql.Time sqlStartTime = null; // Null start time
-    java.sql.Time sqlEndTime = null;   // Null end time
-    String boatName = null;          // Null boat name
-    double boatPrice = 0.0;          // Default boat price as 0.0 (since boatPrice should be a double)
+          Date checkInDate = null;
+    Date checkOutDate = null;
+    String roomNumber = null;
+    String roomType = null;
+    String roomDescription = null;
+    double roomPrice = 0.0;
+    java.sql.Date sqlDate = null;
+    java.sql.Time sqlStartTime = null;
+    java.sql.Time sqlEndTime = null;
+    String boatName = null;
+    double boatPrice = 0.0;
+    int numAdult = 2;       // Example values
+    int numChildren = 1;    // Example values
 
-    // Create a new instance of guestProcess with the initialized parameters
     new guestProcess(checkInDate, checkOutDate, roomNumber, roomType, roomDescription, 
-                     roomPrice, sqlDate, sqlStartTime, sqlEndTime, boatName, boatPrice).setVisible(true);
+                     roomPrice, sqlDate, sqlStartTime, sqlEndTime, boatName, 
+                     boatPrice, numAdult, numChildren).setVisible(true);
         });
     }
 
@@ -791,7 +849,6 @@ public class guestProcess extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel18;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
@@ -804,11 +861,12 @@ public class guestProcess extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel36;
     private javax.swing.JLabel jLabel39;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel40;
     private javax.swing.JLabel jLabel41;
     private javax.swing.JLabel jLabel42;
     private javax.swing.JLabel jLabel45;
+    private javax.swing.JLabel jLabel46;
     private javax.swing.JLabel jLabel47;
+    private javax.swing.JLabel jLabel48;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel8;
@@ -828,15 +886,22 @@ public class guestProcess extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JLabel lblBoatName;
+    private javax.swing.JLabel lblBoatPrice;
     private javax.swing.JLabel lblCheckIn;
     private javax.swing.JLabel lblCheckOut;
+    private javax.swing.JLabel lblEcologicalFee;
     private javax.swing.JLabel lblEndTime;
+    private javax.swing.JLabel lblEntranceFee;
+    private javax.swing.JLabel lblGrandTotal;
+    private javax.swing.JLabel lblGuestInfo;
     private javax.swing.JLabel lblNumberOfNights;
+    private javax.swing.JLabel lblReservationNumber;
     private javax.swing.JLabel lblRoomDescription;
     private javax.swing.JLabel lblRoomNumber;
     private javax.swing.JLabel lblRoomType;
     private javax.swing.JLabel lblSqlDate;
     private javax.swing.JLabel lblStartTime;
+    private javax.swing.JLabel lblTotalRoomPrice;
     private rojeru_san.complementos.RSButtonHover rSButtonHover1;
     private textfield.TextField textField2;
     private textfield.TextField textField3;
@@ -844,10 +909,5 @@ public class guestProcess extends javax.swing.JFrame {
     private textfield.TextField textField5;
     private textfield.TextField textField6;
     private textfield.TextField textField7;
-    private javax.swing.JLabel textReservation;
-    private javax.swing.JLabel txtEcological;
-    private javax.swing.JLabel txtEntrace;
-    private javax.swing.JLabel txtRoomPrice;
-    private javax.swing.JLabel txtWaterActivityPrice;
     // End of variables declaration//GEN-END:variables
 }

@@ -324,7 +324,7 @@ public class landingPage extends javax.swing.JFrame {
     }//GEN-LAST:event_txtpassActionPerformed
 
     private void rSButtonHover1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSButtonHover1ActionPerformed
-      
+     
         try {
     // Get input values
     String email = txtemail.getText().trim();

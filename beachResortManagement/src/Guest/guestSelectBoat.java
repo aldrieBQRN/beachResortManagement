@@ -178,7 +178,7 @@ class ButtonEditor extends DefaultCellEditor {
 private void selectBoat(int row) {
     // Get selected boat details from the table
     String boatName = (String) tblBoatDetails.getValueAt(row, 0); // Boat name is in column 0
-    String boatPriceString = (String) tblBoatDetails.getValueAt(row, 3); // Boat price is in column 3
+    String boatPriceString = (String) tblBoatDetails.getValueAt(row, 2); // Boat price is in column 3
     boatPriceString = boatPriceString.replaceAll("[^0-9.]", "");
     double boatPrice = 0.0;
     if (boatPriceString.isEmpty()) {
@@ -199,7 +199,7 @@ private void selectBoat(int row) {
     );
 
     boolean wantsWaterActivities = (response == JOptionPane.YES_OPTION);
-    double waterActivityPrice = 0.0; // Default value for water activities, can be updated based on user selection
+   
     
     if (wantsWaterActivities) {
         // Get the selected date and parse it
@@ -227,8 +227,9 @@ private void selectBoat(int row) {
         java.sql.Time sqlEndTime = new java.sql.Time(sqlStartTime.getTime() + (3 * 60 * 60 * 1000)); // 3 hours in milliseconds
 
         // Proceed with creating a new instance of guestProcess with all details
-        new guestProcess(checkInDate, checkOutDate, roomNumber, roomType, roomDescription, 
-                         roomPrice, sqlDate, sqlStartTime, sqlEndTime, boatName, boatPrice).setVisible(true);
+       new guestProcess(checkInDate, checkOutDate, roomNumber, roomType, roomDescription, 
+                 roomPrice, sqlDate, sqlStartTime, sqlEndTime, boatName, 
+                 boatPrice, adults, children).setVisible(true);
     }
 }
 
