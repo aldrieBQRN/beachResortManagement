@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.ImageIcon;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 import javax.swing.table.DefaultTableModel;
 
@@ -92,7 +93,17 @@ public class adminBoat extends javax.swing.JInternalFrame {
                 double price = rs.getDouble("tour_price");
 
                 // Add data to the table model
-                boatModel.addRow(new Object[] { boatNumber, registrationDate, boatName, description, capacity, price });
+                boatModel.addRow(new Object[] { 
+                    boatNumber, 
+                    registrationDate, 
+                    boatName, 
+                    description, 
+                    capacity, 
+                    price, 
+                    new ImageIcon(getClass().getResource("/Image/show.png")),
+                    new ImageIcon(getClass().getResource("/Image/show.png")),
+                    new ImageIcon(getClass().getResource("/Image/show.png"))
+                });
             }
         } catch (SQLException ex) {
             // Handle any SQL exceptions
@@ -100,7 +111,6 @@ public class adminBoat extends javax.swing.JInternalFrame {
             System.out.println("Error fetching boat details: " + ex.getMessage());
         }
     }
-
 
     /**
      * This method is called from within the constructor to initialize the form.

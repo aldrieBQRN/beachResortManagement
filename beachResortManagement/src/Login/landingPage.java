@@ -380,7 +380,7 @@ public class landingPage extends javax.swing.JFrame {
                 String role = rs.getString("role");
                 int userID = rs.getInt("user_id");
 
-                JOptionPane.showMessageDialog(this, "Welcome, " + userName + "! Login Successful.");
+                JOptionPane.showMessageDialog(this, "Login Successful.");
 
                 // Open the appropriate home page based on the role
                 switch (role) {

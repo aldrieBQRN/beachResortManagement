@@ -31,6 +31,7 @@ public class adminUsers extends javax.swing.JInternalFrame {
         initComponents();
         removeBackground();
         DatabaseConnection();
+        showUserDetails();
        
         
  
@@ -71,6 +72,47 @@ public class adminUsers extends javax.swing.JInternalFrame {
         UI.setNorthPane(null); 
     }
     
+    public final void showUserDetails() {
+    // Ensure that the database connection is valid
+    if (con == null) {
+        System.out.println("Database connection is not established.");
+        return;
+    }
+
+    // Prepare the SQL query to fetch the required data from user_details table
+    String query = "SELECT user_id, role, full_name, username, phone, address, email, password FROM user_details";
+    
+    // Set up the table model to display the data in the JTable
+    DefaultTableModel userModel = (DefaultTableModel) tblUserDetails.getModel();
+    
+    // Clear any previous rows from the table
+    userModel.setRowCount(0);
+
+    // Use try-with-resources to automatically close the resources
+    try (PreparedStatement pst = con.prepareStatement(query);
+         ResultSet rs = pst.executeQuery()) {
+
+        // Iterate over the result set and add data to the table
+        while (rs.next()) {
+            // Fetch each column's data
+            int userId = rs.getInt("user_id");
+            String role = rs.getString("role");
+            String fullName = rs.getString("full_name");
+            String username = rs.getString("username");
+            String phone = rs.getString("phone");
+            String address = rs.getString("address");
+            String email = rs.getString("email");
+            String password = rs.getString("password");
+            
+
+            // Add data to the table model
+            userModel.addRow(new Object[] { userId, role, fullName, username, phone, address, email, password});
+        }
+    } catch (SQLException e) {
+        System.out.println("Error connecting to the database: " + e.getMessage());
+    }
+}
+
     
     
    
@@ -91,7 +133,7 @@ public class adminUsers extends javax.swing.JInternalFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tblroom = new rojerusan.RSTableMetro();
+        tblUserDetails = new rojerusan.RSTableMetro();
         txtsearch = new javax.swing.JTextField();
         rSComboMetro1 = new rojerusan.RSComboMetro();
         jPanel3 = new javax.swing.JPanel();
@@ -113,10 +155,10 @@ public class adminUsers extends javax.swing.JInternalFrame {
         jPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, new java.awt.Color(204, 204, 204)));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        tblroom.setBackground(new java.awt.Color(242, 242, 242));
-        tblroom.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
-        tblroom.setForeground(new java.awt.Color(255, 255, 255));
-        tblroom.setModel(new javax.swing.table.DefaultTableModel(
+        tblUserDetails.setBackground(new java.awt.Color(242, 242, 242));
+        tblUserDetails.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+        tblUserDetails.setForeground(new java.awt.Color(255, 255, 255));
+        tblUserDetails.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null, null, null},
                 {null, null, null, null, null, null, null, null},
@@ -130,52 +172,48 @@ public class adminUsers extends javax.swing.JInternalFrame {
                 {null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "#", "Date Created", "Role", "Full Name", "Phone", "Address", "Email", "Password"
+                "#", "Role", "Full Name", "Username", "Phone", "Address", "Email", "Password"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, true, false, false
+                false, false, false, true, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
-        tblroom.setColorBackgoundHead(new java.awt.Color(39, 114, 160));
-        tblroom.setColorBordeFilas(new java.awt.Color(255, 255, 255));
-        tblroom.setColorBordeHead(new java.awt.Color(255, 255, 255));
-        tblroom.setColorFilasBackgound2(new java.awt.Color(242, 242, 242));
-        tblroom.setColorFilasForeground1(new java.awt.Color(27, 59, 95));
-        tblroom.setColorFilasForeground2(new java.awt.Color(27, 59, 95));
-        tblroom.setColorSelBackgound(new java.awt.Color(39, 114, 160));
-        tblroom.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
-        tblroom.setFuenteFilas(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        tblroom.setFuenteFilasSelect(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        tblroom.setFuenteHead(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        tblroom.setGridColor(new java.awt.Color(255, 255, 255));
-        tblroom.setRowHeight(30);
-        tblroom.setSelectionBackground(new java.awt.Color(39, 114, 160));
-        tblroom.setSelectionForeground(new java.awt.Color(255, 255, 255));
-        tblroom.setShowGrid(false);
-        tblroom.addMouseListener(new java.awt.event.MouseAdapter() {
+        tblUserDetails.setColorBackgoundHead(new java.awt.Color(39, 114, 160));
+        tblUserDetails.setColorBordeFilas(new java.awt.Color(255, 255, 255));
+        tblUserDetails.setColorBordeHead(new java.awt.Color(255, 255, 255));
+        tblUserDetails.setColorFilasBackgound2(new java.awt.Color(242, 242, 242));
+        tblUserDetails.setColorFilasForeground1(new java.awt.Color(27, 59, 95));
+        tblUserDetails.setColorFilasForeground2(new java.awt.Color(27, 59, 95));
+        tblUserDetails.setColorSelBackgound(new java.awt.Color(39, 114, 160));
+        tblUserDetails.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
+        tblUserDetails.setFuenteFilas(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        tblUserDetails.setFuenteFilasSelect(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        tblUserDetails.setFuenteHead(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        tblUserDetails.setGridColor(new java.awt.Color(255, 255, 255));
+        tblUserDetails.setRowHeight(30);
+        tblUserDetails.setSelectionBackground(new java.awt.Color(39, 114, 160));
+        tblUserDetails.setSelectionForeground(new java.awt.Color(255, 255, 255));
+        tblUserDetails.setShowGrid(false);
+        tblUserDetails.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tblroomMouseClicked(evt);
+                tblUserDetailsMouseClicked(evt);
             }
         });
-        jScrollPane1.setViewportView(tblroom);
-        if (tblroom.getColumnModel().getColumnCount() > 0) {
-            tblroom.getColumnModel().getColumn(0).setResizable(false);
-            tblroom.getColumnModel().getColumn(0).setPreferredWidth(5);
-            tblroom.getColumnModel().getColumn(1).setResizable(false);
-            tblroom.getColumnModel().getColumn(1).setPreferredWidth(5);
-            tblroom.getColumnModel().getColumn(2).setResizable(false);
-            tblroom.getColumnModel().getColumn(2).setPreferredWidth(5);
-            tblroom.getColumnModel().getColumn(3).setResizable(false);
-            tblroom.getColumnModel().getColumn(4).setResizable(false);
-            tblroom.getColumnModel().getColumn(4).setPreferredWidth(5);
-            tblroom.getColumnModel().getColumn(6).setResizable(false);
-            tblroom.getColumnModel().getColumn(6).setPreferredWidth(5);
-            tblroom.getColumnModel().getColumn(7).setResizable(false);
+        jScrollPane1.setViewportView(tblUserDetails);
+        if (tblUserDetails.getColumnModel().getColumnCount() > 0) {
+            tblUserDetails.getColumnModel().getColumn(0).setResizable(false);
+            tblUserDetails.getColumnModel().getColumn(0).setPreferredWidth(5);
+            tblUserDetails.getColumnModel().getColumn(1).setResizable(false);
+            tblUserDetails.getColumnModel().getColumn(2).setResizable(false);
+            tblUserDetails.getColumnModel().getColumn(4).setResizable(false);
+            tblUserDetails.getColumnModel().getColumn(5).setResizable(false);
+            tblUserDetails.getColumnModel().getColumn(6).setResizable(false);
+            tblUserDetails.getColumnModel().getColumn(7).setResizable(false);
         }
 
         jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 1120, 570));
@@ -269,9 +307,9 @@ public class adminUsers extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void tblroomMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblroomMouseClicked
+    private void tblUserDetailsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblUserDetailsMouseClicked
 
-    }//GEN-LAST:event_tblroomMouseClicked
+    }//GEN-LAST:event_tblUserDetailsMouseClicked
 
     private void rSComboMetro1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSComboMetro1ActionPerformed
         // TODO add your handling code here:
@@ -308,7 +346,7 @@ public class adminUsers extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel7;
     private javax.swing.JScrollPane jScrollPane1;
     private rojerusan.RSComboMetro rSComboMetro1;
-    private rojerusan.RSTableMetro tblroom;
+    private rojerusan.RSTableMetro tblUserDetails;
     private javax.swing.JTextField txtsearch;
     // End of variables declaration//GEN-END:variables
 }

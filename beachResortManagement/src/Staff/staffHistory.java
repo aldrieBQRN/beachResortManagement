@@ -14,6 +14,8 @@ import java.util.logging.Logger;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 import Database.DatabaseConnection; 
 import java.awt.Insets;
+import java.text.SimpleDateFormat;
+import javax.swing.JOptionPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
@@ -30,7 +32,7 @@ public class staffHistory extends javax.swing.JInternalFrame {
         initComponents();
         removeBackground();
         DatabaseConnection();
-        showRoom();
+        showCheckedOutReservations();
         
  
     }
@@ -70,46 +72,47 @@ public class staffHistory extends javax.swing.JInternalFrame {
         UI.setNorthPane(null); 
     }
     
-    public final void showRoom(){
-   
+    public final void showCheckedOutReservations() {
+    try {
+        // Prepare the SQL query to select all reservations with status 'Check-out'
+        pst = con.prepareStatement("SELECT reservation_number, guest.guest_name, r.check_in_date, " +
+                                   "r.check_out_date, r.total_price, r.created_at " +
+                                   "FROM reservation r " +
+                                   "JOIN guest ON r.guest_id = guest.guest_id " +
+                                   "WHERE r.status = 'Check-out'");
         
-        try {
-    
-           
-            
-            // Prepare the SQL query to select all rooms from the table
-            pst = con.prepareStatement("SELECT * FROM room");
-            
-            // Execute the query and get the results
-            rs = pst.executeQuery();
-            
-            // Set up the table model to display the data in the JTable
-            DefaultTableModel roomModel = (DefaultTableModel) tblroom.getModel();
-            
-            // Clear any previous rows
-            roomModel.setRowCount(0);
-            
-           
-            // Iterate over the result set and add data to the table
-            while (rs.next()) {
-               
-                String roomNumber = rs.getString("room_number");
-                String roomType = rs.getString("room_type");
-                double price = rs.getDouble("price");
-                String description = rs.getString("description");
-                int maxOccupancy = rs.getInt("max_occupancy");
-                String createdAt = rs.getString("created_at");
+        // Execute the query
+        rs = pst.executeQuery();
 
-                // Add data to the table model
-                roomModel.addRow(new Object[] { roomNumber, createdAt, roomType, description, maxOccupancy, price });
-            }
-        } catch (SQLException ex) {
-            // Handle any SQL exceptions
-            Logger.getLogger(staffHistory.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("Error fetching room data: " + ex.getMessage());
+        // Set up the table model to display the data in the JTable
+        DefaultTableModel model = (DefaultTableModel) completedTable.getModel();
+        
+        // Clear any existing rows
+        model.setRowCount(0);
+
+        // Formatters for date display
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        // Loop through the result and add to table
+        while (rs.next()) {
+            model.addRow(new Object[] {
+                rs.getString("reservation_number"),
+                rs.getString("guest_name"),
+                dateFormat.format(rs.getDate("check_in_date")),
+                dateFormat.format(rs.getDate("check_out_date")),
+                "₱" + String.format("%.2f", rs.getDouble("total_price")),
+                timestampFormat.format(rs.getTimestamp("created_at"))
+            });
         }
         
+        
+
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(this, "Error loading checked-out reservations: " + ex.getMessage());
     }
+}
+
     
    
 
@@ -128,14 +131,12 @@ public class staffHistory extends javax.swing.JInternalFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tblroom = new rojerusan.RSTableMetro();
         txtsearch = new javax.swing.JTextField();
         rSComboMetro1 = new rojerusan.RSComboMetro();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        completedTable = new rojerusan.RSTableMetro();
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jPanel7 = new javax.swing.JPanel();
-        jLabel5 = new javax.swing.JLabel();
 
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -146,62 +147,6 @@ public class staffHistory extends javax.swing.JInternalFrame {
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
         jPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, new java.awt.Color(204, 204, 204)));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        tblroom.setBackground(new java.awt.Color(242, 242, 242));
-        tblroom.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
-        tblroom.setForeground(new java.awt.Color(255, 255, 255));
-        tblroom.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
-            },
-            new String [] {
-                "#", "Guest Name", "Room Number", "Check-In", "Check-Out", "Status"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        tblroom.setColorBackgoundHead(new java.awt.Color(39, 114, 160));
-        tblroom.setColorBordeFilas(new java.awt.Color(255, 255, 255));
-        tblroom.setColorBordeHead(new java.awt.Color(255, 255, 255));
-        tblroom.setColorFilasBackgound2(new java.awt.Color(242, 242, 242));
-        tblroom.setColorFilasForeground1(new java.awt.Color(27, 59, 95));
-        tblroom.setColorFilasForeground2(new java.awt.Color(27, 59, 95));
-        tblroom.setColorSelBackgound(new java.awt.Color(39, 114, 160));
-        tblroom.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
-        tblroom.setFuenteFilas(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        tblroom.setFuenteFilasSelect(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        tblroom.setFuenteHead(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        tblroom.setGridColor(new java.awt.Color(255, 255, 255));
-        tblroom.setRowHeight(30);
-        tblroom.setSelectionBackground(new java.awt.Color(39, 114, 160));
-        tblroom.setSelectionForeground(new java.awt.Color(255, 255, 255));
-        tblroom.setShowGrid(false);
-        tblroom.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tblroomMouseClicked(evt);
-            }
-        });
-        jScrollPane1.setViewportView(tblroom);
-        if (tblroom.getColumnModel().getColumnCount() > 0) {
-            tblroom.getColumnModel().getColumn(0).setPreferredWidth(5);
-        }
-
-        jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 1120, 570));
 
         txtsearch.setBackground(new java.awt.Color(255, 255, 255));
         txtsearch.setForeground(new java.awt.Color(102, 102, 102));
@@ -226,6 +171,58 @@ public class staffHistory extends javax.swing.JInternalFrame {
         });
         jPanel2.add(rSComboMetro1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 100, 40));
 
+        completedTable.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+        completedTable.setForeground(new java.awt.Color(255, 255, 255));
+        completedTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
+            },
+            new String [] {
+                "Date Created", "Reservation ID", "Guest Name", "Check-In", "Check-Out", "Total"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                true, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        completedTable.setColorBackgoundHead(new java.awt.Color(39, 114, 160));
+        completedTable.setColorBordeFilas(new java.awt.Color(255, 255, 255));
+        completedTable.setColorBordeHead(new java.awt.Color(255, 255, 255));
+        completedTable.setColorFilasBackgound2(new java.awt.Color(242, 242, 242));
+        completedTable.setColorFilasForeground1(new java.awt.Color(27, 59, 95));
+        completedTable.setColorFilasForeground2(new java.awt.Color(27, 59, 95));
+        completedTable.setColorSelBackgound(new java.awt.Color(39, 114, 160));
+        completedTable.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
+        completedTable.setFuenteFilas(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        completedTable.setFuenteFilasSelect(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        completedTable.setFuenteHead(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        completedTable.setGridColor(new java.awt.Color(255, 255, 255));
+        completedTable.setRowHeight(30);
+        completedTable.setSelectionBackground(new java.awt.Color(39, 114, 160));
+        completedTable.setSelectionForeground(new java.awt.Color(255, 255, 255));
+        completedTable.setShowGrid(false);
+        completedTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                completedTableMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(completedTable);
+
+        jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 1120, 570));
+
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 1160, 660));
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
@@ -237,22 +234,6 @@ public class staffHistory extends javax.swing.JInternalFrame {
         jLabel1.setText("Completed Reservation");
         jPanel3.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 230, 40));
 
-        jPanel7.setBackground(new java.awt.Color(0, 204, 51));
-        jPanel7.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel5.setFont(new java.awt.Font("Arial Unicode MS", 1, 13)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel5.setText("View Details");
-        jLabel5.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel5MouseClicked(evt);
-            }
-        });
-        jPanel7.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 0, 100, 30));
-
-        jPanel3.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(1030, 20, 110, 30));
-
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 1160, 60));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1200, 760));
@@ -260,10 +241,6 @@ public class staffHistory extends javax.swing.JInternalFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void tblroomMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblroomMouseClicked
-
-    }//GEN-LAST:event_tblroomMouseClicked
 
     private void rSComboMetro1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSComboMetro1ActionPerformed
         // TODO add your handling code here:
@@ -273,21 +250,19 @@ public class staffHistory extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtsearchActionPerformed
 
-    private void jLabel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel5MouseClicked
-       
-    }//GEN-LAST:event_jLabel5MouseClicked
+    private void completedTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_completedTableMouseClicked
+
+    }//GEN-LAST:event_completedTableMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private rojerusan.RSTableMetro completedTable;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel7;
     private javax.swing.JScrollPane jScrollPane1;
     private rojerusan.RSComboMetro rSComboMetro1;
-    private rojerusan.RSTableMetro tblroom;
     private javax.swing.JTextField txtsearch;
     // End of variables declaration//GEN-END:variables
 }

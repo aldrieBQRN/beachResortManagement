@@ -13,9 +13,32 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 import Database.DatabaseConnection; 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import javax.swing.AbstractCellEditor;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 /**
  *
@@ -23,15 +46,17 @@ import javax.swing.table.DefaultTableModel;
  */
 public class staffCheckin extends javax.swing.JInternalFrame {
 
-    /**
-     * Creates new form staffReservation
-     */
+    private static final String CONFIRMED_STATUS = "Confirmed";
+    private static final String CHECKIN_STATUS = "Check-in";
+    
     public staffCheckin() {
         initComponents();
         removeBackground();
         DatabaseConnection();
-        showRoom();
-        
+        DatabaseConnection();
+        fetchRoomReservations(checkInTable, CONFIRMED_STATUS);
+        fetchRoomReservations(checkOutTable, CHECKIN_STATUS);
+    
  
     }
     
@@ -69,47 +94,368 @@ public class staffCheckin extends javax.swing.JInternalFrame {
         BasicInternalFrameUI UI = (BasicInternalFrameUI) this.getUI();
         UI.setNorthPane(null); 
     }
-    
-    public final void showRoom(){
-   
-        
-        try {
-    
-           
-            
-            // Prepare the SQL query to select all rooms from the table
-            pst = con.prepareStatement("SELECT * FROM room");
-            
-            // Execute the query and get the results
-            rs = pst.executeQuery();
-            
-            // Set up the table model to display the data in the JTable
-            DefaultTableModel roomModel = (DefaultTableModel) tblroom.getModel();
-            
-            // Clear any previous rows
-            roomModel.setRowCount(0);
-            
-           
-            // Iterate over the result set and add data to the table
-            while (rs.next()) {
-               
-                String roomNumber = rs.getString("room_number");
-                String roomType = rs.getString("room_type");
-                double price = rs.getDouble("price");
-                String description = rs.getString("description");
-                int maxOccupancy = rs.getInt("max_occupancy");
-                String createdAt = rs.getString("created_at");
 
-                // Add data to the table model
-                roomModel.addRow(new Object[] { roomNumber, createdAt, roomType, description, maxOccupancy, price });
+    private void fetchRoomReservations(JTable table, String status) {
+    try {
+        DatabaseConnection();
+        String query = "SELECT reservation_number, guest.guest_name, r.check_in_date, " +
+                "r.check_out_date, r.total_price, r.created_at, r.reservation_id " +
+                "FROM reservation r " +
+                "JOIN guest ON r.guest_id = guest.guest_id " +
+                "WHERE r.status = ?";
+
+        pst = con.prepareStatement(query);
+        pst.setString(1, status);
+        rs = pst.executeQuery();
+
+        DefaultTableModel model = new DefaultTableModel(
+                new Object[]{"Reservation Number", "Guest Name", "Check-In Date",
+                        "Check-Out Date", "Total Price", "Created At", "Actions"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 6;
             }
-        } catch (SQLException ex) {
-            // Handle any SQL exceptions
-            Logger.getLogger(staffCheckin.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("Error fetching room data: " + ex.getMessage());
+        };
+
+        table.setModel(model);
+
+        TableColumn actionColumn = table.getColumnModel().getColumn(6);
+        actionColumn.setCellRenderer(new DualPanelRenderer());
+        actionColumn.setCellEditor(new DualPanelEditor(new JCheckBox(), table));
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        while (rs.next()) {
+            model.addRow(new Object[]{
+                    rs.getString("reservation_number"),
+                    rs.getString("guest_name"),
+                    dateFormat.format(rs.getDate("check_in_date")),
+                    dateFormat.format(rs.getDate("check_out_date")),
+                    "₱" + String.format("%.2f", rs.getDouble("total_price")),
+                    timestampFormat.format(rs.getTimestamp("created_at")),
+                    rs.getInt("reservation_id")
+            });
+        }
+
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE);
+    } finally {
+        try { if (rs != null) rs.close(); } catch (SQLException e) {}
+        try { if (pst != null) pst.close(); } catch (SQLException e) {}
+        try { if (con != null) con.close(); } catch (SQLException e) {}
+    }
+}
+
+class DualPanelRenderer extends JPanel implements TableCellRenderer {
+    private JPanel viewPanel;
+    private JPanel actionPanel;
+    private JLabel viewLabel;
+    private JLabel actionLabel;
+    
+    private static final Color VIEW_COLOR = new Color(27, 59, 95);
+    private static final Color VIEW_HOVER = new Color(47, 79, 115);
+    private static final Color VIEW_SELECTED = new Color(67, 99, 135);
+    private static final Color ACTION_COLOR = new Color(51,204,0); 
+    private static final Color ACTION_HOVER = new Color(54, 159, 54);
+    private static final Color ACTION_SELECTED = new Color(50, 160, 50);
+
+    public DualPanelRenderer() {
+        setLayout(new GridLayout(1, 2, 0, 0));
+        setOpaque(true);
+        
+        // View Panel
+        viewPanel = new JPanel(new GridBagLayout());
+        viewPanel.setBackground(VIEW_COLOR);
+        viewPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.WHITE, 1),
+            BorderFactory.createEmptyBorder(5, 10, 5, 5)
+        ));
+        
+        viewLabel = new JLabel("View");
+        viewLabel.setForeground(Color.WHITE);
+        viewLabel.setFont(viewLabel.getFont().deriveFont(Font.BOLD));
+        viewPanel.add(viewLabel, new GridBagConstraints());
+        
+        // Action Panel
+        actionPanel = new JPanel(new GridBagLayout());
+        actionPanel.setBackground(ACTION_COLOR);
+        actionPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.WHITE, 1),
+            BorderFactory.createEmptyBorder(5, 5, 5, 10)
+        ));
+        
+        actionLabel = new JLabel("Action");
+        actionLabel.setForeground(Color.WHITE);
+        actionLabel.setFont(actionLabel.getFont().deriveFont(Font.BOLD));
+        actionPanel.add(actionLabel, new GridBagConstraints());
+        
+        add(viewPanel);
+        add(actionPanel);
+    }
+
+    public Component getTableCellRendererComponent(JTable table, Object value,
+                                                 boolean isSelected, boolean hasFocus, int row, int column) {
+        String status = "";
+        if (table == checkInTable) {
+            status = "Check-in";
+        } else if (table == checkOutTable) {
+            status = "Check-out";
+        } else {
+            status = "Confirm";
+        }
+        actionLabel.setText(status);
+        
+        if (isSelected) {
+            setBackground(table.getSelectionBackground());
+            viewPanel.setBackground(VIEW_SELECTED);
+            actionPanel.setBackground(ACTION_SELECTED);
+        } else {
+            setBackground(table.getBackground());
+            viewPanel.setBackground(VIEW_COLOR);
+            actionPanel.setBackground(ACTION_COLOR);
         }
         
+        viewPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.WHITE, 1),
+            BorderFactory.createEmptyBorder(5, 10, 5, 5)
+        ));
+        actionPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.WHITE, 1),
+            BorderFactory.createEmptyBorder(5, 5, 5, 10)
+        ));
+        
+        return this;
     }
+}
+
+class DualPanelEditor extends AbstractCellEditor implements TableCellEditor {
+    private JPanel mainPanel;
+    private JPanel viewPanel;
+    private JPanel actionPanel;
+    private JLabel viewLabel;
+    private JLabel actionLabel;
+    private JTable table;
+    private int currentRow;
+    private Object currentValue;
+    
+    private static final Color VIEW_COLOR = new Color(27, 59, 95);
+    private static final Color VIEW_HOVER = new Color(47, 79, 115);
+    private static final Color VIEW_SELECTED = new Color(67, 99, 135);
+    private static final Color ACTION_COLOR = new Color(51,204,0);
+    private static final Color ACTION_HOVER = new Color(54, 159, 54);
+    private static final Color ACTION_SELECTED = new Color(50, 160, 50);
+
+    public DualPanelEditor(JCheckBox checkBox, JTable tableRef) {
+        this.table = tableRef;
+        mainPanel = new JPanel(new GridLayout(1, 2, 0, 0));
+        mainPanel.setOpaque(true);
+        
+        // View Panel
+        viewPanel = new JPanel(new GridBagLayout());
+        viewPanel.setBackground(VIEW_COLOR);
+        viewPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.WHITE, 1),
+            BorderFactory.createEmptyBorder(5, 10, 5, 5)
+        ));
+        
+        viewLabel = new JLabel("View");
+        viewLabel.setForeground(Color.WHITE);
+        viewLabel.setFont(viewLabel.getFont().deriveFont(Font.BOLD));
+        viewPanel.add(viewLabel, new GridBagConstraints());
+        
+        viewPanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                fireEditingStopped();
+                handleButtonClick(currentRow, "View", table);
+            }
+            
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                viewPanel.setBackground(VIEW_HOVER);
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e) {
+                viewPanel.setBackground(VIEW_COLOR);
+            }
+        });
+        
+        // Action Panel
+        actionPanel = new JPanel(new GridBagLayout());
+        actionPanel.setBackground(ACTION_COLOR);
+        actionPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.WHITE, 1),
+            BorderFactory.createEmptyBorder(5, 5, 5, 10)
+        ));
+        
+        actionLabel = new JLabel("Action");
+        actionLabel.setForeground(Color.WHITE);
+        actionLabel.setFont(actionLabel.getFont().deriveFont(Font.BOLD));
+        actionPanel.add(actionLabel, new GridBagConstraints());
+        
+        actionPanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                fireEditingStopped();
+                String action = "";
+                if (table == checkInTable) {
+                    action = "Check-in";
+                } else if (table == checkOutTable) {
+                    action = "Check-out";
+                } else {
+                    action = "Confirm";
+                }
+                handleButtonClick(currentRow, action, table);
+            }
+            
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                actionPanel.setBackground(ACTION_HOVER);
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e) {
+                actionPanel.setBackground(ACTION_COLOR);
+            }
+        });
+        
+        mainPanel.add(viewPanel);
+        mainPanel.add(actionPanel);
+    }
+
+    @Override
+    public Component getTableCellEditorComponent(JTable table, Object value,
+                                             boolean isSelected, int row, int column) {
+        currentRow = row;
+        currentValue = value;
+        
+        String status = "";
+        if (table == checkInTable) {
+            status = "Check-in";
+        } else if (table == checkOutTable) {
+            status = "Check-out";
+        } else {
+            status = "Confirm";
+        }
+        actionLabel.setText(status);
+        
+        if (isSelected) {
+            mainPanel.setBackground(table.getSelectionBackground());
+            viewPanel.setBackground(VIEW_SELECTED);
+            actionPanel.setBackground(ACTION_SELECTED);
+        } else {
+            mainPanel.setBackground(table.getBackground());
+            viewPanel.setBackground(VIEW_COLOR);
+            actionPanel.setBackground(ACTION_COLOR);
+        }
+        
+        viewPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.WHITE, 1),
+            BorderFactory.createEmptyBorder(5, 10, 5, 5)
+        ));
+        actionPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.WHITE, 1),
+            BorderFactory.createEmptyBorder(5, 5, 5, 10)
+        ));
+        
+        return mainPanel;
+    }
+
+    @Override
+    public Object getCellEditorValue() {
+        return currentValue;
+    }
+}
+
+private void handleButtonClick(int row, String action, JTable sourceTable) {
+    String reservationNumber = (String) sourceTable.getValueAt(row, 0);
+    String newStatus = "";
+
+    if ("View".equals(action)) {
+        viewReservationDetails(reservationNumber);
+        return;
+    }
+
+    if ("Check-in".equals(action)) {
+        newStatus = "Check-in";
+    } else if ("Check-out".equals(action)) {
+        newStatus = "Check-out";
+    }
+
+    int confirm = JOptionPane.showConfirmDialog(this,
+            "Are you sure you want to update reservation " + reservationNumber + " to " + newStatus + "?",
+            "Confirm Status Change",
+            JOptionPane.YES_NO_OPTION);
+
+    if (confirm == JOptionPane.YES_OPTION) {
+        updateReservationStatus(reservationNumber, newStatus);
+        fetchRoomReservations(checkInTable, CONFIRMED_STATUS);
+        fetchRoomReservations(checkOutTable, CHECKIN_STATUS);
+    }
+}
+
+private void updateReservationStatus(String reservationNumber, String newStatus) {
+    try {
+        DatabaseConnection();
+        String query = "UPDATE reservation SET status = ? WHERE reservation_number = ?";
+        pst = con.prepareStatement(query);
+        pst.setString(1, newStatus);
+        pst.setString(2, reservationNumber);
+        int rows = pst.executeUpdate();
+
+        if (rows > 0) {
+            JOptionPane.showMessageDialog(this, "Reservation status updated to " + newStatus);
+            fetchRoomReservations(checkInTable, CONFIRMED_STATUS);
+            fetchRoomReservations(checkOutTable, CHECKIN_STATUS);
+        } else {
+            JOptionPane.showMessageDialog(this, "Failed to update reservation.");
+        }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Error updating reservation: " + e.getMessage());
+    } finally {
+        try { if (pst != null) pst.close(); } catch (SQLException e) {}
+        try { if (con != null) con.close(); } catch (SQLException e) {}
+    }
+}
+
+
+    private void viewReservationDetails(String reservationNumber) {
+        try {
+            DatabaseConnection();
+            pst = con.prepareStatement("SELECT * FROM reservation WHERE reservation_number = ?");
+            pst.setString(1, reservationNumber);
+            rs = pst.executeQuery();
+
+            if (rs.next()) {
+                String guestName = rs.getString("guest_id");
+                Date checkInDate = rs.getDate("check_in_date");
+                Date checkOutDate = rs.getDate("check_out_date");
+                double totalPrice = rs.getDouble("total_price");
+                String reservationStatus = rs.getString("status");
+
+                JOptionPane.showMessageDialog(this,
+                        "Reservation Number: " + reservationNumber + "\n"
+                                + "Guest Name: " + guestName + "\n"
+                                + "Check-In Date: " + checkInDate + "\n"
+                                + "Check-Out Date: " + checkOutDate + "\n"
+                                + "Total Price: ₱" + totalPrice + "\n"
+                                + "Status: " + reservationStatus);
+            }
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error fetching reservation details: " + ex.getMessage());
+        } finally {
+            try { if (pst != null) pst.close(); } catch (SQLException e) {}
+            try { if (con != null) con.close(); } catch (SQLException e) {}
+        }
+    }
+   
+
+    
+   
     
    
 
@@ -129,22 +475,14 @@ public class staffCheckin extends javax.swing.JInternalFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tblroom = new rojerusan.RSTableMetro();
+        checkInTable = new rojerusan.RSTableMetro();
         jPanel8 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
-        jPanel17 = new javax.swing.JPanel();
-        jLabel14 = new javax.swing.JLabel();
-        jPanel7 = new javax.swing.JPanel();
-        jLabel5 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        tblroom1 = new rojerusan.RSTableMetro();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        checkOutTable = new rojerusan.RSTableMetro();
         jPanel9 = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
-        jPanel18 = new javax.swing.JPanel();
-        jLabel15 = new javax.swing.JLabel();
-        jPanel10 = new javax.swing.JPanel();
-        jLabel8 = new javax.swing.JLabel();
 
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -156,9 +494,9 @@ public class staffCheckin extends javax.swing.JInternalFrame {
         jPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, new java.awt.Color(204, 204, 204)));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        tblroom.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
-        tblroom.setForeground(new java.awt.Color(255, 255, 255));
-        tblroom.setModel(new javax.swing.table.DefaultTableModel(
+        checkInTable.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+        checkInTable.setForeground(new java.awt.Color(255, 255, 255));
+        checkInTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null},
                 {null, null, null, null, null, null},
@@ -172,50 +510,39 @@ public class staffCheckin extends javax.swing.JInternalFrame {
                 {null, null, null, null, null, null}
             },
             new String [] {
-                "#", "Guest Name", "Room Number", "Check-In", "Check-Out", "Status"
+                "Reservation ID", "Guest Name", "Check-In", "Check-Out", "Total", "Date Created"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
+                false, false, false, false, false, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
-        tblroom.setColorBackgoundHead(new java.awt.Color(39, 114, 160));
-        tblroom.setColorBordeFilas(new java.awt.Color(255, 255, 255));
-        tblroom.setColorBordeHead(new java.awt.Color(255, 255, 255));
-        tblroom.setColorFilasBackgound2(new java.awt.Color(242, 242, 242));
-        tblroom.setColorFilasForeground1(new java.awt.Color(27, 59, 95));
-        tblroom.setColorFilasForeground2(new java.awt.Color(27, 59, 95));
-        tblroom.setColorSelBackgound(new java.awt.Color(39, 114, 160));
-        tblroom.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
-        tblroom.setFuenteFilas(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        tblroom.setFuenteFilasSelect(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        tblroom.setFuenteHead(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        tblroom.setGridColor(new java.awt.Color(255, 255, 255));
-        tblroom.setRowHeight(30);
-        tblroom.setSelectionBackground(new java.awt.Color(39, 114, 160));
-        tblroom.setSelectionForeground(new java.awt.Color(255, 255, 255));
-        tblroom.setShowGrid(false);
-        tblroom.addMouseListener(new java.awt.event.MouseAdapter() {
+        checkInTable.setColorBackgoundHead(new java.awt.Color(39, 114, 160));
+        checkInTable.setColorBordeFilas(new java.awt.Color(255, 255, 255));
+        checkInTable.setColorBordeHead(new java.awt.Color(255, 255, 255));
+        checkInTable.setColorFilasBackgound2(new java.awt.Color(242, 242, 242));
+        checkInTable.setColorFilasForeground1(new java.awt.Color(27, 59, 95));
+        checkInTable.setColorFilasForeground2(new java.awt.Color(27, 59, 95));
+        checkInTable.setColorSelBackgound(new java.awt.Color(39, 114, 160));
+        checkInTable.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
+        checkInTable.setFuenteFilas(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        checkInTable.setFuenteFilasSelect(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        checkInTable.setFuenteHead(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        checkInTable.setGridColor(new java.awt.Color(255, 255, 255));
+        checkInTable.setRowHeight(30);
+        checkInTable.setSelectionBackground(new java.awt.Color(39, 114, 160));
+        checkInTable.setSelectionForeground(new java.awt.Color(255, 255, 255));
+        checkInTable.setShowGrid(false);
+        checkInTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tblroomMouseClicked(evt);
+                checkInTableMouseClicked(evt);
             }
         });
-        jScrollPane1.setViewportView(tblroom);
-        if (tblroom.getColumnModel().getColumnCount() > 0) {
-            tblroom.getColumnModel().getColumn(0).setResizable(false);
-            tblroom.getColumnModel().getColumn(0).setPreferredWidth(5);
-            tblroom.getColumnModel().getColumn(1).setResizable(false);
-            tblroom.getColumnModel().getColumn(1).setPreferredWidth(5);
-            tblroom.getColumnModel().getColumn(2).setResizable(false);
-            tblroom.getColumnModel().getColumn(2).setPreferredWidth(5);
-            tblroom.getColumnModel().getColumn(3).setResizable(false);
-            tblroom.getColumnModel().getColumn(4).setPreferredWidth(5);
-            tblroom.getColumnModel().getColumn(5).setPreferredWidth(5);
-        }
+        jScrollPane1.setViewportView(checkInTable);
 
         jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 1120, 260));
 
@@ -229,47 +556,15 @@ public class staffCheckin extends javax.swing.JInternalFrame {
         jLabel6.setText("Check-In");
         jPanel8.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, -1, 40));
 
-        jPanel17.setBackground(new java.awt.Color(27, 59, 95));
-        jPanel17.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel14.setFont(new java.awt.Font("Arial Unicode MS", 1, 13)); // NOI18N
-        jLabel14.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel14.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel14.setText("Confirm Check-In");
-        jLabel14.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel14MouseClicked(evt);
-            }
-        });
-        jPanel17.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 130, 30));
-
-        jPanel8.add(jPanel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(890, 20, 130, 30));
-
-        jPanel7.setBackground(new java.awt.Color(0, 204, 51));
-        jPanel7.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel5.setFont(new java.awt.Font("Arial Unicode MS", 1, 13)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel5.setText("View Details");
-        jLabel5.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel5MouseClicked(evt);
-            }
-        });
-        jPanel7.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 0, 100, 30));
-
-        jPanel8.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(1030, 20, 110, 30));
-
         jPanel1.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 1160, 60));
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
         jPanel3.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, new java.awt.Color(204, 204, 204)));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        tblroom1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
-        tblroom1.setForeground(new java.awt.Color(255, 255, 255));
-        tblroom1.setModel(new javax.swing.table.DefaultTableModel(
+        checkOutTable.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+        checkOutTable.setForeground(new java.awt.Color(255, 255, 255));
+        checkOutTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null},
                 {null, null, null, null, null, null},
@@ -283,52 +578,41 @@ public class staffCheckin extends javax.swing.JInternalFrame {
                 {null, null, null, null, null, null}
             },
             new String [] {
-                "#", "Guest Name", "Room Number", "Check-In", "Check-Out", "Status"
+                "Reservation ID", "Guest Name", "Check-In", "Check-Out", "Total", "Date Created"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
+                false, false, false, false, false, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
-        tblroom1.setColorBackgoundHead(new java.awt.Color(39, 114, 160));
-        tblroom1.setColorBordeFilas(new java.awt.Color(255, 255, 255));
-        tblroom1.setColorBordeHead(new java.awt.Color(255, 255, 255));
-        tblroom1.setColorFilasBackgound2(new java.awt.Color(242, 242, 242));
-        tblroom1.setColorFilasForeground1(new java.awt.Color(27, 59, 95));
-        tblroom1.setColorFilasForeground2(new java.awt.Color(27, 59, 95));
-        tblroom1.setColorSelBackgound(new java.awt.Color(39, 114, 160));
-        tblroom1.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
-        tblroom1.setFuenteFilas(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        tblroom1.setFuenteFilasSelect(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        tblroom1.setFuenteHead(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        tblroom1.setGridColor(new java.awt.Color(255, 255, 255));
-        tblroom1.setRowHeight(30);
-        tblroom1.setSelectionBackground(new java.awt.Color(39, 114, 160));
-        tblroom1.setSelectionForeground(new java.awt.Color(255, 255, 255));
-        tblroom1.setShowGrid(false);
-        tblroom1.addMouseListener(new java.awt.event.MouseAdapter() {
+        checkOutTable.setColorBackgoundHead(new java.awt.Color(39, 114, 160));
+        checkOutTable.setColorBordeFilas(new java.awt.Color(255, 255, 255));
+        checkOutTable.setColorBordeHead(new java.awt.Color(255, 255, 255));
+        checkOutTable.setColorFilasBackgound2(new java.awt.Color(242, 242, 242));
+        checkOutTable.setColorFilasForeground1(new java.awt.Color(27, 59, 95));
+        checkOutTable.setColorFilasForeground2(new java.awt.Color(27, 59, 95));
+        checkOutTable.setColorSelBackgound(new java.awt.Color(39, 114, 160));
+        checkOutTable.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
+        checkOutTable.setFuenteFilas(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        checkOutTable.setFuenteFilasSelect(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        checkOutTable.setFuenteHead(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        checkOutTable.setGridColor(new java.awt.Color(255, 255, 255));
+        checkOutTable.setRowHeight(30);
+        checkOutTable.setSelectionBackground(new java.awt.Color(39, 114, 160));
+        checkOutTable.setSelectionForeground(new java.awt.Color(255, 255, 255));
+        checkOutTable.setShowGrid(false);
+        checkOutTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tblroom1MouseClicked(evt);
+                checkOutTableMouseClicked(evt);
             }
         });
-        jScrollPane2.setViewportView(tblroom1);
-        if (tblroom1.getColumnModel().getColumnCount() > 0) {
-            tblroom1.getColumnModel().getColumn(0).setResizable(false);
-            tblroom1.getColumnModel().getColumn(0).setPreferredWidth(5);
-            tblroom1.getColumnModel().getColumn(1).setResizable(false);
-            tblroom1.getColumnModel().getColumn(1).setPreferredWidth(5);
-            tblroom1.getColumnModel().getColumn(2).setResizable(false);
-            tblroom1.getColumnModel().getColumn(2).setPreferredWidth(5);
-            tblroom1.getColumnModel().getColumn(3).setResizable(false);
-            tblroom1.getColumnModel().getColumn(4).setPreferredWidth(5);
-            tblroom1.getColumnModel().getColumn(5).setPreferredWidth(5);
-        }
+        jScrollPane3.setViewportView(checkOutTable);
 
-        jPanel3.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 1120, 240));
+        jPanel3.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 1120, 230));
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 460, 1160, 280));
 
@@ -340,38 +624,6 @@ public class staffCheckin extends javax.swing.JInternalFrame {
         jLabel7.setText("Check-Out");
         jPanel9.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, 40));
 
-        jPanel18.setBackground(new java.awt.Color(27, 59, 95));
-        jPanel18.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel15.setFont(new java.awt.Font("Arial Unicode MS", 1, 13)); // NOI18N
-        jLabel15.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel15.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel15.setText("Confirm Check-Out");
-        jLabel15.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel15MouseClicked(evt);
-            }
-        });
-        jPanel18.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 130, 30));
-
-        jPanel9.add(jPanel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(890, 20, 130, 30));
-
-        jPanel10.setBackground(new java.awt.Color(0, 204, 51));
-        jPanel10.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel8.setFont(new java.awt.Font("Arial Unicode MS", 1, 13)); // NOI18N
-        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel8.setText("View Details");
-        jLabel8.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel8MouseClicked(evt);
-            }
-        });
-        jPanel10.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 0, 100, 30));
-
-        jPanel9.add(jPanel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(1030, 20, 110, 30));
-
         jPanel1.add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 400, 1160, 60));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1200, 760));
@@ -380,50 +632,26 @@ public class staffCheckin extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void tblroomMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblroomMouseClicked
+    private void checkInTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_checkInTableMouseClicked
 
-    }//GEN-LAST:event_tblroomMouseClicked
+    }//GEN-LAST:event_checkInTableMouseClicked
 
-    private void jLabel14MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel14MouseClicked
+    private void checkOutTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_checkOutTableMouseClicked
         // TODO add your handling code here:
-    }//GEN-LAST:event_jLabel14MouseClicked
-
-    private void jLabel15MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel15MouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jLabel15MouseClicked
-
-    private void tblroom1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblroom1MouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_tblroom1MouseClicked
-
-    private void jLabel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel5MouseClicked
-
-    }//GEN-LAST:event_jLabel5MouseClicked
-
-    private void jLabel8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel8MouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jLabel8MouseClicked
+    }//GEN-LAST:event_checkOutTableMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel5;
+    private rojerusan.RSTableMetro checkInTable;
+    private rojerusan.RSTableMetro checkOutTable;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel10;
-    private javax.swing.JPanel jPanel17;
-    private javax.swing.JPanel jPanel18;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private rojerusan.RSTableMetro tblroom;
-    private rojerusan.RSTableMetro tblroom1;
+    private javax.swing.JScrollPane jScrollPane3;
     // End of variables declaration//GEN-END:variables
 }

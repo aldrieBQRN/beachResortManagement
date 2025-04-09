@@ -4,6 +4,18 @@
  */
 package Staff;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -12,16 +24,29 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
-import Database.DatabaseConnection; 
-import java.awt.Insets;
-import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+  import java.sql.Date;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import javax.swing.AbstractAction;
+import javax.swing.AbstractCellEditor;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultCellEditor;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 /**
  *
  * @author yeojvaldez
  */
-public class staffReservation extends javax.swing.JInternalFrame {
+public final class staffReservation extends javax.swing.JInternalFrame {
 
     /**
      * Creates new form staffReservation
@@ -30,7 +55,7 @@ public class staffReservation extends javax.swing.JInternalFrame {
         initComponents();
         removeBackground();
         DatabaseConnection();
-        showRoom();
+        fetchPendingRoomReservations();
         
  
     }
@@ -70,47 +95,337 @@ public class staffReservation extends javax.swing.JInternalFrame {
         UI.setNorthPane(null); 
     }
     
-    public final void showRoom(){
-   
-        
-        try {
-    
-           
-            
-            // Prepare the SQL query to select all rooms from the table
-            pst = con.prepareStatement("SELECT * FROM room");
-            
-            // Execute the query and get the results
-            rs = pst.executeQuery();
-            
-            // Set up the table model to display the data in the JTable
-            DefaultTableModel roomModel = (DefaultTableModel) tblroom.getModel();
-            
-            // Clear any previous rows
-            roomModel.setRowCount(0);
-            
-           
-            // Iterate over the result set and add data to the table
-            while (rs.next()) {
-               
-                String roomNumber = rs.getString("room_number");
-                String roomType = rs.getString("room_type");
-                double price = rs.getDouble("room_price");
-                String description = rs.getString("description");
-                int maxOccupancy = rs.getInt("max_occupancy");
-                String createdAt = rs.getString("created_at");
+  
+ private void fetchPendingRoomReservations() {
+    try {
+        pst = con.prepareStatement("SELECT reservation_number, guest.guest_name, r.check_in_date, r.check_out_date, r.total_price, r.created_at, r.reservation_id "
+                                  + "FROM reservation r "
+                                  + "JOIN guest ON r.guest_id = guest.guest_id "
+                                  + "WHERE r.status = 'Pending'");
 
-                // Add data to the table model
-                roomModel.addRow(new Object[] { roomNumber, createdAt, roomType, description, maxOccupancy, price });
+        rs = pst.executeQuery();
+
+        DefaultTableModel reservationModel = new DefaultTableModel(
+            new Object[]{"Reservation Number", "Guest Name", "Check-In Date", "Check-Out Date", "Total Price", "Created At", "Actions"}, 0
+        ) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                // Only make the actions column editable
+                return column == 6;
             }
-        } catch (SQLException ex) {
-            // Handle any SQL exceptions
-            Logger.getLogger(staffReservation.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("Error fetching room data: " + ex.getMessage());
+        };
+
+        tblReservation.setModel(reservationModel);
+        
+        // Set up the combined panel renderer and editor
+        TableColumn actionColumn = tblReservation.getColumnModel().getColumn(6);
+        actionColumn.setCellRenderer(new DualPanelRenderer());
+        actionColumn.setCellEditor(new DualPanelEditor(new JCheckBox()));
+
+        boolean found = false;
+
+        while (rs.next()) {
+            found = true;
+
+            String reservationNumber = rs.getString("reservation_number");
+            String guestName = rs.getString("guest_name");
+            Date checkInDate = rs.getDate("check_in_date");
+            Date checkOutDate = rs.getDate("check_out_date");
+            Timestamp createdAt = rs.getTimestamp("created_at");
+            double totalPrice = rs.getDouble("total_price");
+            int reservationId = rs.getInt("reservation_id");
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String formattedCheckInDate = sdf.format(checkInDate);
+            String formattedCheckOutDate = sdf.format(checkOutDate);
+            String formattedCreatedAt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(createdAt);
+
+            reservationModel.addRow(new Object[]{
+                reservationNumber,
+                guestName,
+                formattedCheckInDate,
+                formattedCheckOutDate,
+                "₱" + String.format("%.2f", totalPrice),
+                formattedCreatedAt,
+                reservationId // Store the reservation ID in the actions column
+            });
+        }
+
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage());
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+    }
+}
+
+// Updated DualPanelRenderer class with white borders
+// Updated DualPanelRenderer with new View color
+class DualPanelRenderer extends JPanel implements TableCellRenderer {
+    private JPanel viewPanel;
+    private JPanel confirmPanel;
+    private JLabel viewLabel;
+    private JLabel confirmLabel;
+    
+    // Define colors as constants
+    private static final Color VIEW_COLOR = new Color(27, 59, 95);
+    private static final Color VIEW_HOVER = new Color(47, 79, 115);
+    private static final Color VIEW_SELECTED = new Color(67, 99, 135);
+    private static final Color CONFIRM_COLOR = new Color(51,204,0);
+    private static final Color CONFIRM_HOVER = new Color(54, 159, 54);
+    private static final Color CONFIRM_SELECTED = new Color(50, 160, 50);
+
+    public DualPanelRenderer() {
+        setLayout(new GridLayout(1, 2, 0, 0));
+        setOpaque(true);
+        
+        // View Panel
+        viewPanel = new JPanel(new GridBagLayout());
+        viewPanel.setBackground(VIEW_COLOR);
+        viewPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.WHITE, 1),
+            BorderFactory.createEmptyBorder(5, 10, 5, 5)
+        ));
+        
+        viewLabel = new JLabel("View");
+        viewLabel.setForeground(Color.WHITE);
+        viewLabel.setFont(viewLabel.getFont().deriveFont(Font.BOLD));
+        viewPanel.add(viewLabel, new GridBagConstraints());
+        
+        // Confirm Panel
+        confirmPanel = new JPanel(new GridBagLayout());
+        confirmPanel.setBackground(CONFIRM_COLOR);
+        confirmPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.WHITE, 1),
+            BorderFactory.createEmptyBorder(5, 5, 5, 10)
+        ));
+        
+        confirmLabel = new JLabel("Confirm");
+        confirmLabel.setForeground(Color.WHITE);
+        confirmLabel.setFont(confirmLabel.getFont().deriveFont(Font.BOLD));
+        confirmPanel.add(confirmLabel, new GridBagConstraints());
+        
+        add(viewPanel);
+        add(confirmPanel);
+    }
+
+    public Component getTableCellRendererComponent(JTable table, Object value,
+                                                 boolean isSelected, boolean hasFocus, int row, int column) {
+        if (isSelected) {
+            setBackground(table.getSelectionBackground());
+            viewPanel.setBackground(VIEW_SELECTED);
+            confirmPanel.setBackground(CONFIRM_SELECTED);
+        } else {
+            setBackground(table.getBackground());
+            viewPanel.setBackground(VIEW_COLOR);
+            confirmPanel.setBackground(CONFIRM_COLOR);
         }
         
+        // Maintain white borders
+        viewPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.WHITE, 1),
+            BorderFactory.createEmptyBorder(5, 10, 5, 5)
+        ));
+        confirmPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.WHITE, 1),
+            BorderFactory.createEmptyBorder(5, 5, 5, 10)
+        ));
+        
+        return this;
+    }
+}
+
+// Updated DualPanelEditor with new View color
+class DualPanelEditor extends AbstractCellEditor implements TableCellEditor {
+    private JPanel mainPanel;
+    private JPanel viewPanel;
+    private JPanel confirmPanel;
+    private JLabel viewLabel;
+    private JLabel confirmLabel;
+    private int currentRow;
+    private Object currentValue;
+    
+    // Reuse the same color constants
+    private static final Color VIEW_COLOR = new Color(27, 59, 95);
+    private static final Color VIEW_HOVER = new Color(47, 79, 115);
+    private static final Color VIEW_SELECTED = new Color(67, 99, 135);
+    private static final Color CONFIRM_COLOR = new Color(51,204,0);
+    private static final Color CONFIRM_HOVER = new Color(54, 159, 54);
+    private static final Color CONFIRM_SELECTED = new Color(50, 160, 50);
+
+    public DualPanelEditor(JCheckBox checkBox) {
+        mainPanel = new JPanel(new GridLayout(1, 2, 0, 0));
+        mainPanel.setOpaque(true);
+        
+        // View Panel
+        viewPanel = new JPanel(new GridBagLayout());
+        viewPanel.setBackground(VIEW_COLOR);
+        viewPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.WHITE, 1),
+            BorderFactory.createEmptyBorder(5, 10, 5, 5)
+        ));
+        
+        viewLabel = new JLabel("View");
+        viewLabel.setForeground(Color.WHITE);
+        viewLabel.setFont(viewLabel.getFont().deriveFont(Font.BOLD));
+        viewPanel.add(viewLabel, new GridBagConstraints());
+        
+        // Mouse listeners for View panel
+        viewPanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                fireEditingStopped();
+                handleButtonClick(currentRow, "View");
+            }
+            
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                viewPanel.setBackground(VIEW_HOVER);
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e) {
+                viewPanel.setBackground(VIEW_COLOR);
+            }
+        });
+        
+        // Confirm Panel
+        confirmPanel = new JPanel(new GridBagLayout());
+        confirmPanel.setBackground(CONFIRM_COLOR);
+        confirmPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.WHITE, 1),
+            BorderFactory.createEmptyBorder(5, 5, 5, 10)
+        ));
+        
+        confirmLabel = new JLabel("Confirm");
+        confirmLabel.setForeground(Color.WHITE);
+        confirmLabel.setFont(confirmLabel.getFont().deriveFont(Font.BOLD));
+        confirmPanel.add(confirmLabel, new GridBagConstraints());
+        
+        // Mouse listeners for Confirm panel
+        confirmPanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                fireEditingStopped();
+                handleButtonClick(currentRow, "Confirm");
+            }
+            
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                confirmPanel.setBackground(CONFIRM_HOVER);
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e) {
+                confirmPanel.setBackground(CONFIRM_COLOR);
+            }
+        });
+        
+        mainPanel.add(viewPanel);
+        mainPanel.add(confirmPanel);
+    }
+
+    public Component getTableCellEditorComponent(JTable table, Object value,
+                                              boolean isSelected, int row, int column) {
+        currentRow = row;
+        currentValue = value;
+        
+        if (isSelected) {
+            mainPanel.setBackground(table.getSelectionBackground());
+            viewPanel.setBackground(VIEW_SELECTED);
+            confirmPanel.setBackground(CONFIRM_SELECTED);
+        } else {
+            mainPanel.setBackground(table.getBackground());
+            viewPanel.setBackground(VIEW_COLOR);
+            confirmPanel.setBackground(CONFIRM_COLOR);
+        }
+        
+        // Maintain white borders
+        viewPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.WHITE, 1),
+            BorderFactory.createEmptyBorder(5, 10, 5, 5)
+        ));
+        confirmPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.WHITE, 1),
+            BorderFactory.createEmptyBorder(5, 5, 5, 10)
+        ));
+        
+        return mainPanel;
+    }
+
+    public Object getCellEditorValue() {
+        return currentValue;
+    }
+}
+
+// Keep your existing handleButtonClick, viewReservationDetails, and confirmReservation methods
+
+   private void handleButtonClick(int row, String action) {
+    String reservationNumber = (String) tblReservation.getValueAt(row, 0);
+    
+    if ("View".equals(action)) {
+        viewReservationDetails(reservationNumber);
+    } else if ("Confirm".equals(action)) {
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "Are you sure you want to confirm reservation number " + reservationNumber + "?",
+                "Confirm Reservation",
+                JOptionPane.YES_NO_OPTION);
+        
+        if (confirm == JOptionPane.YES_OPTION) {
+            confirmReservation(reservationNumber);
+        }
+    }
+}
+   
+   
+    private void viewReservationDetails(String reservationNumber) {
+        try {
+            pst = con.prepareStatement("SELECT * FROM reservation WHERE reservation_number = ?");
+            pst.setString(1, reservationNumber);
+            rs = pst.executeQuery();
+
+            if (rs.next()) {
+                String guestName = rs.getString("guest_id");
+                Date checkInDate = rs.getDate("check_in_date");
+                Date checkOutDate = rs.getDate("check_out_date");
+                double totalPrice = rs.getDouble("total_price");
+                String reservationStatus = rs.getString("status");
+
+                JOptionPane.showMessageDialog(this,
+                        "Reservation Number: " + reservationNumber + "\n"
+                                + "Guest Name: " + guestName + "\n"
+                                + "Check-In Date: " + checkInDate + "\n"
+                                + "Check-Out Date: " + checkOutDate + "\n"
+                                + "Total Price: ₱" + totalPrice + "\n"
+                                + "Status: " + reservationStatus);
+            }
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error fetching reservation details: " + ex.getMessage());
+        }
     }
     
+
+    private void confirmReservation(String reservationNumber) {
+        try {
+            String updateQuery = "UPDATE reservation SET status = 'Confirmed' WHERE reservation_number = ?";
+            pst = con.prepareStatement(updateQuery);
+            pst.setString(1, reservationNumber);
+            int rowsAffected = pst.executeUpdate();
+
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(this, "Reservation confirmed successfully!");
+                fetchPendingRoomReservations();
+            } else {
+                JOptionPane.showMessageDialog(this, "Error confirming reservation.");
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error confirming reservation: " + ex.getMessage());
+        }
+    }
+
+
+
+
    
 
     
@@ -128,16 +443,12 @@ public class staffReservation extends javax.swing.JInternalFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tblroom = new rojerusan.RSTableMetro();
         txtsearch = new javax.swing.JTextField();
         rSComboMetro1 = new rojerusan.RSComboMetro();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblReservation = new rojerusan.RSTableMetro();
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jPanel7 = new javax.swing.JPanel();
-        jLabel5 = new javax.swing.JLabel();
-        jPanel8 = new javax.swing.JPanel();
-        jLabel6 = new javax.swing.JLabel();
 
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -149,67 +460,10 @@ public class staffReservation extends javax.swing.JInternalFrame {
         jPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, new java.awt.Color(204, 204, 204)));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        tblroom.setBackground(new java.awt.Color(242, 242, 242));
-        tblroom.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
-        tblroom.setForeground(new java.awt.Color(255, 255, 255));
-        tblroom.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
-            },
-            new String [] {
-                "#", "Guest Name", "Room Number", "Check-In", "Check-Out", "Status"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        tblroom.setColorBackgoundHead(new java.awt.Color(39, 114, 160));
-        tblroom.setColorBordeFilas(new java.awt.Color(255, 255, 255));
-        tblroom.setColorBordeHead(new java.awt.Color(255, 255, 255));
-        tblroom.setColorFilasBackgound2(new java.awt.Color(242, 242, 242));
-        tblroom.setColorFilasForeground1(new java.awt.Color(27, 59, 95));
-        tblroom.setColorFilasForeground2(new java.awt.Color(27, 59, 95));
-        tblroom.setColorSelBackgound(new java.awt.Color(39, 114, 160));
-        tblroom.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
-        tblroom.setFuenteFilas(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        tblroom.setFuenteFilasSelect(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        tblroom.setFuenteHead(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        tblroom.setGridColor(new java.awt.Color(255, 255, 255));
-        tblroom.setRowHeight(30);
-        tblroom.setSelectionBackground(new java.awt.Color(39, 114, 160));
-        tblroom.setSelectionForeground(new java.awt.Color(255, 255, 255));
-        tblroom.setShowGrid(false);
-        tblroom.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tblroomMouseClicked(evt);
-            }
-        });
-        jScrollPane1.setViewportView(tblroom);
-        if (tblroom.getColumnModel().getColumnCount() > 0) {
-            tblroom.getColumnModel().getColumn(0).setPreferredWidth(5);
-        }
-
-        jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 1120, 570));
-
         txtsearch.setBackground(new java.awt.Color(255, 255, 255));
         txtsearch.setForeground(new java.awt.Color(102, 102, 102));
         txtsearch.setText("Seach here...");
         txtsearch.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
-        txtsearch.setBounds(new java.awt.Rectangle(0, 5, 0, 0));
         txtsearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtsearchActionPerformed(evt);
@@ -228,6 +482,63 @@ public class staffReservation extends javax.swing.JInternalFrame {
         });
         jPanel2.add(rSComboMetro1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 100, 40));
 
+        tblReservation.setBackground(new java.awt.Color(255, 255, 255));
+        tblReservation.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+        tblReservation.setForeground(new java.awt.Color(255, 255, 255));
+        tblReservation.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
+            },
+            new String [] {
+                "Date Created", "Reservation ID", "Guest Name", "Check-In", "Check-Out", "Total"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                true, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tblReservation.setColorBackgoundHead(new java.awt.Color(39, 114, 160));
+        tblReservation.setColorBordeFilas(new java.awt.Color(255, 255, 255));
+        tblReservation.setColorBordeHead(new java.awt.Color(255, 255, 255));
+        tblReservation.setColorFilasBackgound2(new java.awt.Color(242, 242, 242));
+        tblReservation.setColorFilasForeground1(new java.awt.Color(27, 59, 95));
+        tblReservation.setColorFilasForeground2(new java.awt.Color(27, 59, 95));
+        tblReservation.setColorSelBackgound(new java.awt.Color(39, 114, 160));
+        tblReservation.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
+        tblReservation.setFuenteFilas(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        tblReservation.setFuenteFilasSelect(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        tblReservation.setFuenteHead(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        tblReservation.setGridColor(new java.awt.Color(255, 255, 255));
+        tblReservation.setRowHeight(30);
+        tblReservation.setSelectionBackground(new java.awt.Color(39, 114, 160));
+        tblReservation.setSelectionForeground(new java.awt.Color(255, 255, 255));
+        tblReservation.setShowGrid(true);
+        tblReservation.setShowHorizontalLines(false);
+        tblReservation.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblReservationMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tblReservation);
+        if (tblReservation.getColumnModel().getColumnCount() > 0) {
+            tblReservation.getColumnModel().getColumn(0).setResizable(false);
+        }
+
+        jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 1120, 570));
+
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 1160, 660));
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
@@ -238,38 +549,6 @@ public class staffReservation extends javax.swing.JInternalFrame {
         jLabel1.setText("Reservation");
         jPanel3.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 180, 40));
 
-        jPanel7.setBackground(new java.awt.Color(0, 204, 51));
-        jPanel7.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel5.setFont(new java.awt.Font("Arial Unicode MS", 1, 13)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel5.setText("View Details");
-        jLabel5.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel5MouseClicked(evt);
-            }
-        });
-        jPanel7.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 0, 100, 30));
-
-        jPanel3.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(1030, 20, 110, 30));
-
-        jPanel8.setBackground(new java.awt.Color(27, 59, 95));
-        jPanel8.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel6.setFont(new java.awt.Font("Arial Unicode MS", 1, 13)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel6.setText("Confirm");
-        jLabel6.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel6MouseClicked(evt);
-            }
-        });
-        jPanel8.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 0, 100, 30));
-
-        jPanel3.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(910, 20, 110, 30));
-
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 1160, 60));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1200, 760));
@@ -277,10 +556,6 @@ public class staffReservation extends javax.swing.JInternalFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void tblroomMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblroomMouseClicked
-
-    }//GEN-LAST:event_tblroomMouseClicked
 
     private void rSComboMetro1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSComboMetro1ActionPerformed
         // TODO add your handling code here:
@@ -290,27 +565,19 @@ public class staffReservation extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtsearchActionPerformed
 
-    private void jLabel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel5MouseClicked
-       
-    }//GEN-LAST:event_jLabel5MouseClicked
+    private void tblReservationMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblReservationMouseClicked
 
-    private void jLabel6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel6MouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jLabel6MouseClicked
+    }//GEN-LAST:event_tblReservationMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel7;
-    private javax.swing.JPanel jPanel8;
     private javax.swing.JScrollPane jScrollPane1;
     private rojerusan.RSComboMetro rSComboMetro1;
-    private rojerusan.RSTableMetro tblroom;
+    private rojerusan.RSTableMetro tblReservation;
     private javax.swing.JTextField txtsearch;
     // End of variables declaration//GEN-END:variables
 }

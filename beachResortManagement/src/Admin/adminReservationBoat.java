@@ -5,7 +5,15 @@
 package Admin;
 
 import Staff.*;
-
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Date;
+import javax.swing.table.DefaultTableModel;
+import java.text.SimpleDateFormat;
+import java.sql.Time;
 /**
  *
  * @author yeojvaldez
@@ -17,7 +25,91 @@ public class adminReservationBoat extends javax.swing.JFrame {
      */
     public adminReservationBoat() {
         initComponents();
+        DatabaseConnection();
+        showReservedBoatReservations();
     }
+    
+    Connection con; 
+    PreparedStatement pst;
+    ResultSet rs; 
+    
+    public final void DatabaseConnection() {
+          String url = "jdbc:mysql://localhost:3306/beachResortManagement";
+        String user = "root"; // MySQL username
+        String password = ""; // MySQL password
+        
+        // Establishing the connection
+        try {
+            // Load MySQL JDBC driver (optional in newer versions of JDBC)
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            
+            // Create the connection
+            con = DriverManager.getConnection(url, user, password);
+            
+            System.out.println("Connected to the database successfully!");
+
+            // Perform database operations here...
+
+      
+        } catch (SQLException e) {
+            System.out.println("Error connecting to the database: " + e.getMessage());
+        } catch (ClassNotFoundException e) {
+            System.out.println("MySQL JDBC Driver not found: " + e.getMessage());
+        }
+    }
+
+
+
+public final void showReservedBoatReservations() {
+    // Ensure that the database connection is valid
+    if (con == null) {
+        System.out.println("Database connection is not established.");
+        return;
+    }
+
+    // Prepare the SQL query to fetch the required data from boat_reservation and room_reservation tables
+    String query = "SELECT br.boat_reservation_id, rr.reservation_number, br.boat_tour_date, " +
+                   "br.boat_tour_start_time, br.boat_tour_end_time " +
+                   "FROM boat_reservation br " +
+                   "JOIN room_reservation rr ON br.room_reservation_id = rr.room_reservation_id " +
+                   "WHERE br.status = 'Reserved'";
+
+    // Set up the table model to display the data in the JTable
+    DefaultTableModel reservationModel = (DefaultTableModel) tblBoatReservation.getModel();
+
+    // Clear any previous rows from the table
+    reservationModel.setRowCount(0);
+
+    // SimpleDateFormat for 12-hour time format with AM/PM
+    SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
+
+    // Use try-with-resources to automatically close the resources
+    try (PreparedStatement pst = con.prepareStatement(query);
+         ResultSet rs = pst.executeQuery()) {
+
+        // Iterate over the result set and add data to the table
+        while (rs.next()) {
+            // Fetch each column's data
+            String reservationNumber = rs.getString("reservation_number");
+            Date boatTourDate = rs.getDate("boat_tour_date");
+
+            // Fetch start and end time as Time and then format it using SimpleDateFormat
+            Time boatTourStartTime = rs.getTime("boat_tour_start_time");
+            Time boatTourEndTime = rs.getTime("boat_tour_end_time");
+
+            // Format times into 12-hour AM/PM format
+            String formattedStartTime = (boatTourStartTime != null) ? timeFormat.format(boatTourStartTime) : "";
+            String formattedEndTime = (boatTourEndTime != null) ? timeFormat.format(boatTourEndTime) : "";
+
+            // Add data to the table model
+            reservationModel.addRow(new Object[] { reservationNumber, boatTourDate, 
+                                                    formattedStartTime, formattedEndTime });
+        }
+    } catch (SQLException e) {
+        System.out.println("Error connecting to the database: " + e.getMessage());
+    }
+}
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -31,7 +123,7 @@ public class adminReservationBoat extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        tblbooking1 = new rojerusan.RSTableMetro();
+        tblBoatReservation = new rojerusan.RSTableMetro();
         jLabel6 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
 
@@ -40,20 +132,20 @@ public class adminReservationBoat extends javax.swing.JFrame {
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(39, 114, 160), 7));
+        jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 7));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
         jPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 0, 0, 0, new java.awt.Color(27, 59, 95)));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        tblbooking1.setBackground(new java.awt.Color(242, 242, 242));
-        tblbooking1.setModel(new javax.swing.table.DefaultTableModel(
+        tblBoatReservation.setBackground(new java.awt.Color(242, 242, 242));
+        tblBoatReservation.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Guest Name", "Date", "Start Time", "Return Time"
+                "Reservation", "Date", "Start Time", "Return Time"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -64,29 +156,29 @@ public class adminReservationBoat extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        tblbooking1.setColorBackgoundHead(new java.awt.Color(255, 255, 255));
-        tblbooking1.setColorBordeFilas(new java.awt.Color(255, 255, 255));
-        tblbooking1.setColorBordeHead(new java.awt.Color(255, 255, 255));
-        tblbooking1.setColorFilasBackgound2(new java.awt.Color(255, 255, 255));
-        tblbooking1.setColorFilasForeground1(new java.awt.Color(27, 59, 95));
-        tblbooking1.setColorFilasForeground2(new java.awt.Color(27, 59, 95));
-        tblbooking1.setColorForegroundHead(new java.awt.Color(0, 0, 0));
-        tblbooking1.setColorSelBackgound(new java.awt.Color(39, 114, 160));
-        tblbooking1.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
-        tblbooking1.setFuenteFilas(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        tblbooking1.setFuenteFilasSelect(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        tblbooking1.setFuenteHead(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        tblbooking1.setGridColor(new java.awt.Color(204, 204, 204));
-        tblbooking1.setRowHeight(30);
-        tblbooking1.setSelectionBackground(new java.awt.Color(61, 58, 87));
-        tblbooking1.setSelectionForeground(new java.awt.Color(255, 255, 255));
-        tblbooking1.setShowGrid(false);
-        tblbooking1.addMouseListener(new java.awt.event.MouseAdapter() {
+        tblBoatReservation.setColorBackgoundHead(new java.awt.Color(255, 255, 255));
+        tblBoatReservation.setColorBordeFilas(new java.awt.Color(255, 255, 255));
+        tblBoatReservation.setColorBordeHead(new java.awt.Color(255, 255, 255));
+        tblBoatReservation.setColorFilasBackgound2(new java.awt.Color(255, 255, 255));
+        tblBoatReservation.setColorFilasForeground1(new java.awt.Color(27, 59, 95));
+        tblBoatReservation.setColorFilasForeground2(new java.awt.Color(27, 59, 95));
+        tblBoatReservation.setColorForegroundHead(new java.awt.Color(0, 0, 0));
+        tblBoatReservation.setColorSelBackgound(new java.awt.Color(39, 114, 160));
+        tblBoatReservation.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
+        tblBoatReservation.setFuenteFilas(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        tblBoatReservation.setFuenteFilasSelect(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        tblBoatReservation.setFuenteHead(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        tblBoatReservation.setGridColor(new java.awt.Color(204, 204, 204));
+        tblBoatReservation.setRowHeight(30);
+        tblBoatReservation.setSelectionBackground(new java.awt.Color(61, 58, 87));
+        tblBoatReservation.setSelectionForeground(new java.awt.Color(255, 255, 255));
+        tblBoatReservation.setShowGrid(false);
+        tblBoatReservation.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tblbooking1MouseClicked(evt);
+                tblBoatReservationMouseClicked(evt);
             }
         });
-        jScrollPane2.setViewportView(tblbooking1);
+        jScrollPane2.setViewportView(tblBoatReservation);
 
         jPanel2.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, 560, 360));
 
@@ -101,6 +193,11 @@ public class adminReservationBoat extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Helvetica Neue", 1, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(0, 0, 0));
         jLabel1.setText("X");
+        jLabel1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel1MouseClicked(evt);
+            }
+        });
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 20, -1, -1));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 620, 500));
@@ -109,9 +206,13 @@ public class adminReservationBoat extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void tblbooking1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblbooking1MouseClicked
+    private void tblBoatReservationMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblBoatReservationMouseClicked
         // TODO add your handling code here:
-    }//GEN-LAST:event_tblbooking1MouseClicked
+    }//GEN-LAST:event_tblBoatReservationMouseClicked
+
+    private void jLabel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseClicked
+        this.dispose();
+    }//GEN-LAST:event_jLabel1MouseClicked
 
     /**
      * @param args the command line arguments
@@ -185,6 +286,6 @@ public class adminReservationBoat extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane2;
-    private rojerusan.RSTableMetro tblbooking1;
+    private rojerusan.RSTableMetro tblBoatReservation;
     // End of variables declaration//GEN-END:variables
 }
