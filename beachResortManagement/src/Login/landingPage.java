@@ -369,7 +369,7 @@ public class landingPage extends javax.swing.JFrame {
     }
 
     // Now, check for correct email-password combination
-    String query = "SELECT full_name, role FROM user_details WHERE email = ? AND password = ? LIMIT 1";
+    String query = "SELECT full_name, role, user_id FROM user_details WHERE email = ? AND password = ? LIMIT 1";
     try (PreparedStatement pst = con.prepareStatement(query)) {
         pst.setString(1, email);
         pst.setString(2, password);
@@ -378,6 +378,7 @@ public class landingPage extends javax.swing.JFrame {
             if (rs.next()) {
                 String userName = rs.getString("full_name");
                 String role = rs.getString("role");
+                int userID = rs.getInt("user_id");
 
                 JOptionPane.showMessageDialog(this, "Welcome, " + userName + "! Login Successful.");
 
@@ -390,7 +391,7 @@ public class landingPage extends javax.swing.JFrame {
                         new staffHome().setVisible(true);
                         break;
                     case "Guest":
-                        new guestHome().setVisible(true);
+                        new guestHome(userID).setVisible(true); 
                         break;
                     default:
                         JOptionPane.showMessageDialog(this, "Unknown role: " + role, "Error", JOptionPane.ERROR_MESSAGE);

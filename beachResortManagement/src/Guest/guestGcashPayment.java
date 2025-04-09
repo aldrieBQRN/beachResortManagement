@@ -74,55 +74,6 @@ public class guestGcashPayment extends javax.swing.JFrame {
     }
     
     
-    private void searchAvailableRooms(Date checkIn, Date checkOut, int totalGuests, int adults, int children) {
-    try {
-        java.sql.Date sqlCheckIn = new java.sql.Date(checkIn.getTime());
-        java.sql.Date sqlCheckOut = new java.sql.Date(checkOut.getTime());
-        
-
-        // Fixed SQL query
-        String query = "SELECT r.room_number, r.room_type, r.max_occupancy, r.room_price " +
-                       "FROM room r " +
-                       "WHERE r.max_occupancy >= ? " +
-                       "AND r.room_number NOT IN (" +
-                       "   SELECT room_number FROM room_reservation " +
-                       "   WHERE (? < check_out_date AND ? > check_in_date)" +
-                       ") " + // <== don't forget to close subquery
-                       "ORDER BY r.room_price ASC";
-
-        pst = con.prepareStatement(query);
-        pst.setInt(1, totalGuests);
-        pst.setDate(2, sqlCheckIn);
-        pst.setDate(3, sqlCheckOut);
-
-        rs = pst.executeQuery();
-
-        boolean found = false;
-
-        while (rs.next()) {
-            found = true;
-            String roomNumber = rs.getString("room_number");
-            String roomType = rs.getString("room_type");
-            int maxOccupancy = rs.getInt("max_occupancy");
-            double price = rs.getDouble("room_price");
-
-            // You can display the result in a table or console for now
-            System.out.println("Room: " + roomNumber + " | Type: " + roomType + " | Capacity: " + maxOccupancy + " | ₱" + price);
-        }
-
-        if (!found) {
-            JOptionPane.showMessageDialog(this, "No available rooms found.");
-        } else {
-             
-            new guestSelectRoom(checkIn, checkOut, adults, children).setVisible(true);
-        }
-
-    } catch (SQLException ex) {
-        JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage());
-    }
-}
-
-    
     
 
     /**

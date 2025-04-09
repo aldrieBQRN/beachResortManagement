@@ -41,9 +41,10 @@ public class guestSelectRoom extends javax.swing.JFrame {
     private Date checkOutDate;
     private int adults;
     private int children;
+    private int userID;
     
     
-    public guestSelectRoom(Date checkInDate, Date checkOutDate, int adults, int children) {
+    public guestSelectRoom(Date checkInDate, Date checkOutDate, int adults, int children, int userID) {
         
         initComponents();
         
@@ -52,6 +53,7 @@ public class guestSelectRoom extends javax.swing.JFrame {
         this.checkOutDate = checkOutDate;
         this.adults = adults;
         this.children = children;
+        this.userID = userID;
         displayValues();
          
         DatabaseConnection();
@@ -294,7 +296,7 @@ private void selectRoom(int row) {
         System.out.println("Total Guests: " + totalGuests);
 
         // Pass the details to the next form or action
-        new guestSelectBoat(checkInDate, checkOutDate, adults, children, roomNumber, roomType, description, price).setVisible(true);
+        new guestSelectBoat(checkInDate, checkOutDate, adults, children, roomNumber, roomType, description, price, userID).setVisible(true);
     }
 }
 
@@ -696,7 +698,8 @@ private double calculateTotalPrice() {
              Date checkOut = null;
             int adults = 0;
             int children = 0;
-            new guestSelectRoom(checkIn, checkOut, adults, children).setVisible(true);
+            int guestID = 0;
+            new guestSelectRoom(checkIn, checkOut, adults, children, guestID).setVisible(true);
         });
     }
 

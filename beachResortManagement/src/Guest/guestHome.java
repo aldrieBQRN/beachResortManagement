@@ -28,10 +28,10 @@ import javax.swing.table.DefaultTableModel;
  */
 public class guestHome extends javax.swing.JFrame {
 
-    /**
-     * Creates new form signIN
-     */
-    public guestHome() {
+   private int userID;
+   
+    public guestHome(int userID) {
+        this.userID = userID;
         initComponents();
        
         DatabaseConnection();
@@ -116,7 +116,7 @@ public class guestHome extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "No available rooms found.");
         } else {
              
-            new guestSelectRoom(checkIn, checkOut, adults, children).setVisible(true);
+            new guestSelectRoom(checkIn, checkOut, adults, children, userID).setVisible(true);
         }
 
     } catch (SQLException ex) {
@@ -451,7 +451,8 @@ public class guestHome extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
-            new guestHome().setVisible(true);
+            int userID = 0;
+            new guestHome(userID).setVisible(true);
         });
     }
 

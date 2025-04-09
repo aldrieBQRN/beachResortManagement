@@ -42,10 +42,11 @@ public class guestSelectBoat extends javax.swing.JFrame {
     private String roomType;
     private String roomDescription;
     private double roomPrice;
+    private int userID;
     
     
     public guestSelectBoat(Date checkInDate, Date checkOutDate, int adults, int children, 
-                           String roomNumber, String roomType, String description, double price) {
+                           String roomNumber, String roomType, String description, double price, int userID) {
         
         initComponents();
         
@@ -57,6 +58,7 @@ public class guestSelectBoat extends javax.swing.JFrame {
         this.roomType = roomType;
         this.roomDescription = description;
         this.roomPrice = price;
+        this.userID = userID;
 
         displayValues();
          
@@ -229,7 +231,7 @@ private void selectBoat(int row) {
         // Proceed with creating a new instance of guestProcess with all details
        new guestProcess(checkInDate, checkOutDate, roomNumber, roomType, roomDescription, 
                  roomPrice, sqlDate, sqlStartTime, sqlEndTime, boatName, 
-                 boatPrice, adults, children).setVisible(true);
+                 boatPrice, adults, children, userID).setVisible(true);
     }
 }
 
@@ -537,21 +539,20 @@ private void selectBoat(int row) {
   
 
     // Query for available boats with the updated condition for reservation overlap
-    String boatQuery = """
-        SELECT b.boat_name, b.description, b.tour_price 
-        FROM boat b 
-        WHERE b.capacity >= ? 
-        AND b.boat_name NOT IN (
-            SELECT br.boat_name 
-            FROM boat_reservation br 
-            WHERE br.status = 'Reserved' 
-            AND br.boat_tour_date = ? 
-            AND (
-                ? < br.boat_tour_end_time AND ? > br.boat_tour_start_time
-            )
-        ) 
-        ORDER BY b.tour_price ASC;
-    """;
+   String boatQuery = """
+    SELECT b.boat_name, b.description, b.tour_price 
+    FROM boat b 
+    WHERE b.capacity >= ?  -- Minimum capacity requirement
+    AND b.boat_id NOT IN (
+        SELECT br.boat_id 
+        FROM boat_reservation br 
+        WHERE br.status = 'Reserved' 
+        AND br.boat_tour_date = ? 
+        AND (? < br.boat_tour_end_time AND ? > br.boat_tour_start_time)  -- Time overlap check
+    ) 
+    ORDER BY b.tour_price ASC;
+""";
+
 
     pst = con.prepareStatement(boatQuery);
     pst.setInt(1, guestTotal);     // Capacity check (number of guests)

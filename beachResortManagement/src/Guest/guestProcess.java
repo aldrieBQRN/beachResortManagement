@@ -15,6 +15,7 @@ import com.raven.datechooser.SelectedAction;
 import com.raven.datechooser.SelectedDate;
 import com.toedter.calendar.JCalendar;
 import java.awt.HeadlessException;
+import java.beans.Statement;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -34,6 +35,7 @@ public class guestProcess extends javax.swing.JFrame {
 
     private int numChildren;
     private int numAdults;
+    private int totalGuests;
     private Date checkInDate;
     private Date checkOutDate;
     private String roomNumber;
@@ -45,12 +47,14 @@ public class guestProcess extends javax.swing.JFrame {
     private java.sql.Time sqlEndTime;
     private String boatName;
     private double boatPrice;
+    private int userID;
+    
 
     // Constructor to initialize guestProcess with all the parameters
    public guestProcess(Date checkInDate, Date checkOutDate, String roomNumber, String roomType, 
                     String roomDescription, double roomPrice, java.sql.Date sqlDate, 
                     java.sql.Time sqlStartTime, java.sql.Time sqlEndTime, String boatName, 
-                    double boatPrice, int numAdult, int numChildren) {
+                    double boatPrice, int numAdult, int numChildren, int userID) {
 
 
         
@@ -70,25 +74,24 @@ public class guestProcess extends javax.swing.JFrame {
         this.boatName = boatName;
         this.boatPrice = boatPrice;
         this.numAdults = numAdult;
-        this.numChildren = numChildren;     
+        this.numChildren = numChildren;  
+        this.userID = userID;
         
-       SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM d", Locale.ENGLISH);
+      
+      
+       
+      
+        
+        
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM d", Locale.ENGLISH);
         SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a"); // "hh" for 12-hour format with leading zero, "a" for AM/PM
 
-
-// Format the check-in and check-out dates
         lblCheckIn.setText(checkInDate != null ? dateFormat.format(checkInDate) : "N/A");
         lblCheckOut.setText(checkOutDate != null ? dateFormat.format(checkOutDate) : "N/A");
         long diffInMillies = checkOutDate.getTime() - checkInDate.getTime();
-
-        // Convert the difference from milliseconds to days
         long numberOfNights = TimeUnit.MILLISECONDS.toDays(diffInMillies);
-
-        // Display the number of nights (you can set it to a label or print it)
        
         lblNumberOfNights.setText("" + numberOfNights);
-
-    // Format and display the room details
         lblRoomNumber.setText(roomNumber != null ? roomNumber : "N/A");
         lblRoomNumber.setText(roomNumber != null ? roomNumber : "N/A");
         lblRoomType.setText(roomType != null ? roomType : "N/A");
@@ -96,10 +99,10 @@ public class guestProcess extends javax.swing.JFrame {
         lblBoatName.setText(boatName != null ? boatName : "N/A");
         lblSqlDate.setText(sqlDate != null ? dateFormat.format(sqlDate) : "N/A");
         lblStartTime.setText(sqlStartTime != null ? timeFormat.format(sqlStartTime) : "N/A");
-        lblEndTime.setText(sqlEndTime != null ? timeFormat.format(sqlEndTime) : "N/A");
-        
+        lblEndTime.setText(sqlEndTime != null ? timeFormat.format(sqlEndTime) : "N/A"); 
         String reservationNumber = generateReservationNumber();
         lblReservationNumber.setText("" + reservationNumber);
+        int totalGuests = numAdults + numChildren;
         String guestInfo;
         if (numChildren > 0) {
             guestInfo = numAdults + " Adult" + (numAdults > 1 ? "s" : "") + ", " + numChildren + " Child" + (numChildren > 1 ? "ren" : "");
@@ -108,40 +111,18 @@ public class guestProcess extends javax.swing.JFrame {
         }
         lblGuestInfo.setText(guestInfo);  // Make sure lblGuestInfo exists in your form
         double totalRoomPrice = roomPrice * numberOfNights;
-
-        // Format to 2 decimal places (optional)
         String formattedTotalRoomPrice = String.format("₱%.2f", totalRoomPrice);
-
-        // Display total room price
         lblTotalRoomPrice.setText(formattedTotalRoomPrice);
-        
         String formattedBoatPrice = String.format("₱%.2f", boatPrice);
-        
         lblBoatPrice.setText(formattedBoatPrice);
-        
-        int totalGuests = numAdults + numChildren;
         double entranceFee = 100.0 * totalGuests;
-
-        // Format entrance fee
         String formattedEntranceFee = String.format("₱%.2f", entranceFee);
-
-        // Display entrance fee
         lblEntranceFee.setText(formattedEntranceFee); 
-        
         double ecologicalFee = 20.0 * totalGuests;
-
-// Format ecological fee
         String formattedEcoFee = String.format("₱%.2f", ecologicalFee);
-
-        // Display ecological fee
         lblEcologicalFee.setText(formattedEcoFee);
-        
         double grandTotal = totalRoomPrice + boatPrice + entranceFee + ecologicalFee;
         lblGrandTotal.setText(String.format("₱%.2f", grandTotal));
-
-
-
-        
     }
 
        
@@ -183,46 +164,239 @@ public class guestProcess extends javax.swing.JFrame {
     
     
    public String generateReservationNumber() {
-        String reservationNumber = "";
-
-        // Ensure that the connection is not null
-        if (con == null) {
-            System.out.println("Database connection is not initialized!");
-            return reservationNumber;
-        }
-
-        try {
-            // Query to get the last reservation number from the database
-            String query = "SELECT reservation_number FROM reservation ORDER BY reservation_id DESC LIMIT 1";
-            pst = con.prepareStatement(query); // Use prepared statement
-            rs = pst.executeQuery();
-
-            // Get the last reservation number if available
-            if (rs.next()) {
-                String lastReservationNumber = rs.getString("reservation_number");
-                // Extract the numeric part (assuming format is like "RES-YYYYMMDD-001")
-                String lastNumberPart = lastReservationNumber.substring(lastReservationNumber.lastIndexOf("-") + 1);
-                int lastNumber = Integer.parseInt(lastNumberPart);
-                // Increment it for the new reservation
-                lastNumber++;
-                reservationNumber = "RES-" + getCurrentDateString() + "-" + String.format("%03d", lastNumber);
-            } else {
-                // If no reservations exist, start from 001
-                reservationNumber = "RES-" + getCurrentDateString() + "-001";
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } 
+    String reservationNumber = "";
+    
+    // Ensure that the connection is not null
+    if (con == null) {
+        System.out.println("Database connection is not initialized!");
         return reservationNumber;
     }
+
+    try {
+        // Start with generating the initial reservation number
+        reservationNumber = "RES-" + getCurrentDateString() + "-001";
+
+        // Query to check if the generated reservation number already exists
+        String query = "SELECT COUNT(*) FROM room_reservation WHERE reservation_number = ?";
+        PreparedStatement pst = con.prepareStatement(query);
+        
+        while (true) {
+            // Set the generated reservation number
+            pst.setString(1, reservationNumber);
+            
+            // Execute query to check if the number already exists
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                if (count == 0) {
+                    // If the count is zero, the number is unique
+                    break;
+                } else {
+                    // If the reservation number exists, increment the number part and try again
+                    String lastNumberPart = reservationNumber.substring(reservationNumber.lastIndexOf("-") + 1);
+                    int lastNumber = Integer.parseInt(lastNumberPart);
+                    lastNumber++;
+                    reservationNumber = "RES-" + getCurrentDateString() + "-" + String.format("%03d", lastNumber);
+                }
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return reservationNumber;
+}
+
 
     // Get the current date in the format YYYYMMDD
     private String getCurrentDateString() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         return dateFormat.format(new Date());
     }
-
     
+    
+    // Assuming you already have a method to establish the database connection
+public void insertGuestAndRoomReservation() {
+    try {
+        // Step 1: Insert guest data into the guest table
+        String guestName = txtFName.getText() + " " + txtLName.getText();  // Assuming txtFName and txtLName are the JTextFields for first and last name
+        String email = txtEmail.getText();  // Assuming txtEmail is the JTextField for email
+        String contact = txtContact.getText();  // Assuming txtContact is the JTextField for contact
+        String address = txtAddress.getText();  // Assuming txtAddress is the JTextField for address
+        
+        // SQL query to insert guest data
+        String guestQuery = "INSERT INTO guest (user_id, guest_name, email, contact, address) "
+                          + "VALUES (?, ?, ?, ?, ?)";
+        
+        // Use PreparedStatement to insert guest data
+        PreparedStatement guestStmt = con.prepareStatement(guestQuery, PreparedStatement.RETURN_GENERATED_KEYS);
+        
+        // Set values in the PreparedStatement
+        guestStmt.setInt(1, this.userID); // user_id (Replace with actual user_id from your app)
+        guestStmt.setString(2, guestName); // guest_name
+        guestStmt.setString(3, email); // email
+        guestStmt.setString(4, contact); // contact
+        guestStmt.setString(5, address); // address
+        
+        // Execute the insert statement
+        int affectedRows = guestStmt.executeUpdate();
+        
+        // Step 2: Retrieve the generated guest_id (auto-generated primary key)
+        if (affectedRows > 0) {
+            ResultSet generatedKeys = guestStmt.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int guestId = generatedKeys.getInt(1);  // Retrieve the first generated key (guest_id)
+                System.out.println("Guest ID: " + guestId);
+
+                // Step 3: Insert room reservation data using the generated guest_id
+                insertRoomReservation(guestId);  // Call method to insert room reservation with guestId
+            } else {
+                System.out.println("Error: guest_id not generated.");
+            }
+        }
+        
+    } catch (SQLException e) {
+        System.out.println("Error inserting guest and room reservation: " + e.getMessage());
+    }
+}
+
+public void insertRoomReservation(int guestId) {
+    try {
+        long diffInMillies = checkOutDate.getTime() - checkInDate.getTime();
+        long numberOfNights = TimeUnit.MILLISECONDS.toDays(diffInMillies);
+        double totalRoomPrice = roomPrice * numberOfNights;
+        int totalGuests = numAdults + numChildren;
+        double entranceFee = 100.0 * totalGuests;
+        double ecologicalFee = 20.0 * totalGuests;
+
+        String reservationNumber = generateReservationNumber();
+
+        String roomReservationQuery = "INSERT INTO room_reservation (reservation_number, user_id, guest_id, room_number, adult, child, total_guests, check_in_date, check_out_date, total_room_price, total_entrance_fee, total_ecological_fee, boat_tour_status, status, created_at) "
+                                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+
+        // Set RETURN_GENERATED_KEYS to retrieve room_reservation_id
+        PreparedStatement roomStmt = con.prepareStatement(roomReservationQuery, PreparedStatement.RETURN_GENERATED_KEYS);
+
+        roomStmt.setString(1, reservationNumber);
+        roomStmt.setInt(2, userID); // user_id
+        roomStmt.setInt(3, guestId);
+        roomStmt.setString(4, roomNumber);
+        roomStmt.setInt(5, numAdults);
+        roomStmt.setInt(6, numChildren);
+        roomStmt.setInt(7, totalGuests);
+        roomStmt.setDate(8, new java.sql.Date(checkInDate.getTime()));
+        roomStmt.setDate(9, new java.sql.Date(checkOutDate.getTime()));
+        roomStmt.setDouble(10, totalRoomPrice);
+        roomStmt.setDouble(11, entranceFee);
+        roomStmt.setDouble(12, ecologicalFee);
+        roomStmt.setString(13, "Availed");
+        roomStmt.setString(14, "Reserved");
+
+        int affectedRows = roomStmt.executeUpdate();
+
+        if (affectedRows > 0) {
+            ResultSet generatedKeys = roomStmt.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int roomReservationId = generatedKeys.getInt(1);
+                System.out.println("Room Reservation ID: " + roomReservationId);
+
+                // 🔗 Now insert boat reservation
+                insertBoatReservation(roomReservationId, guestId);
+            } else {
+                System.out.println("Room reservation ID not generated.");
+            }
+        }
+
+        System.out.println("Guest and Room Reservation successfully added!");
+
+    } catch (SQLException e) {
+        System.out.println("Error inserting room reservation: " + e.getMessage());
+    }
+}
+
+
+public int insertBoatReservation(int roomReservationId, int guestId) {
+    int boatReservationId = -1;
+    try {
+        String boatQuery = "SELECT boat_id FROM boat WHERE boat_name = ?";
+        PreparedStatement boatStmt = con.prepareStatement(boatQuery);
+        boatStmt.setString(1, boatName);
+
+        ResultSet boatRs = boatStmt.executeQuery();
+
+        if (boatRs.next()) {
+            int boatId = boatRs.getInt("boat_id");
+
+            String insertQuery = "INSERT INTO boat_reservation (room_reservation_id, guest_id, boat_id, boat_tour_date, boat_tour_start_time, boat_tour_end_time, tour_price, status, created_at) "
+                               + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+
+            PreparedStatement insertStmt = con.prepareStatement(insertQuery, PreparedStatement.RETURN_GENERATED_KEYS);
+            insertStmt.setInt(1, roomReservationId);
+            insertStmt.setInt(2, guestId);
+            insertStmt.setInt(3, boatId);
+            insertStmt.setDate(4, sqlDate);
+            insertStmt.setTime(5, sqlStartTime);
+            insertStmt.setTime(6, sqlEndTime);
+            insertStmt.setDouble(7, boatPrice);
+            insertStmt.setString(8, "Reserved");
+
+            int inserted = insertStmt.executeUpdate();
+            if (inserted > 0) {
+                ResultSet keys = insertStmt.getGeneratedKeys();
+                if (keys.next()) {
+                    boatReservationId = keys.getInt(1);
+                    System.out.println("Boat Reservation ID: " + boatReservationId);
+
+                    // 🔗 Now call insertMainReservation here
+                    insertMainReservation(guestId, roomReservationId, boatReservationId);
+                }
+            }
+        } else {
+            System.out.println("Boat not found: " + boatName);
+        }
+
+    } catch (SQLException e) {
+        System.out.println("Error inserting boat reservation: " + e.getMessage());
+    }
+    return boatReservationId;
+}
+
+
+
+
+public void insertMainReservation(int guestId, int roomReservationId, int boatReservationId) {
+    try {
+        String reservationNumber = generateReservationNumber(); // same method used for room
+        double totalPrice = roomPrice * TimeUnit.MILLISECONDS.toDays(checkOutDate.getTime() - checkInDate.getTime())
+                          + boatPrice
+                          + (100.0 + 20.0) * (numAdults + numChildren); // room + boat + entrance + ecological fees
+
+        String query = "INSERT INTO reservation (reservation_number, guest_id, room_reservation_id, boat_reservation_id, check_in_date, check_out_date, total_price, status, created_at) "
+                     + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+
+        PreparedStatement pst = con.prepareStatement(query);
+        pst.setString(1, reservationNumber);
+        pst.setInt(2, guestId);
+        pst.setInt(3, roomReservationId);
+        pst.setInt(4, boatReservationId);
+        pst.setDate(5, new java.sql.Date(checkInDate.getTime()));
+        pst.setDate(6, new java.sql.Date(checkOutDate.getTime()));
+        pst.setDouble(7, totalPrice);
+        pst.setString(8, "Pending"); // or "Confirmed", depending on your logic
+
+        int inserted = pst.executeUpdate();
+        if (inserted > 0) {
+            System.out.println("Main reservation successfully inserted!");
+        }
+
+    } catch (SQLException e) {
+        System.out.println("Error inserting main reservation: " + e.getMessage());
+    }
+}
+
+
+
+
    
     
 
@@ -288,12 +462,13 @@ public class guestProcess extends javax.swing.JFrame {
         jLabel41 = new javax.swing.JLabel();
         jPanel14 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
-        textField4 = new textfield.TextField();
-        textField5 = new textfield.TextField();
-        textField2 = new textfield.TextField();
-        textField3 = new textfield.TextField();
-        textField6 = new textfield.TextField();
+        txtAddress = new textfield.TextField();
+        txtEmail = new textfield.TextField();
+        txtContact = new textfield.TextField();
         textField7 = new textfield.TextField();
+        txtLName = new textfield.TextField();
+        txtFName = new textfield.TextField();
+        rSButtonHover2 = new rojeru_san.complementos.RSButtonHover();
         jPanel5 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
@@ -339,6 +514,11 @@ public class guestProcess extends javax.swing.JFrame {
         jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, -1, 30));
 
         rSButtonHover1.setText("Pay with Gcash");
+        rSButtonHover1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rSButtonHover1ActionPerformed(evt);
+            }
+        });
         jPanel2.add(rSButtonHover1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 160, 820, -1));
 
         cmbRoomType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Gcash", "Maya", "PayPal", " " }));
@@ -628,40 +808,43 @@ public class guestProcess extends javax.swing.JFrame {
         jLabel4.setText("Who's the lead Guest?");
         jPanel14.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 30, -1, -1));
 
-        textField4.setBackground(new java.awt.Color(255, 255, 255));
-        textField4.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
-        textField4.setLabelText("Fiste Name");
-        jPanel14.add(textField4, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 80, 790, 45));
-
-        textField5.setBackground(new java.awt.Color(255, 255, 255));
-        textField5.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
-        textField5.setLabelText("Last Name");
-        jPanel14.add(textField5, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 140, 790, 45));
-
-        textField2.setBackground(new java.awt.Color(255, 255, 255));
-        textField2.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
-        textField2.setLabelText("Address");
-        textField2.addActionListener(new java.awt.event.ActionListener() {
+        txtAddress.setBackground(new java.awt.Color(255, 255, 255));
+        txtAddress.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        txtAddress.setLabelText("Address");
+        txtAddress.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                textField2ActionPerformed(evt);
+                txtAddressActionPerformed(evt);
             }
         });
-        jPanel14.add(textField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 320, 790, 45));
+        jPanel14.add(txtAddress, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 260, 790, 45));
 
-        textField3.setBackground(new java.awt.Color(255, 255, 255));
-        textField3.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
-        textField3.setLabelText("Email");
-        jPanel14.add(textField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 200, 790, 45));
+        txtEmail.setBackground(new java.awt.Color(255, 255, 255));
+        txtEmail.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        txtEmail.setLabelText("Email");
+        jPanel14.add(txtEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 140, 790, 45));
 
-        textField6.setBackground(new java.awt.Color(255, 255, 255));
-        textField6.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
-        textField6.setLabelText("Contact Number");
-        jPanel14.add(textField6, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 260, 790, 45));
+        txtContact.setBackground(new java.awt.Color(255, 255, 255));
+        txtContact.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        txtContact.setLabelText("Contact Number");
+        jPanel14.add(txtContact, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 200, 790, 45));
 
         textField7.setBackground(new java.awt.Color(255, 255, 255));
         textField7.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
         textField7.setLabelText("Contact Number");
         jPanel14.add(textField7, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 240, 790, 45));
+
+        txtLName.setBackground(new java.awt.Color(255, 255, 255));
+        txtLName.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        txtLName.setLabelText("Last Name");
+        jPanel14.add(txtLName, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 80, 380, 45));
+
+        txtFName.setBackground(new java.awt.Color(255, 255, 255));
+        txtFName.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        txtFName.setLabelText("First Name");
+        jPanel14.add(txtFName, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 80, 380, 45));
+
+        rSButtonHover2.setText("Proceed Payment");
+        jPanel14.add(rSButtonHover2, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 340, 180, -1));
 
         jPanel11.add(jPanel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(31, 51, 870, 410));
 
@@ -739,9 +922,9 @@ public class guestProcess extends javax.swing.JFrame {
 
     }//GEN-LAST:event_jLabel10MouseClicked
 
-    private void textField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textField2ActionPerformed
+    private void txtAddressActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtAddressActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_textField2ActionPerformed
+    }//GEN-LAST:event_txtAddressActionPerformed
 
     private void cmbRoomTypeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbRoomTypeActionPerformed
         // TODO add your handling code here:
@@ -758,6 +941,10 @@ public class guestProcess extends javax.swing.JFrame {
     private void jLabel9MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel9MouseClicked
         // TODO add your handling code here:
     }//GEN-LAST:event_jLabel9MouseClicked
+
+    private void rSButtonHover1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSButtonHover1ActionPerformed
+       insertGuestAndRoomReservation();
+    }//GEN-LAST:event_rSButtonHover1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -831,12 +1018,13 @@ public class guestProcess extends javax.swing.JFrame {
     java.sql.Time sqlEndTime = null;
     String boatName = null;
     double boatPrice = 0.0;
-    int numAdult = 2;       // Example values
-    int numChildren = 1;    // Example values
+    int numAdult = 0;       // Example values
+    int numChildren = 0;  
+     int userID = 0;  // Example values
 
     new guestProcess(checkInDate, checkOutDate, roomNumber, roomType, roomDescription, 
                      roomPrice, sqlDate, sqlStartTime, sqlEndTime, boatName, 
-                     boatPrice, numAdult, numChildren).setVisible(true);
+                     boatPrice, numAdult, numChildren, userID).setVisible(true);
         });
     }
 
@@ -903,11 +1091,12 @@ public class guestProcess extends javax.swing.JFrame {
     private javax.swing.JLabel lblStartTime;
     private javax.swing.JLabel lblTotalRoomPrice;
     private rojeru_san.complementos.RSButtonHover rSButtonHover1;
-    private textfield.TextField textField2;
-    private textfield.TextField textField3;
-    private textfield.TextField textField4;
-    private textfield.TextField textField5;
-    private textfield.TextField textField6;
+    private rojeru_san.complementos.RSButtonHover rSButtonHover2;
     private textfield.TextField textField7;
+    private textfield.TextField txtAddress;
+    private textfield.TextField txtContact;
+    private textfield.TextField txtEmail;
+    private textfield.TextField txtFName;
+    private textfield.TextField txtLName;
     // End of variables declaration//GEN-END:variables
 }
