@@ -5,6 +5,7 @@
 package Guest;
 
 import Guest.guestSelectRoom;
+import Login.landingPage;
 import java.awt.Color;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -76,6 +77,7 @@ public class guestProcess extends javax.swing.JFrame {
         this.numAdults = numAdult;
         this.numChildren = numChildren;  
         this.userID = userID;
+  
         
       
       
@@ -123,6 +125,10 @@ public class guestProcess extends javax.swing.JFrame {
         lblEcologicalFee.setText(formattedEcoFee);
         double grandTotal = totalRoomPrice + boatPrice + entranceFee + ecologicalFee;
         lblGrandTotal.setText(String.format("₱%.2f", grandTotal));
+        double downPayment = grandTotal * 0.30;
+        String formattedDownPayment = String.format("₱%.2f", downPayment);
+        lblDownPayment.setText(formattedDownPayment);
+        lblDownPayment2.setText(formattedDownPayment);
     }
 
        
@@ -216,189 +222,7 @@ public class guestProcess extends javax.swing.JFrame {
     
     
     // Assuming you already have a method to establish the database connection
-public void insertGuestAndRoomReservation() {
-    try {
-        // Step 1: Insert guest data into the guest table
-        String guestName = txtFName.getText() + " " + txtLName.getText();  // Assuming txtFName and txtLName are the JTextFields for first and last name
-        String email = txtEmail.getText();  // Assuming txtEmail is the JTextField for email
-        String contact = txtContact.getText();  // Assuming txtContact is the JTextField for contact
-        String address = txtAddress.getText();  // Assuming txtAddress is the JTextField for address
-        
-        // SQL query to insert guest data
-        String guestQuery = "INSERT INTO guest (user_id, guest_name, email, contact, address) "
-                          + "VALUES (?, ?, ?, ?, ?)";
-        
-        // Use PreparedStatement to insert guest data
-        PreparedStatement guestStmt = con.prepareStatement(guestQuery, PreparedStatement.RETURN_GENERATED_KEYS);
-        
-        // Set values in the PreparedStatement
-        guestStmt.setInt(1, this.userID); // user_id (Replace with actual user_id from your app)
-        guestStmt.setString(2, guestName); // guest_name
-        guestStmt.setString(3, email); // email
-        guestStmt.setString(4, contact); // contact
-        guestStmt.setString(5, address); // address
-        
-        // Execute the insert statement
-        int affectedRows = guestStmt.executeUpdate();
-        
-        // Step 2: Retrieve the generated guest_id (auto-generated primary key)
-        if (affectedRows > 0) {
-            ResultSet generatedKeys = guestStmt.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                int guestId = generatedKeys.getInt(1);  // Retrieve the first generated key (guest_id)
-                System.out.println("Guest ID: " + guestId);
 
-                // Step 3: Insert room reservation data using the generated guest_id
-                insertRoomReservation(guestId);  // Call method to insert room reservation with guestId
-            } else {
-                System.out.println("Error: guest_id not generated.");
-            }
-        }
-        
-    } catch (SQLException e) {
-        System.out.println("Error inserting guest and room reservation: " + e.getMessage());
-    }
-}
-
-public void insertRoomReservation(int guestId) {
-    try {
-        long diffInMillies = checkOutDate.getTime() - checkInDate.getTime();
-        long numberOfNights = TimeUnit.MILLISECONDS.toDays(diffInMillies);
-        double totalRoomPrice = roomPrice * numberOfNights;
-        int totalGuests = numAdults + numChildren;
-        double entranceFee = 100.0 * totalGuests;
-        double ecologicalFee = 20.0 * totalGuests;
-
-        String reservationNumber = generateReservationNumber();
-
-        String roomReservationQuery = "INSERT INTO room_reservation (reservation_number, user_id, guest_id, room_number, adult, child, total_guests, check_in_date, check_out_date, total_room_price, total_entrance_fee, total_ecological_fee, boat_tour_status, status, created_at) "
-                                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
-
-        // Set RETURN_GENERATED_KEYS to retrieve room_reservation_id
-        PreparedStatement roomStmt = con.prepareStatement(roomReservationQuery, PreparedStatement.RETURN_GENERATED_KEYS);
-
-        roomStmt.setString(1, reservationNumber);
-        roomStmt.setInt(2, userID); // user_id
-        roomStmt.setInt(3, guestId);
-        roomStmt.setString(4, roomNumber);
-        roomStmt.setInt(5, numAdults);
-        roomStmt.setInt(6, numChildren);
-        roomStmt.setInt(7, totalGuests);
-        roomStmt.setDate(8, new java.sql.Date(checkInDate.getTime()));
-        roomStmt.setDate(9, new java.sql.Date(checkOutDate.getTime()));
-        roomStmt.setDouble(10, totalRoomPrice);
-        roomStmt.setDouble(11, entranceFee);
-        roomStmt.setDouble(12, ecologicalFee);
-        roomStmt.setString(13, "Availed");
-        roomStmt.setString(14, "Reserved");
-
-        int affectedRows = roomStmt.executeUpdate();
-
-        if (affectedRows > 0) {
-            ResultSet generatedKeys = roomStmt.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                int roomReservationId = generatedKeys.getInt(1);
-                System.out.println("Room Reservation ID: " + roomReservationId);
-
-                // 🔗 Now insert boat reservation
-                insertBoatReservation(roomReservationId, guestId);
-            } else {
-                System.out.println("Room reservation ID not generated.");
-            }
-        }
-
-        System.out.println("Guest and Room Reservation successfully added!");
-
-    } catch (SQLException e) {
-        System.out.println("Error inserting room reservation: " + e.getMessage());
-    }
-}
-
-
-public int insertBoatReservation(int roomReservationId, int guestId) {
-    int boatReservationId = -1;
-    try {
-        String boatQuery = "SELECT boat_id FROM boat WHERE boat_name = ?";
-        PreparedStatement boatStmt = con.prepareStatement(boatQuery);
-        boatStmt.setString(1, boatName);
-
-        ResultSet boatRs = boatStmt.executeQuery();
-
-        if (boatRs.next()) {
-            int boatId = boatRs.getInt("boat_id");
-
-            String insertQuery = "INSERT INTO boat_reservation (room_reservation_id, guest_id, boat_id, boat_tour_date, boat_tour_start_time, boat_tour_end_time, tour_price, status, created_at) "
-                               + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
-
-            PreparedStatement insertStmt = con.prepareStatement(insertQuery, PreparedStatement.RETURN_GENERATED_KEYS);
-            insertStmt.setInt(1, roomReservationId);
-            insertStmt.setInt(2, guestId);
-            insertStmt.setInt(3, boatId);
-            insertStmt.setDate(4, sqlDate);
-            insertStmt.setTime(5, sqlStartTime);
-            insertStmt.setTime(6, sqlEndTime);
-            insertStmt.setDouble(7, boatPrice);
-            insertStmt.setString(8, "Reserved");
-
-            int inserted = insertStmt.executeUpdate();
-            if (inserted > 0) {
-                ResultSet keys = insertStmt.getGeneratedKeys();
-                if (keys.next()) {
-                    boatReservationId = keys.getInt(1);
-                    System.out.println("Boat Reservation ID: " + boatReservationId);
-
-                    // 🔗 Now call insertMainReservation here
-                    insertMainReservation(guestId, roomReservationId, boatReservationId);
-                }
-            }
-        } else {
-            System.out.println("Boat not found: " + boatName);
-        }
-
-    } catch (SQLException e) {
-        System.out.println("Error inserting boat reservation: " + e.getMessage());
-    }
-    return boatReservationId;
-}
-
-
-
-
-public void insertMainReservation(int guestId, int roomReservationId, int boatReservationId) {
-    try {
-        String reservationNumber = generateReservationNumber(); // same method used for room
-        double totalPrice = roomPrice * TimeUnit.MILLISECONDS.toDays(checkOutDate.getTime() - checkInDate.getTime())
-                          + boatPrice
-                          + (100.0 + 20.0) * (numAdults + numChildren); // room + boat + entrance + ecological fees
-
-        String query = "INSERT INTO reservation (reservation_number, guest_id, room_reservation_id, boat_reservation_id, check_in_date, check_out_date, total_price, status, created_at) "
-                     + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
-
-        PreparedStatement pst = con.prepareStatement(query);
-        pst.setString(1, reservationNumber);
-        pst.setInt(2, guestId);
-        pst.setInt(3, roomReservationId);
-        pst.setInt(4, boatReservationId);
-        pst.setDate(5, new java.sql.Date(checkInDate.getTime()));
-        pst.setDate(6, new java.sql.Date(checkOutDate.getTime()));
-        pst.setDouble(7, totalPrice);
-        pst.setString(8, "Pending"); // or "Confirmed", depending on your logic
-
-        int inserted = pst.executeUpdate();
-        if (inserted > 0) {
-            System.out.println("Main reservation successfully inserted!");
-        }
-
-    } catch (SQLException e) {
-        System.out.println("Error inserting main reservation: " + e.getMessage());
-    }
-}
-
-
-
-
-   
-    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -414,10 +238,12 @@ public void insertMainReservation(int guestId, int roomReservationId, int boatRe
         jPanel11 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
-        rSButtonHover1 = new rojeru_san.complementos.RSButtonHover();
-        cmbRoomType = new rojerusan.RSComboMetro();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
+        paymentMethodComboBox = new rojerusan.RSComboMetro();
+        lblDownPayment2 = new javax.swing.JLabel();
+        txtmessage = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        panelRound5 = new GUI.PanelRound();
+        jLabel2 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         lblBoatName = new javax.swing.JLabel();
         lblSqlDate = new javax.swing.JLabel();
@@ -437,6 +263,8 @@ public void insertMainReservation(int guestId, int roomReservationId, int boatRe
         jPanel7 = new javax.swing.JPanel();
         lblGrandTotal = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        lblDownPayment = new javax.swing.JLabel();
         jLabel42 = new javax.swing.JLabel();
         jLabel47 = new javax.swing.JLabel();
         jLabel36 = new javax.swing.JLabel();
@@ -465,25 +293,25 @@ public void insertMainReservation(int guestId, int roomReservationId, int boatRe
         txtAddress = new textfield.TextField();
         txtEmail = new textfield.TextField();
         txtContact = new textfield.TextField();
-        textField7 = new textfield.TextField();
         txtLName = new textfield.TextField();
         txtFName = new textfield.TextField();
-        rSButtonHover2 = new rojeru_san.complementos.RSButtonHover();
-        jPanel5 = new javax.swing.JPanel();
+        panelRound4 = new GUI.PanelRound();
         jLabel1 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
-        jPanel10 = new javax.swing.JPanel();
+        panelRound1 = new GUI.PanelRound();
         jLabel16 = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
+        jLabel26 = new javax.swing.JLabel();
+        jLabel19 = new javax.swing.JLabel();
+        jLabel28 = new javax.swing.JLabel();
+        panelRound2 = new GUI.PanelRound();
+        jLabel6 = new javax.swing.JLabel();
         jPanel9 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setBackground(new java.awt.Color(242, 242, 242));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel4.setBackground(new java.awt.Color(39, 114, 160));
@@ -511,36 +339,58 @@ public void insertMainReservation(int guestId, int roomReservationId, int boatRe
         jLabel5.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(0, 0, 0));
         jLabel5.setText("Digital Payment");
-        jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, -1, 30));
+        jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, -1, 60));
 
-        rSButtonHover1.setText("Pay with Gcash");
-        rSButtonHover1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rSButtonHover1ActionPerformed(evt);
+        paymentMethodComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "GCash", "Maya", "PayPal" }));
+        paymentMethodComboBox.setColorArrow(new java.awt.Color(27, 59, 95));
+        paymentMethodComboBox.setColorBorde(new java.awt.Color(39, 114, 160));
+        paymentMethodComboBox.setColorFondo(new java.awt.Color(39, 114, 160));
+        paymentMethodComboBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                paymentMethodComboBoxItemStateChanged(evt);
             }
         });
-        jPanel2.add(rSButtonHover1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 160, 820, -1));
-
-        cmbRoomType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Gcash", "Maya", "PayPal", " " }));
-        cmbRoomType.setColorArrow(new java.awt.Color(27, 59, 95));
-        cmbRoomType.setColorBorde(new java.awt.Color(39, 114, 160));
-        cmbRoomType.setColorFondo(new java.awt.Color(39, 114, 160));
-        cmbRoomType.addActionListener(new java.awt.event.ActionListener() {
+        paymentMethodComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbRoomTypeActionPerformed(evt);
+                paymentMethodComboBoxActionPerformed(evt);
             }
         });
-        jPanel2.add(cmbRoomType, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 50, 820, 30));
+        jPanel2.add(paymentMethodComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 70, 790, 30));
 
-        jLabel6.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel6.setText("The total amount you will be charged is: ₱ 5,236.85");
-        jPanel2.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 120, 810, -1));
+        lblDownPayment2.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
+        lblDownPayment2.setForeground(new java.awt.Color(102, 102, 102));
+        lblDownPayment2.setText("₱ 5,236.85");
+        jPanel2.add(lblDownPayment2, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 140, 310, -1));
 
-        jLabel10.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel10.setText("You have chosen to pay by GCash. You will be forwarded to the GCash website to proceed with this transaction.");
-        jPanel2.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 100, 810, -1));
+        txtmessage.setForeground(new java.awt.Color(102, 102, 102));
+        txtmessage.setText("You have chosen to pay by GCash. You will be forwarded to the GCash website to proceed with this transaction.");
+        jPanel2.add(txtmessage, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 120, 800, -1));
 
-        jPanel11.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 470, 870, 220));
+        jLabel11.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel11.setText("The total amount to be pay is:");
+        jPanel2.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 140, 180, -1));
+
+        panelRound5.setBackground(new java.awt.Color(0, 153, 255));
+        panelRound5.setRoundBottomLeft(20);
+        panelRound5.setRoundBottomRight(20);
+        panelRound5.setRoundTopLeft(20);
+        panelRound5.setRoundTopRight(20);
+        panelRound5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel2.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel2.setText("Pay with GCash");
+        jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel2MouseClicked(evt);
+            }
+        });
+        panelRound5.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 770, 40));
+
+        jPanel2.add(panelRound5, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 180, 790, 40));
+
+        jPanel11.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 450, 870, 250));
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
         jPanel3.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
@@ -594,7 +444,7 @@ public void insertMainReservation(int guestId, int roomReservationId, int boatRe
         jLabel29.setText("End Time");
         jPanel3.add(jLabel29, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 40, 70, -1));
 
-        jPanel11.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(940, 380, 470, 80));
+        jPanel11.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(940, 360, 470, 80));
 
         jPanel6.setBackground(new java.awt.Color(255, 255, 255));
         jPanel6.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
@@ -640,18 +490,29 @@ public void insertMainReservation(int guestId, int roomReservationId, int boatRe
         jPanel7.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jPanel7.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        lblGrandTotal.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
+        lblGrandTotal.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
         lblGrandTotal.setForeground(new java.awt.Color(0, 0, 0));
         lblGrandTotal.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lblGrandTotal.setText("00.00");
         jPanel7.add(lblGrandTotal, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 10, 100, -1));
 
-        jLabel3.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(0, 0, 0));
         jLabel3.setText("Total Price");
         jPanel7.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, -1, -1));
 
-        jPanel6.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 180, 470, 40));
+        jLabel12.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
+        jLabel12.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel12.setText("Downpayment");
+        jPanel7.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 30, -1, -1));
+
+        lblDownPayment.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
+        lblDownPayment.setForeground(new java.awt.Color(0, 0, 0));
+        lblDownPayment.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lblDownPayment.setText("00.00");
+        jPanel7.add(lblDownPayment, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 30, 100, -1));
+
+        jPanel6.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 190, 470, 60));
 
         jLabel42.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         jLabel42.setForeground(new java.awt.Color(0, 0, 0));
@@ -695,7 +556,7 @@ public void insertMainReservation(int guestId, int roomReservationId, int boatRe
         jLabel48.setText("Reservation Number:");
         jPanel6.add(jLabel48, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, 130, -1));
 
-        jPanel11.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(940, 470, 470, 220));
+        jPanel11.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(940, 450, 470, 250));
 
         jPanel8.setBackground(new java.awt.Color(255, 255, 255));
         jPanel8.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
@@ -743,7 +604,7 @@ public void insertMainReservation(int guestId, int roomReservationId, int boatRe
         jLabel23.setText(">>>");
         jPanel8.add(jLabel23, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 20, -1, 40));
 
-        jPanel11.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(940, 50, 470, 90));
+        jPanel11.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(940, 30, 470, 90));
 
         jPanel12.setBackground(new java.awt.Color(255, 255, 255));
         jPanel12.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
@@ -782,6 +643,7 @@ public void insertMainReservation(int guestId, int roomReservationId, int boatRe
         lblRoomType.setText("Null");
         jPanel12.add(lblRoomType, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 40, 120, -1));
 
+        lblRoomDescription.setForeground(new java.awt.Color(0, 0, 0));
         lblRoomDescription.setText("jLabel16");
         jPanel12.add(lblRoomDescription, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 80, 160, 120));
 
@@ -797,7 +659,7 @@ public void insertMainReservation(int guestId, int roomReservationId, int boatRe
         jLabel41.setText("Category:");
         jPanel12.add(jLabel41, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 40, 120, -1));
 
-        jPanel11.add(jPanel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(940, 150, 470, 220));
+        jPanel11.add(jPanel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(940, 130, 470, 220));
 
         jPanel14.setBackground(new java.awt.Color(255, 255, 255));
         jPanel14.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
@@ -806,7 +668,7 @@ public void insertMainReservation(int guestId, int roomReservationId, int boatRe
         jLabel4.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(0, 0, 0));
         jLabel4.setText("Who's the lead Guest?");
-        jPanel14.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 30, -1, -1));
+        jPanel14.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 40, -1, -1));
 
         txtAddress.setBackground(new java.awt.Color(255, 255, 255));
         txtAddress.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
@@ -828,11 +690,6 @@ public void insertMainReservation(int guestId, int roomReservationId, int boatRe
         txtContact.setLabelText("Contact Number");
         jPanel14.add(txtContact, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 200, 790, 45));
 
-        textField7.setBackground(new java.awt.Color(255, 255, 255));
-        textField7.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
-        textField7.setLabelText("Contact Number");
-        jPanel14.add(textField7, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 240, 790, 45));
-
         txtLName.setBackground(new java.awt.Color(255, 255, 255));
         txtLName.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
         txtLName.setLabelText("Last Name");
@@ -843,68 +700,89 @@ public void insertMainReservation(int guestId, int roomReservationId, int boatRe
         txtFName.setLabelText("First Name");
         jPanel14.add(txtFName, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 80, 380, 45));
 
-        rSButtonHover2.setText("Proceed Payment");
-        jPanel14.add(rSButtonHover2, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 340, 180, -1));
+        panelRound4.setBackground(new java.awt.Color(0, 153, 255));
+        panelRound4.setRoundBottomLeft(20);
+        panelRound4.setRoundBottomRight(20);
+        panelRound4.setRoundTopLeft(20);
+        panelRound4.setRoundTopRight(20);
+        panelRound4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel11.add(jPanel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(31, 51, 870, 410));
-
-        jPanel1.add(jPanel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 60, 1440, 730));
-
-        jPanel5.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel1.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel1.setText("CONTACT");
+        jLabel1.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("Procced to Payment");
         jLabel1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel1MouseClicked(evt);
             }
         });
-        jPanel5.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1230, 0, -1, 60));
+        panelRound4.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 770, 40));
 
-        jLabel8.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
-        jLabel8.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel8.setText("HOME");
-        jLabel8.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel8MouseClicked(evt);
-            }
-        });
-        jPanel5.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(1090, 0, -1, 60));
+        jPanel14.add(panelRound4, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 335, 790, 40));
 
-        jLabel9.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
-        jLabel9.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel9.setText("ABOUT");
-        jLabel9.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel9MouseClicked(evt);
-            }
-        });
-        jPanel5.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(1160, 0, -1, 60));
+        jPanel11.add(jPanel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 30, 870, 410));
 
-        jLabel11.setFont(new java.awt.Font("Tahoma", 1, 30)); // NOI18N
-        jLabel11.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel11.setText("Welcome,");
-        jPanel5.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 0, 180, 60));
+        jPanel1.add(jPanel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 60, 1440, 730));
 
-        jLabel12.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
-        jLabel12.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel12.setText("enjoy and have fun!");
-        jPanel5.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 20, -1, 30));
+        panelRound1.setBackground(new java.awt.Color(27, 59, 95));
+        panelRound1.setRoundBottomLeft(50);
+        panelRound1.setRoundBottomRight(50);
+        panelRound1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel10.setBackground(new java.awt.Color(0, 153, 255));
-        jPanel10.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel16.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 15)); // NOI18N
+        jLabel16.setFont(new java.awt.Font("Tahoma", 1, 30)); // NOI18N
         jLabel16.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel16.setText("Log out");
-        jPanel10.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 100, 20));
+        jLabel16.setText("Welcome,");
+        panelRound1.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 0, 180, 60));
 
-        jPanel5.add(jPanel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(1320, 10, 100, 40));
+        jLabel17.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
+        jLabel17.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel17.setText("enjoy and have fun!");
+        panelRound1.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 20, -1, 30));
 
-        jPanel1.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1490, 60));
+        jLabel26.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel26.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel26.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/iconHome.png"))); // NOI18N
+        jLabel26.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel26MouseClicked(evt);
+            }
+        });
+        panelRound1.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(1170, 0, -1, 60));
+
+        jLabel19.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel19.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel19.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/iconNotif.png"))); // NOI18N
+        panelRound1.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(1220, 0, -1, 60));
+
+        jLabel28.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/profile.png"))); // NOI18N
+        panelRound1.add(jLabel28, new org.netbeans.lib.awtextra.AbsoluteConstraints(1270, 0, 30, 60));
+
+        panelRound2.setBackground(new java.awt.Color(0, 153, 255));
+        panelRound2.setRoundBottomLeft(20);
+        panelRound2.setRoundBottomRight(20);
+        panelRound2.setRoundTopLeft(20);
+        panelRound2.setRoundTopRight(20);
+        panelRound2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                panelRound2MouseClicked(evt);
+            }
+        });
+        panelRound2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel6.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel6.setText("Logout");
+        jLabel6.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel6MouseClicked(evt);
+            }
+        });
+        panelRound2.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 70, 35));
+
+        panelRound1.add(panelRound2, new org.netbeans.lib.awtextra.AbsoluteConstraints(1320, 12, 90, -1));
+
+        jPanel1.add(panelRound1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 60));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 830));
 
@@ -926,25 +804,83 @@ public void insertMainReservation(int guestId, int roomReservationId, int boatRe
         // TODO add your handling code here:
     }//GEN-LAST:event_txtAddressActionPerformed
 
-    private void cmbRoomTypeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbRoomTypeActionPerformed
+    private void paymentMethodComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paymentMethodComboBoxActionPerformed
+       
+    }//GEN-LAST:event_paymentMethodComboBoxActionPerformed
+
+    private void paymentMethodComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_paymentMethodComboBoxItemStateChanged
+ String selectedPaymentMethod = (String) paymentMethodComboBox.getSelectedItem();
+
+       if (selectedPaymentMethod != null) {
+        if (selectedPaymentMethod.equals("GCash")) {
+            // Action for GCash
+            txtmessage.setText("You have chosen to pay by GCash. You will be forwarded to the GCash website to proceed with this transaction.");
+        } else if (selectedPaymentMethod.equals("Maya")) {
+            // Action for Maya
+            txtmessage.setText("You have chosen to pay by Maya. You will be forwarded to the Maya website to proceed with this transaction.");
+        } else if (selectedPaymentMethod.equals("PayPal")) {
+            // Action for PayMaya
+            txtmessage.setText("You have chosen to pay by PayPal. You will be forwarded to the PayPal website to proceed with this transaction.");
+        } else {
+            // Handle the case where no valid payment method is selected
+            txtmessage.setText("Invalid Payment Method");
+        }
+    }
+
         // TODO add your handling code here:
-    }//GEN-LAST:event_cmbRoomTypeActionPerformed
+    }//GEN-LAST:event_paymentMethodComboBoxItemStateChanged
 
     private void jLabel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseClicked
-
+       
     }//GEN-LAST:event_jLabel1MouseClicked
 
-    private void jLabel8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel8MouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jLabel8MouseClicked
+    private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
+          String reservationNumber = lblReservationNumber.getText();
+        String guestName = txtFName.getText() + " " + txtLName.getText();  // Assuming txtFName and txtLName are the JTextFields for first and last name
+        String email = txtEmail.getText();  // Assuming txtEmail is the JTextField for email
+        String contact = txtContact.getText();  // Assuming txtContact is the JTextField for contact
+        String address = txtAddress.getText();  
+        double totalPrice = roomPrice * TimeUnit.MILLISECONDS.toDays(checkOutDate.getTime() - checkInDate.getTime())
+                          + boatPrice
+                          + (100.0 + 20.0) * (numAdults + numChildren);
+         double downPayment = totalPrice * 0.30;
+        
+    new guestGcashPayment(
+    checkInDate, 
+    checkOutDate, 
+    roomNumber, 
+    roomType, 
+    roomDescription, 
+    roomPrice, 
+    sqlDate, 
+    sqlStartTime, 
+    sqlEndTime, 
+    boatName, 
+    boatPrice, 
+    numAdults, 
+    numChildren, 
+    userID, 
+    totalPrice, 
+    downPayment, guestName, email, contact, address, reservationNumber
+          
+).setVisible(true);
 
-    private void jLabel9MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel9MouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jLabel9MouseClicked
+        
+        
+    }//GEN-LAST:event_jLabel2MouseClicked
 
-    private void rSButtonHover1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSButtonHover1ActionPerformed
-       insertGuestAndRoomReservation();
-    }//GEN-LAST:event_rSButtonHover1ActionPerformed
+    private void jLabel26MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel26MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jLabel26MouseClicked
+
+    private void jLabel6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel6MouseClicked
+        this.dispose();
+       new landingPage().setVisible(true);
+    }//GEN-LAST:event_jLabel6MouseClicked
+
+    private void panelRound2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelRound2MouseClicked
+
+    }//GEN-LAST:event_panelRound2MouseClicked
 
     /**
      * @param args the command line arguments
@@ -1029,19 +965,22 @@ public void insertMainReservation(int guestId, int roomReservationId, int boatRe
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private rojerusan.RSComboMetro cmbRoomType;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
+    private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel30;
@@ -1057,10 +996,7 @@ public void insertMainReservation(int guestId, int roomReservationId, int boatRe
     private javax.swing.JLabel jLabel48;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel13;
@@ -1068,7 +1004,6 @@ public void insertMainReservation(int guestId, int roomReservationId, int boatRe
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
@@ -1077,6 +1012,8 @@ public void insertMainReservation(int guestId, int roomReservationId, int boatRe
     private javax.swing.JLabel lblBoatPrice;
     private javax.swing.JLabel lblCheckIn;
     private javax.swing.JLabel lblCheckOut;
+    private javax.swing.JLabel lblDownPayment;
+    private javax.swing.JLabel lblDownPayment2;
     private javax.swing.JLabel lblEcologicalFee;
     private javax.swing.JLabel lblEndTime;
     private javax.swing.JLabel lblEntranceFee;
@@ -1090,13 +1027,16 @@ public void insertMainReservation(int guestId, int roomReservationId, int boatRe
     private javax.swing.JLabel lblSqlDate;
     private javax.swing.JLabel lblStartTime;
     private javax.swing.JLabel lblTotalRoomPrice;
-    private rojeru_san.complementos.RSButtonHover rSButtonHover1;
-    private rojeru_san.complementos.RSButtonHover rSButtonHover2;
-    private textfield.TextField textField7;
+    private GUI.PanelRound panelRound1;
+    private GUI.PanelRound panelRound2;
+    private GUI.PanelRound panelRound4;
+    private GUI.PanelRound panelRound5;
+    private rojerusan.RSComboMetro paymentMethodComboBox;
     private textfield.TextField txtAddress;
     private textfield.TextField txtContact;
     private textfield.TextField txtEmail;
     private textfield.TextField txtFName;
     private textfield.TextField txtLName;
+    private javax.swing.JLabel txtmessage;
     // End of variables declaration//GEN-END:variables
 }

@@ -378,51 +378,145 @@ class DualPanelEditor extends AbstractCellEditor implements TableCellEditor {
    
    
     private void viewReservationDetails(String reservationNumber) {
-        try {
-            pst = con.prepareStatement("SELECT * FROM reservation WHERE reservation_number = ?");
-            pst.setString(1, reservationNumber);
-            rs = pst.executeQuery();
+    try {
+        // First get reservation details
+        pst = con.prepareStatement("SELECT r.*, g.guest_name FROM reservation r " +
+                                  "JOIN guest g ON r.guest_id = g.guest_id " +
+                                  "WHERE r.reservation_number = ?");
+        pst.setString(1, reservationNumber);
+        rs = pst.executeQuery();
 
-            if (rs.next()) {
-                String guestName = rs.getString("guest_id");
-                Date checkInDate = rs.getDate("check_in_date");
-                Date checkOutDate = rs.getDate("check_out_date");
-                double totalPrice = rs.getDouble("total_price");
-                String reservationStatus = rs.getString("status");
+        if (rs.next()) {
+           
+            String reservationStatus = rs.getString("status");
+            int reservationId = rs.getInt("reservation_id");
 
-                JOptionPane.showMessageDialog(this,
-                        "Reservation Number: " + reservationNumber + "\n"
-                                + "Guest Name: " + guestName + "\n"
-                                + "Check-In Date: " + checkInDate + "\n"
-                                + "Check-Out Date: " + checkOutDate + "\n"
-                                + "Total Price: ₱" + totalPrice + "\n"
-                                + "Status: " + reservationStatus);
+            // Now get payment details
+            String paymentInfo = "";
+            PreparedStatement paymentStmt = con.prepareStatement(
+                "SELECT * FROM payment WHERE reservation_id = ? AND payment_type = 'Downpayment'");
+            paymentStmt.setInt(1, reservationId);
+            ResultSet paymentRs = paymentStmt.executeQuery();
+
+            if (paymentRs.next()) {
+                double downPayment = paymentRs.getDouble("amount");
+                String referenceNumber = paymentRs.getString("reference_number");
+                String paymentMethod = paymentRs.getString("payment_method");
+                String paymentStatus = paymentRs.getString("status");
+
+                paymentInfo = "\nDownpayment Details:\n" +
+                             "Amount: ₱" + String.format("%.2f", downPayment) + "\n" +
+                             "Payment Method: " + paymentMethod + "\n" +
+                             "Reference Number: " + (referenceNumber != null ? referenceNumber : "N/A") + "\n" +
+                             "Payment Status: " + paymentStatus;
             }
 
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error fetching reservation details: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this,
+               
+                "Reservation Status: " + reservationStatus +
+                paymentInfo,
+                "Reservation Details",
+                JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "No reservation found with number: " + reservationNumber);
         }
+
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(this, 
+            "Error fetching reservation details: " + ex.getMessage(),
+            "Database Error",
+            JOptionPane.ERROR_MESSAGE);
+        ex.printStackTrace();
+    } finally {
+        // Close resources
+        try { if (rs != null) rs.close(); } catch (SQLException e) { /* ignore */ }
+        try { if (pst != null) pst.close(); } catch (SQLException e) { /* ignore */ }
     }
+}
+
+private void confirmReservation(String reservationNumber) {
+    PreparedStatement updateReservationStmt = null;
+    PreparedStatement updatePaymentStmt = null;
+    PreparedStatement getIdStmt = null;
+    ResultSet rs = null;
     
+    try {
+        // Start transaction
+        con.setAutoCommit(false);
 
-    private void confirmReservation(String reservationNumber) {
+        // 1. First get the reservation_id
+        String getIdQuery = "SELECT reservation_id FROM reservation WHERE reservation_number = ?";
+        getIdStmt = con.prepareStatement(getIdQuery);
+        getIdStmt.setString(1, reservationNumber);
+        rs = getIdStmt.executeQuery();
+        
+        if (!rs.next()) {
+            JOptionPane.showMessageDialog(this,
+                "Reservation not found with number: " + reservationNumber,
+                "Not Found",
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        int reservationId = rs.getInt("reservation_id");
+
+        // 2. Update reservation status
+        String updateReservationQuery = "UPDATE reservation SET status = 'Confirmed' WHERE reservation_id = ?";
+        updateReservationStmt = con.prepareStatement(updateReservationQuery);
+        updateReservationStmt.setInt(1, reservationId);
+        int reservationUpdated = updateReservationStmt.executeUpdate();
+
+        // 3. Update payment status (only for downpayment)
+        String updatePaymentQuery = "UPDATE payment SET status = 'Paid' " +
+                                 "WHERE reservation_id = ? AND payment_type = 'Downpayment'";
+        updatePaymentStmt = con.prepareStatement(updatePaymentQuery);
+        updatePaymentStmt.setInt(1, reservationId);
+        int paymentUpdated = updatePaymentStmt.executeUpdate();
+
+        // Check if both updates were successful
+        if (reservationUpdated > 0 && paymentUpdated > 0) {
+            con.commit();
+            JOptionPane.showMessageDialog(this, 
+                "Reservation #" + reservationNumber + " confirmed successfully!\n" +
+                "Payment status updated to 'Paid'.",
+                "Confirmation Successful", 
+                JOptionPane.INFORMATION_MESSAGE);
+            fetchPendingRoomReservations();
+        } else {
+            con.rollback();
+            String errorMsg = "Failed to confirm reservation.\n";
+            if (reservationUpdated == 0) errorMsg += "- Reservation not found\n";
+            if (paymentUpdated == 0) errorMsg += "- Downpayment not found";
+            
+            JOptionPane.showMessageDialog(this,
+                errorMsg,
+                "Confirmation Failed",
+                JOptionPane.ERROR_MESSAGE);
+        }
+    } catch (SQLException ex) {
         try {
-            String updateQuery = "UPDATE reservation SET status = 'Confirmed' WHERE reservation_number = ?";
-            pst = con.prepareStatement(updateQuery);
-            pst.setString(1, reservationNumber);
-            int rowsAffected = pst.executeUpdate();
-
-            if (rowsAffected > 0) {
-                JOptionPane.showMessageDialog(this, "Reservation confirmed successfully!");
-                fetchPendingRoomReservations();
-            } else {
-                JOptionPane.showMessageDialog(this, "Error confirming reservation.");
-            }
+            if (con != null) con.rollback();
+        } catch (SQLException e) {
+            ex.addSuppressed(e);
+        }
+        JOptionPane.showMessageDialog(this,
+            "Database error while confirming reservation:\n" + ex.getMessage(),
+            "Error",
+            JOptionPane.ERROR_MESSAGE);
+        ex.printStackTrace();
+    } finally {
+        // Restore auto-commit and close resources
+        try {
+            if (con != null) con.setAutoCommit(true);
+            if (rs != null) rs.close();
+            if (getIdStmt != null) getIdStmt.close();
+            if (updateReservationStmt != null) updateReservationStmt.close();
+            if (updatePaymentStmt != null) updatePaymentStmt.close();
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error confirming reservation: " + ex.getMessage());
+            ex.printStackTrace();
         }
     }
-
+}
 
 
 

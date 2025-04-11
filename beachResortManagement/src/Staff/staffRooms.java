@@ -273,7 +273,7 @@ public class staffRooms extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
-        new roomReservation().setVisible(true);
+        new staffReservationRoom().setVisible(true);
     }//GEN-LAST:event_jLabel4MouseClicked
 
     private void rSComboMetro1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSComboMetro1ActionPerformed

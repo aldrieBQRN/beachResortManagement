@@ -4,6 +4,7 @@
  */
 package Guest;
 
+import Login.landingPage;
 import java.awt.Color;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -249,17 +250,19 @@ private void selectRoom(int row) {
     String roomNumber = (String) tblRoomDetails.getValueAt(row, 0); // Room number is in column 0
     String roomType = (String) tblRoomDetails.getValueAt(row, 1); // Room type is in column 1
     String description = (String) tblRoomDetails.getValueAt(row, 2); // Description is in column 2
-   
-     String priceString = (String) tblRoomDetails.getValueAt(row, 3); // Description is in column 
-     priceString = priceString.replaceAll("[^0-9.]", ""); 
-     double price = Double.parseDouble(priceString);
 
-
-    // Parse the string to a double, handling possible formatting issues
+    String priceString = (String) tblRoomDetails.getValueAt(row, 3); // Price is in column 3
+    priceString = priceString.replaceAll("[^0-9.]", ""); 
+    double price = 0;
     
-    
+    try {
+        price = Double.parseDouble(priceString); // Parse price
+    } catch (NumberFormatException ex) {
+        JOptionPane.showMessageDialog(this, "Invalid price format.", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
 
-    // Debug: print the selected room information
+    // Debug: print the selected room information (Remove in production)
     System.out.println("Selected Room: ");
     System.out.println("Room Number: " + roomNumber);
     System.out.println("Room Type: " + roomType);
@@ -276,43 +279,44 @@ private void selectRoom(int row) {
 
     boolean wantsWaterActivities = (response == JOptionPane.YES_OPTION);
 
+    // Get check-in and check-out dates
+    Date checkInDate = rsDateChooserCheckIn.getDatoFecha();
+    Date checkOutDate = rsDateChooserCheckOut.getDatoFecha();
+
+ 
+    // Get number of guests
+    int adults = (Integer) adultsSpinner.getValue();
+    int children = (Integer) childrenSpinner.getValue();
+    int totalGuests = adults + children;
+
+    // Debug: print the number of guests
+    System.out.println("Total Guests: " + totalGuests);
+
+    // Pass the details to the next form or action
     if (wantsWaterActivities) {
-        // Get check-in and check-out dates
-        Date checkInDate = rsDateChooserCheckIn.getDatoFecha();
-        Date checkOutDate = rsDateChooserCheckOut.getDatoFecha();
-
-        // Check if the dates are valid
-        if (checkInDate == null || checkOutDate == null) {
-            JOptionPane.showMessageDialog(this, "Please select valid check-in and check-out dates.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // Get number of guests
-        int adults = (Integer) adultsSpinner.getValue();
-        int children = (Integer) childrenSpinner.getValue();
-        int totalGuests = adults + children;
-
-        // Debug: print the number of guests
-        System.out.println("Total Guests: " + totalGuests);
-
-        // Pass the details to the next form or action
         new guestSelectBoat(checkInDate, checkOutDate, adults, children, roomNumber, roomType, description, price, userID).setVisible(true);
+    } else {
+        new guestProcess2(checkInDate, checkOutDate, roomNumber, roomType, description, price, adults, children, userID).setVisible(true);
     }
 }
 
+// Method to validate check-in and check-out dates
+private boolean validateDates(Date checkInDate, Date checkOutDate) {
+    if (checkInDate == null || checkOutDate == null) {
+        JOptionPane.showMessageDialog(this, "Please select valid check-in and check-out dates.", "Error", JOptionPane.ERROR_MESSAGE);
+        return false;
+    }
 
+    if (checkOutDate.before(checkInDate)) {
+        JOptionPane.showMessageDialog(this, "Check-out date cannot be before check-in date.", "Error", JOptionPane.ERROR_MESSAGE);
+        return false;
+    }
 
-private double calculateTotalPrice() {
-   /* // Calculate based on selected room price and stay duration
-    long diffInMillies = Math.abs(checkOutDate.getTime() - checkInDate.getTime());
-    long diffInDays = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-    return selectedRoomPrice * diffInDays; */return 0;
-   /* // Calculate based on selected room price and stay duration
-    long diffInMillies = Math.abs(checkOutDate.getTime() - checkInDate.getTime());
-    long diffInDays = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-    return selectedRoomPrice * diffInDays; */
+    return true;
 }
-    
+
+
+
     
 
     /**
@@ -328,15 +332,6 @@ private double calculateTotalPrice() {
         jPanel9 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblRoomDetails = new rojerusan.RSTableMetro();
-        jPanel4 = new javax.swing.JPanel();
-        jPanel5 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jPanel10 = new javax.swing.JPanel();
-        jLabel15 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
         rsDateChooserCheckIn = new rojeru_san.componentes.RSDateChooser();
@@ -348,6 +343,16 @@ private double calculateTotalPrice() {
         childrenSpinner = new spinner.Spinner();
         jPanel8 = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
+        jPanel6 = new javax.swing.JPanel();
+        panelRound1 = new GUI.PanelRound();
+        jLabel17 = new javax.swing.JLabel();
+        jLabel18 = new javax.swing.JLabel();
+        jLabel20 = new javax.swing.JLabel();
+        jLabel19 = new javax.swing.JLabel();
+        jLabel22 = new javax.swing.JLabel();
+        panelRound2 = new GUI.PanelRound();
+        jLabel3 = new javax.swing.JLabel();
+        jPanel4 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
@@ -360,7 +365,6 @@ private double calculateTotalPrice() {
         jPanel9.setBorder(javax.swing.BorderFactory.createMatteBorder(2, 0, 0, 0, new java.awt.Color(204, 204, 204)));
         jPanel9.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        tblRoomDetails.setBackground(new java.awt.Color(255, 255, 255));
         tblRoomDetails.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
         tblRoomDetails.setForeground(new java.awt.Color(255, 255, 255));
         tblRoomDetails.setModel(new javax.swing.table.DefaultTableModel(
@@ -388,7 +392,7 @@ private double calculateTotalPrice() {
                 return canEdit [columnIndex];
             }
         });
-        tblRoomDetails.setColorBackgoundHead(new java.awt.Color(27, 59, 95));
+        tblRoomDetails.setColorBackgoundHead(new java.awt.Color(39, 114, 160));
         tblRoomDetails.setColorBordeFilas(new java.awt.Color(255, 255, 255));
         tblRoomDetails.setColorBordeHead(new java.awt.Color(255, 255, 255));
         tblRoomDetails.setColorFilasBackgound2(new java.awt.Color(242, 242, 242));
@@ -411,83 +415,11 @@ private double calculateTotalPrice() {
         });
         jScrollPane1.setViewportView(tblRoomDetails);
 
-        jPanel9.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 620));
+        jPanel9.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 660));
 
         jPanel1.add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 170, 1440, 620));
 
-        jPanel4.setBackground(new java.awt.Color(27, 59, 95));
-
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1440, Short.MAX_VALUE)
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 40, Short.MAX_VALUE)
-        );
-
-        jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 790, 1440, 40));
-
-        jPanel5.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel1.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel1.setText("CONTACT");
-        jLabel1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel1MouseClicked(evt);
-            }
-        });
-        jPanel5.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1230, 0, -1, 60));
-
-        jLabel8.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
-        jLabel8.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel8.setText("HOME");
-        jLabel8.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel8MouseClicked(evt);
-            }
-        });
-        jPanel5.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(1090, 0, -1, 60));
-
-        jLabel9.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
-        jLabel9.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel9.setText("ABOUT");
-        jLabel9.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel9MouseClicked(evt);
-            }
-        });
-        jPanel5.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(1160, 0, -1, 60));
-
-        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 30)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel3.setText("Welcome,");
-        jPanel5.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 0, 180, 60));
-
-        jLabel5.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel5.setText("enjoy and have fun!");
-        jPanel5.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 20, -1, 30));
-
-        jPanel10.setBackground(new java.awt.Color(0, 153, 255));
-        jPanel10.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel15.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 15)); // NOI18N
-        jLabel15.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel15.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel15.setText("Log out");
-        jPanel10.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 100, 20));
-
-        jPanel5.add(jPanel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(1320, 10, 100, 40));
-
-        jPanel1.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1490, 60));
-
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel2.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel10.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
@@ -553,6 +485,86 @@ private double calculateTotalPrice() {
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 60, 1440, 110));
 
+        jPanel6.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        panelRound1.setBackground(new java.awt.Color(27, 59, 95));
+        panelRound1.setRoundBottomLeft(50);
+        panelRound1.setRoundBottomRight(50);
+        panelRound1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel17.setFont(new java.awt.Font("Tahoma", 1, 30)); // NOI18N
+        jLabel17.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel17.setText("Welcome,");
+        panelRound1.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 0, 180, 60));
+
+        jLabel18.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
+        jLabel18.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel18.setText("enjoy and have fun!");
+        panelRound1.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 20, -1, 30));
+
+        jLabel20.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel20.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel20.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/iconHome.png"))); // NOI18N
+        jLabel20.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel20MouseClicked(evt);
+            }
+        });
+        panelRound1.add(jLabel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(1170, 0, -1, 60));
+
+        jLabel19.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel19.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel19.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/iconNotif.png"))); // NOI18N
+        panelRound1.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(1220, 0, -1, 60));
+
+        jLabel22.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/profile.png"))); // NOI18N
+        panelRound1.add(jLabel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(1270, 0, 30, 60));
+
+        panelRound2.setBackground(new java.awt.Color(0, 153, 255));
+        panelRound2.setRoundBottomLeft(20);
+        panelRound2.setRoundBottomRight(20);
+        panelRound2.setRoundTopLeft(20);
+        panelRound2.setRoundTopRight(20);
+        panelRound2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                panelRound2MouseClicked(evt);
+            }
+        });
+        panelRound2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel3.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel3.setText("Logout");
+        jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel3MouseClicked(evt);
+            }
+        });
+        panelRound2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 70, 35));
+
+        panelRound1.add(panelRound2, new org.netbeans.lib.awtextra.AbsoluteConstraints(1320, 12, 90, -1));
+
+        jPanel6.add(panelRound1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 60));
+
+        jPanel1.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1490, 60));
+
+        jPanel4.setBackground(new java.awt.Color(39, 114, 160));
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 1440, Short.MAX_VALUE)
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 40, Short.MAX_VALUE)
+        );
+
+        jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 790, 1440, 40));
+
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 830));
 
         pack();
@@ -568,18 +580,6 @@ private double calculateTotalPrice() {
     private void tblRoomDetailsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblRoomDetailsMouseClicked
 
     }//GEN-LAST:event_tblRoomDetailsMouseClicked
-
-    private void jLabel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseClicked
-
-    }//GEN-LAST:event_jLabel1MouseClicked
-
-    private void jLabel8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel8MouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jLabel8MouseClicked
-
-    private void jLabel9MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel9MouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jLabel9MouseClicked
 
     private void rsDateChooserCheckInPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_rsDateChooserCheckInPropertyChange
         
@@ -601,6 +601,19 @@ private double calculateTotalPrice() {
         
         searchAvailableRooms();
     }//GEN-LAST:event_jLabel12MouseClicked
+
+    private void jLabel20MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel20MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jLabel20MouseClicked
+
+    private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
+           this.dispose();
+       new landingPage().setVisible(true);
+    }//GEN-LAST:event_jLabel3MouseClicked
+
+    private void panelRound2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelRound2MouseClicked
+
+    }//GEN-LAST:event_panelRound2MouseClicked
 
     /**
      * @param args the command line arguments
@@ -706,25 +719,26 @@ private double calculateTotalPrice() {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private spinner.Spinner adultsSpinner;
     private spinner.Spinner childrenSpinner;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
+    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
+    private GUI.PanelRound panelRound1;
+    private GUI.PanelRound panelRound2;
     private rojeru_san.componentes.RSDateChooser rsDateChooserCheckIn;
     private rojeru_san.componentes.RSDateChooser rsDateChooserCheckOut;
     private rojerusan.RSTableMetro tblRoomDetails;

@@ -251,7 +251,7 @@ public class staffBoats extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_rSComboMetro1ActionPerformed
 
     private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
-        new boatReservation().setVisible(true);
+        new staffBoatReservation().setVisible(true);
     }//GEN-LAST:event_jLabel4MouseClicked
 
 

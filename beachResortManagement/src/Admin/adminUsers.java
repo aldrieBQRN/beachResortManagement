@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 import Database.DatabaseConnection; 
 import java.awt.Insets;
+import javax.swing.JOptionPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
@@ -72,46 +73,44 @@ public class adminUsers extends javax.swing.JInternalFrame {
         UI.setNorthPane(null); 
     }
     
-    public final void showUserDetails() {
-    // Ensure that the database connection is valid
-    if (con == null) {
-        System.out.println("Database connection is not established.");
-        return;
-    }
+   public final void showUserDetails() {
+        // Ensure that the database connection is valid
+       
 
-    // Prepare the SQL query to fetch the required data from user_details table
-    String query = "SELECT user_id, role, full_name, username, phone, address, email, password FROM user_details";
-    
-    // Set up the table model to display the data in the JTable
-    DefaultTableModel userModel = (DefaultTableModel) tblUserDetails.getModel();
-    
-    // Clear any previous rows from the table
-    userModel.setRowCount(0);
+        // Prepare the SQL query to fetch the required data from user_details table
+        String query = "SELECT user_id, role, full_name, phone, email, password FROM user_details";
+        
+        // Set up the table model to display the data in the JTable
+        DefaultTableModel userModel = (DefaultTableModel) tblUserDetails.getModel();
+        
+        // Clear any previous rows from the table
+        userModel.setRowCount(0);
 
-    // Use try-with-resources to automatically close the resources
-    try (PreparedStatement pst = con.prepareStatement(query);
-         ResultSet rs = pst.executeQuery()) {
+        // Use try-with-resources to automatically close the resources
+        try (PreparedStatement pst = con.prepareStatement(query);
+             ResultSet rs = pst.executeQuery()) {
 
-        // Iterate over the result set and add data to the table
-        while (rs.next()) {
-            // Fetch each column's data
-            int userId = rs.getInt("user_id");
-            String role = rs.getString("role");
-            String fullName = rs.getString("full_name");
-            String username = rs.getString("username");
-            String phone = rs.getString("phone");
-            String address = rs.getString("address");
-            String email = rs.getString("email");
-            String password = rs.getString("password");
-            
+            // Iterate over the result set and add data to the table
+            while (rs.next()) {
+                // Fetch each column's data
+                int userId = rs.getInt("user_id");
+                String role = rs.getString("role");
+                String fullName = rs.getString("full_name");
+                String phone = rs.getString("phone");
+         
+                String email = rs.getString("email");
+                String password = rs.getString("password");
 
-            // Add data to the table model
-            userModel.addRow(new Object[] { userId, role, fullName, username, phone, address, email, password});
+                // Add data to the table model
+                userModel.addRow(new Object[]{ userId, role, fullName, phone, email, password });
+            }
+        } catch (SQLException e) {
+            System.out.println("Error executing query: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Failed to fetch user details.", "Query Error", JOptionPane.ERROR_MESSAGE);
         }
-    } catch (SQLException e) {
-        System.out.println("Error connecting to the database: " + e.getMessage());
     }
-}
+
+
 
     
     
@@ -160,23 +159,23 @@ public class adminUsers extends javax.swing.JInternalFrame {
         tblUserDetails.setForeground(new java.awt.Color(255, 255, 255));
         tblUserDetails.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "#", "Role", "Full Name", "Username", "Phone", "Address", "Email", "Password"
+                "#", "Role", "Full Name", "Phone", "Email", "Password"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, true, false, false, false, false
+                false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -210,10 +209,9 @@ public class adminUsers extends javax.swing.JInternalFrame {
             tblUserDetails.getColumnModel().getColumn(0).setPreferredWidth(5);
             tblUserDetails.getColumnModel().getColumn(1).setResizable(false);
             tblUserDetails.getColumnModel().getColumn(2).setResizable(false);
+            tblUserDetails.getColumnModel().getColumn(3).setResizable(false);
             tblUserDetails.getColumnModel().getColumn(4).setResizable(false);
             tblUserDetails.getColumnModel().getColumn(5).setResizable(false);
-            tblUserDetails.getColumnModel().getColumn(6).setResizable(false);
-            tblUserDetails.getColumnModel().getColumn(7).setResizable(false);
         }
 
         jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 1120, 570));

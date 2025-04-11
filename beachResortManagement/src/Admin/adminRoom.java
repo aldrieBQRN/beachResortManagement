@@ -339,8 +339,7 @@ public class adminRoom extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_txtsearchActionPerformed
 
     private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
-        Background bg = new Background();
-        bg.setVisible(true);
+       
         adminAddRoom room = new adminAddRoom();
         room.setVisible(true);
 
@@ -350,7 +349,7 @@ public class adminRoom extends javax.swing.JInternalFrame {
             public void windowClosed(java.awt.event.WindowEvent e) {
                 // Call showBoatDetails after adminAddBoat is closed
                 showRoomDetails();
-                bg.dispose();
+               
                 
             }
         });

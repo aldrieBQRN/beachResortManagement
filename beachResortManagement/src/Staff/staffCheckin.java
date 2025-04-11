@@ -372,30 +372,157 @@ class DualPanelEditor extends AbstractCellEditor implements TableCellEditor {
 
 private void handleButtonClick(int row, String action, JTable sourceTable) {
     String reservationNumber = (String) sourceTable.getValueAt(row, 0);
-    String newStatus = "";
+    int reservationId = (int) sourceTable.getValueAt(row, 6); // reservation_id is in column 6
 
     if ("View".equals(action)) {
         viewReservationDetails(reservationNumber);
         return;
     }
 
+    String newStatus = "";
+    boolean requiresPayment = false;
+    double remainingBalance = 0;
+
     if ("Check-in".equals(action)) {
         newStatus = "Check-in";
+        requiresPayment = true;
     } else if ("Check-out".equals(action)) {
         newStatus = "Check-out";
+
+        // ✅ Confirm check-out before proceeding
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "Are you sure you want to check out this reservation?",
+                "Confirm Check-out",
+                JOptionPane.YES_NO_OPTION);
+
+        if (confirm != JOptionPane.YES_OPTION) {
+            return; // Cancel operation if user chose NO
+        }
     }
 
-    int confirm = JOptionPane.showConfirmDialog(this,
-            "Are you sure you want to update reservation " + reservationNumber + " to " + newStatus + "?",
-            "Confirm Status Change",
-            JOptionPane.YES_NO_OPTION);
+    try {
+        // 🔄 Calculate remaining balance
+        DatabaseConnection();
+        String balanceQuery = "SELECT r.total_price, COALESCE(SUM(p.amount), 0) as paid " +
+                              "FROM reservation r " +
+                              "LEFT JOIN payment p ON r.reservation_id = p.reservation_id AND p.status = 'Paid' " +
+                              "WHERE r.reservation_id = ?";
+        pst = con.prepareStatement(balanceQuery);
+        pst.setInt(1, reservationId);
+        rs = pst.executeQuery();
 
-    if (confirm == JOptionPane.YES_OPTION) {
+        if (rs.next()) {
+            double totalPrice = rs.getDouble("total_price");
+            double paidAmount = rs.getDouble("paid");
+            remainingBalance = totalPrice - paidAmount;
+        }
+
+        // 🔒 For check-in, ensure payment
+        if (requiresPayment && remainingBalance > 0) {
+            int option = JOptionPane.showConfirmDialog(this,
+                    "This reservation has ₱" + String.format("%.2f", remainingBalance) + " remaining balance.\n" +
+                    "Process payment now?",
+                    "Payment Required",
+                    JOptionPane.YES_NO_OPTION);
+
+            if (option == JOptionPane.YES_OPTION) {
+                processOnSitePayment(reservationId, remainingBalance);
+            } else {
+                return; // Don't proceed with check-in if payment not made
+            }
+        }
+
+        // ✅ Update status (Check-in or Check-out)
         updateReservationStatus(reservationNumber, newStatus);
-        fetchRoomReservations(checkInTable, CONFIRMED_STATUS);
-        fetchRoomReservations(checkOutTable, CHECKIN_STATUS);
+
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(),
+                "Database Error", JOptionPane.ERROR_MESSAGE);
+    } finally {
+        try { if (rs != null) rs.close(); } catch (SQLException e) {}
+        try { if (pst != null) pst.close(); } catch (SQLException e) {}
+        try { if (con != null) con.close(); } catch (SQLException e) {}
     }
 }
+
+private void processOnSitePayment(int reservationId, double balanceAmount) {
+    try {
+        DatabaseConnection();
+
+        // Prompt user to enter the amount paid
+        String input = JOptionPane.showInputDialog(this,
+            "Remaining balance: ₱" + String.format("%.2f", balanceAmount) + "\nEnter amount paid:",
+            "Process On-Site Payment",
+            JOptionPane.PLAIN_MESSAGE);
+
+        if (input == null) return; // User cancelled
+
+        double amountPaid;
+        try {
+            amountPaid = Double.parseDouble(input);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this,
+                "Invalid amount entered.",
+                "Input Error",
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (amountPaid < balanceAmount) {
+            JOptionPane.showMessageDialog(this,
+                "Amount paid is less than the remaining balance.\nPlease collect full payment.",
+                "Insufficient Payment",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        double change = amountPaid - balanceAmount;
+
+        // Check if a Balance payment record already exists
+        String checkQuery = "SELECT * FROM payment WHERE reservation_id = ? AND payment_type = 'Balance'";
+        pst = con.prepareStatement(checkQuery);
+        pst.setInt(1, reservationId);
+        rs = pst.executeQuery();
+
+        if (rs.next()) {
+            // Update existing balance payment
+            String updateQuery = "UPDATE payment SET amount = ?, status = 'Paid' WHERE payment_id = ?";
+            PreparedStatement updateStmt = con.prepareStatement(updateQuery);
+            updateStmt.setDouble(1, balanceAmount);
+            updateStmt.setInt(2, rs.getInt("payment_id"));
+            updateStmt.executeUpdate();
+            updateStmt.close();
+        } else {
+            // Create new balance payment
+            String insertQuery = "INSERT INTO payment " +
+                                 "(reservation_id, payment_type, payment_method, amount, status) " +
+                                 "VALUES (?, 'Balance', 'On Site', ?, 'Paid')";
+            PreparedStatement insertStmt = con.prepareStatement(insertQuery);
+            insertStmt.setInt(1, reservationId);
+            insertStmt.setDouble(2, balanceAmount);
+            insertStmt.executeUpdate();
+            insertStmt.close();
+        }
+
+        JOptionPane.showMessageDialog(this,
+            "Payment of ₱" + String.format("%.2f", balanceAmount) + " recorded.\n" +
+            "Amount received: ₱" + String.format("%.2f", amountPaid) + "\n" +
+            "Change due: ₱" + String.format("%.2f", change),
+            "Payment Successful",
+            JOptionPane.INFORMATION_MESSAGE);
+
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(this,
+            "Error processing payment: " + ex.getMessage(),
+            "Payment Error",
+            JOptionPane.ERROR_MESSAGE);
+    } finally {
+        try { if (rs != null) rs.close(); } catch (SQLException e) {}
+        try { if (pst != null) pst.close(); } catch (SQLException e) {}
+        try { if (con != null) con.close(); } catch (SQLException e) {}
+    }
+}
+
 
 private void updateReservationStatus(String reservationNumber, String newStatus) {
     try {
@@ -407,7 +534,7 @@ private void updateReservationStatus(String reservationNumber, String newStatus)
         int rows = pst.executeUpdate();
 
         if (rows > 0) {
-            JOptionPane.showMessageDialog(this, "Reservation status updated to " + newStatus);
+           
             fetchRoomReservations(checkInTable, CONFIRMED_STATUS);
             fetchRoomReservations(checkOutTable, CHECKIN_STATUS);
         } else {
@@ -422,36 +549,83 @@ private void updateReservationStatus(String reservationNumber, String newStatus)
 }
 
 
-    private void viewReservationDetails(String reservationNumber) {
-        try {
-            DatabaseConnection();
-            pst = con.prepareStatement("SELECT * FROM reservation WHERE reservation_number = ?");
-            pst.setString(1, reservationNumber);
-            rs = pst.executeQuery();
+ private void viewReservationDetails(String reservationNumber) {
+    try {
+        DatabaseConnection();
+        
+        // Get reservation details with guest name
+        String reservationQuery = "SELECT r.*, g.guest_name FROM reservation r " +
+                                "JOIN guest g ON r.guest_id = g.guest_id " +
+                                "WHERE r.reservation_number = ?";
+        pst = con.prepareStatement(reservationQuery);
+        pst.setString(1, reservationNumber);
+        rs = pst.executeQuery();
 
-            if (rs.next()) {
-                String guestName = rs.getString("guest_id");
-                Date checkInDate = rs.getDate("check_in_date");
-                Date checkOutDate = rs.getDate("check_out_date");
-                double totalPrice = rs.getDouble("total_price");
-                String reservationStatus = rs.getString("status");
+        if (rs.next()) {
+            String guestName = rs.getString("guest_name");
+            Date checkInDate = rs.getDate("check_in_date");
+            Date checkOutDate = rs.getDate("check_out_date");
+            double totalPrice = rs.getDouble("total_price");
+            String reservationStatus = rs.getString("status");
+            int reservationId = rs.getInt("reservation_id");
 
-                JOptionPane.showMessageDialog(this,
-                        "Reservation Number: " + reservationNumber + "\n"
-                                + "Guest Name: " + guestName + "\n"
-                                + "Check-In Date: " + checkInDate + "\n"
-                                + "Check-Out Date: " + checkOutDate + "\n"
-                                + "Total Price: ₱" + totalPrice + "\n"
-                                + "Status: " + reservationStatus);
+            // Get payment details
+            String paymentQuery = "SELECT * FROM payment WHERE reservation_id = ?";
+            PreparedStatement paymentStmt = con.prepareStatement(paymentQuery);
+            paymentStmt.setInt(1, reservationId);
+            ResultSet paymentRs = paymentStmt.executeQuery();
+
+            StringBuilder paymentInfo = new StringBuilder();
+            double totalPaid = 0;
+            double remainingBalance = totalPrice;
+
+            while (paymentRs.next()) {
+                String paymentType = paymentRs.getString("payment_type");
+                double amount = paymentRs.getDouble("amount");
+                String status = paymentRs.getString("status");
+                String method = paymentRs.getString("payment_method");
+                String refNum = paymentRs.getString("reference_number");
+
+                paymentInfo.append("\n- ").append(paymentType).append(": ₱").append(String.format("%.2f", amount))
+                          .append(" (").append(method).append(") - ").append(status);
+                if (refNum != null) {
+                    paymentInfo.append(" (Ref: ").append(refNum).append(")");
+                }
+
+                if ("Paid".equals(status)) {
+                    totalPaid += amount;
+                }
             }
+            remainingBalance = totalPrice - totalPaid;
+            paymentRs.close();
+            paymentStmt.close();
 
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error fetching reservation details: " + ex.getMessage());
-        } finally {
-            try { if (pst != null) pst.close(); } catch (SQLException e) {}
-            try { if (con != null) con.close(); } catch (SQLException e) {}
+            // Show reservation details with payment info
+            String message = "Reservation Details:\n" +
+                           "Number: " + reservationNumber + "\n" +
+                           "Guest: " + guestName + "\n" +
+                           "Check-In: " + checkInDate + "\n" +
+                           "Check-Out: " + checkOutDate + "\n" +
+                           "Total Price: ₱" + String.format("%.2f", totalPrice) + "\n" +
+                           "Amount Paid: ₱" + String.format("%.2f", totalPaid) + "\n" +
+                           "Remaining Balance: ₱" + String.format("%.2f", remainingBalance) + "\n" +
+                           "Status: " + reservationStatus + "\n\n" +
+                           "Payment History:" + paymentInfo.toString();
+
+            JOptionPane.showMessageDialog(this, message, "Reservation Details", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "Reservation not found", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(this, "Error fetching details: " + ex.getMessage(), 
+                                    "Database Error", JOptionPane.ERROR_MESSAGE);
+    } finally {
+        try { if (rs != null) rs.close(); } catch (SQLException e) {}
+        try { if (pst != null) pst.close(); } catch (SQLException e) {}
+        try { if (con != null) con.close(); } catch (SQLException e) {}
     }
+}
+
    
 
     
