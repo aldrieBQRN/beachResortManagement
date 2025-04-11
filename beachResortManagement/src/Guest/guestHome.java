@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.awt.HeadlessException;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 import javax.swing.JOptionPane;
 
 
@@ -36,8 +37,7 @@ public class guestHome extends javax.swing.JFrame {
     public guestHome(int userID) {
         this.userID = userID;
         initComponents();
-    
-     
+
         DatabaseConnection();
      
 
@@ -48,7 +48,21 @@ public class guestHome extends javax.swing.JFrame {
  
 
   
-    
+    private void updateNights() {
+    Date checkInDate = rsDateChooserCheckIn.getDatoFecha();
+    Date checkOutDate = rsDateChooserCheckOut.getDatoFecha();
+
+    if (checkInDate == null || checkOutDate == null) {
+        lblNumberOfNights.setText("0");
+        return;
+    }
+
+    long diffInMillis = checkOutDate.getTime() - checkInDate.getTime();
+    long numberOfNights = TimeUnit.MILLISECONDS.toDays(diffInMillis);
+
+    lblNumberOfNights.setText(String.valueOf(Math.max(numberOfNights, 0)));
+}
+
   
 
 
@@ -152,14 +166,14 @@ public class guestHome extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         rsDateChooserCheckOut = new rojeru_san.componentes.RSDateChooser();
-        lblNumberOfNights = new javax.swing.JLabel();
+        lbl = new javax.swing.JLabel();
         adultSpinner = new spinner.Spinner();
         jLabel10 = new javax.swing.JLabel();
         childSpinner = new spinner.Spinner();
         jLabel11 = new javax.swing.JLabel();
         jPanel8 = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
+        lblNumberOfNights = new javax.swing.JLabel();
         panelRound1 = new GUI.PanelRound();
         jLabel16 = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
@@ -211,10 +225,10 @@ public class guestHome extends javax.swing.JFrame {
         });
         jPanel2.add(rsDateChooserCheckOut, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 80, -1, -1));
 
-        lblNumberOfNights.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
-        lblNumberOfNights.setForeground(new java.awt.Color(102, 102, 102));
-        lblNumberOfNights.setText("Duration");
-        jPanel2.add(lblNumberOfNights, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 60, -1, -1));
+        lbl.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        lbl.setForeground(new java.awt.Color(102, 102, 102));
+        lbl.setText("Duration");
+        jPanel2.add(lbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 60, -1, -1));
 
         adultSpinner.setBackground(new java.awt.Color(255, 255, 255));
         adultSpinner.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
@@ -257,10 +271,10 @@ public class guestHome extends javax.swing.JFrame {
 
         jPanel2.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 160, 130, 40));
 
-        jLabel7.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
-        jLabel7.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel7.setText("3 Nigths");
-        jPanel2.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 80, 90, 50));
+        lblNumberOfNights.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
+        lblNumberOfNights.setForeground(new java.awt.Color(0, 0, 0));
+        lblNumberOfNights.setText("0");
+        jPanel2.add(lblNumberOfNights, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 80, 90, 50));
 
         jPanel3.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 0, 740, 280));
 
@@ -426,11 +440,20 @@ public class guestHome extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel12MouseClicked
 
     private void rsDateChooserCheckOutPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_rsDateChooserCheckOutPropertyChange
-         /* Date checkInDate = rsDateChooserCheckIn.getDatoFecha();
-        Date checkOutDate = rsDateChooserCheckOut.getDatoFecha();
-        long diffInMillies = checkOutDate.getTime() - checkInDate.getTime();
-        long numberOfNights = TimeUnit.MILLISECONDS.toDays(diffInMillies);
-         lblNumberOfNights.setText("" + numberOfNights + " Nights"); */
+    Date checkInDate = rsDateChooserCheckIn.getDatoFecha();
+    Date checkOutDate = rsDateChooserCheckOut.getDatoFecha();
+
+    // Exit if either date is not selected
+    if (checkInDate == null || checkOutDate == null) {
+        return;
+    }
+
+    long diffInMillis = checkOutDate.getTime() - checkInDate.getTime();
+    long numberOfNights = TimeUnit.MILLISECONDS.toDays(diffInMillis);
+
+    // Show 0 if checkout is before check-in
+    lblNumberOfNights.setText(String.valueOf(Math.max(numberOfNights, 0)));
+       
     }//GEN-LAST:event_rsDateChooserCheckOutPropertyChange
 
     private void jLabel18MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel18MouseClicked
@@ -513,13 +536,13 @@ public class guestHome extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
+    private javax.swing.JLabel lbl;
     private javax.swing.JLabel lblNumberOfNights;
     private GUI.PanelRound panelRound1;
     private GUI.PanelRound panelRound2;

@@ -830,10 +830,6 @@ public class guestProcess extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_paymentMethodComboBoxItemStateChanged
 
-    private void jLabel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseClicked
-       
-    }//GEN-LAST:event_jLabel1MouseClicked
-
     private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
           String reservationNumber = lblReservationNumber.getText();
         String guestName = txtFName.getText() + " " + txtLName.getText();  // Assuming txtFName and txtLName are the JTextFields for first and last name
@@ -881,6 +877,10 @@ public class guestProcess extends javax.swing.JFrame {
     private void panelRound2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelRound2MouseClicked
 
     }//GEN-LAST:event_panelRound2MouseClicked
+
+    private void jLabel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseClicked
+
+    }//GEN-LAST:event_jLabel1MouseClicked
 
     /**
      * @param args the command line arguments

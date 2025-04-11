@@ -135,6 +135,7 @@ public class landingPage extends javax.swing.JFrame {
         jLabel12 = new javax.swing.JLabel();
         panelRound2 = new GUI.PanelRound();
         jLabel8 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
         pnlgraphics = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
 
@@ -214,19 +215,19 @@ public class landingPage extends javax.swing.JFrame {
         jLabel4.setForeground(new java.awt.Color(0, 0, 0));
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel4.setText("Login");
-        pnllogin.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 350, 149, -1));
+        pnllogin.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 330, 149, -1));
 
         txterror.setBackground(new java.awt.Color(255, 0, 51));
         txterror.setFont(new java.awt.Font("Helvetica Neue", 2, 12)); // NOI18N
         txterror.setForeground(new java.awt.Color(255, 0, 51));
         txterror.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         txterror.setText("(error message)");
-        pnllogin.add(txterror, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 520, 320, 20));
+        pnllogin.add(txterror, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 500, 320, 20));
 
         jLabel14.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
         jLabel14.setForeground(new java.awt.Color(0, 0, 0));
         jLabel14.setText("Don't have an account?");
-        pnllogin.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 600, 140, -1));
+        pnllogin.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 580, 140, -1));
 
         jLabel13.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 13)); // NOI18N
         jLabel13.setForeground(new java.awt.Color(0, 0, 0));
@@ -236,7 +237,7 @@ public class landingPage extends javax.swing.JFrame {
                 jLabel13MouseClicked(evt);
             }
         });
-        pnllogin.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 600, 60, -1));
+        pnllogin.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 580, 60, -1));
 
         jLabel2.setFont(new java.awt.Font("New Peninim MT", 0, 13)); // NOI18N
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -246,7 +247,7 @@ public class landingPage extends javax.swing.JFrame {
                 jLabel2MouseClicked(evt);
             }
         });
-        pnllogin.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 490, 30, 20));
+        pnllogin.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 460, 30, 40));
 
         txtpass.setBackground(new java.awt.Color(255, 255, 255));
         txtpass.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
@@ -261,7 +262,7 @@ public class landingPage extends javax.swing.JFrame {
                 txtpassKeyReleased(evt);
             }
         });
-        pnllogin.add(txtpass, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 480, 330, 40));
+        pnllogin.add(txtpass, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 460, 330, 40));
 
         txtemail.setBackground(new java.awt.Color(255, 255, 255));
         txtemail.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
@@ -275,12 +276,12 @@ public class landingPage extends javax.swing.JFrame {
                 txtemailKeyTyped(evt);
             }
         });
-        pnllogin.add(txtemail, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 410, 330, 40));
+        pnllogin.add(txtemail, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 390, 330, 40));
 
         jLabel12.setFont(new java.awt.Font("New Peninim MT", 0, 13)); // NOI18N
         jLabel12.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel12.setText("Email");
-        pnllogin.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 390, 110, 20));
+        jLabel12.setText("Password");
+        pnllogin.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 440, 110, 20));
 
         panelRound2.setBackground(new java.awt.Color(0, 153, 255));
         panelRound2.setRoundBottomLeft(20);
@@ -305,7 +306,12 @@ public class landingPage extends javax.swing.JFrame {
         });
         panelRound2.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 70, 35));
 
-        pnllogin.add(panelRound2, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 550, 90, 35));
+        pnllogin.add(panelRound2, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 530, 90, 35));
+
+        jLabel16.setFont(new java.awt.Font("New Peninim MT", 0, 13)); // NOI18N
+        jLabel16.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel16.setText("Email");
+        pnllogin.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 370, 110, 20));
 
         pnlmain.add(pnllogin, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 60, 550, 730));
 
@@ -513,6 +519,7 @@ public class landingPage extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel2;

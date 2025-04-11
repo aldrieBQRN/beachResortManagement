@@ -141,7 +141,7 @@ public class guestSelectRoom extends javax.swing.JFrame {
 
         // Create table model with columns for room details and a "Select" button
         DefaultTableModel roomModel = new DefaultTableModel(
-            new Object[]{"Room Number", "Room Type", "Description", "Price", "Select"}, 
+            new Object[]{"Room Number", "Room Type", "Description", "Price", "Action"}, 
             0
         ) {
             @Override
@@ -341,7 +341,7 @@ private boolean validateDates(Date checkInDate, Date checkOutDate) {
         adultsSpinner = new spinner.Spinner();
         jLabel14 = new javax.swing.JLabel();
         childrenSpinner = new spinner.Spinner();
-        jPanel8 = new javax.swing.JPanel();
+        panelRound3 = new GUI.PanelRound();
         jLabel12 = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
         panelRound1 = new GUI.PanelRound();
@@ -361,24 +361,15 @@ private boolean validateDates(Date checkInDate, Date checkOutDate) {
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel9.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel9.setBorder(javax.swing.BorderFactory.createMatteBorder(2, 0, 0, 0, new java.awt.Color(204, 204, 204)));
+        jPanel9.setBackground(new java.awt.Color(242, 242, 242));
+        jPanel9.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, new java.awt.Color(204, 204, 204)));
         jPanel9.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        tblRoomDetails.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+        tblRoomDetails.setBackground(new java.awt.Color(255, 255, 255));
         tblRoomDetails.setForeground(new java.awt.Color(255, 255, 255));
         tblRoomDetails.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
                 "Room Number", "Room Category", "Description", "Price/Night"
@@ -415,9 +406,9 @@ private boolean validateDates(Date checkInDate, Date checkOutDate) {
         });
         jScrollPane1.setViewportView(tblRoomDetails);
 
-        jPanel9.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 660));
+        jPanel9.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 40, 1360, 510));
 
-        jPanel1.add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 170, 1440, 620));
+        jPanel1.add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 200, 1440, 590));
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -425,7 +416,7 @@ private boolean validateDates(Date checkInDate, Date checkOutDate) {
         jLabel10.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(102, 102, 102));
         jLabel10.setText("Check-in Date");
-        jPanel2.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 20, -1, -1));
+        jPanel2.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 40, -1, -1));
 
         rsDateChooserCheckIn.setColorBackground(new java.awt.Color(0, 153, 255));
         rsDateChooserCheckIn.setColorButtonHover(new java.awt.Color(0, 153, 255));
@@ -436,54 +427,64 @@ private boolean validateDates(Date checkInDate, Date checkOutDate) {
                 rsDateChooserCheckInPropertyChange(evt);
             }
         });
-        jPanel2.add(rsDateChooserCheckIn, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 40, -1, -1));
+        jPanel2.add(rsDateChooserCheckIn, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 60, -1, -1));
 
         rsDateChooserCheckOut.setColorBackground(new java.awt.Color(0, 153, 255));
         rsDateChooserCheckOut.setColorButtonHover(new java.awt.Color(0, 153, 255));
         rsDateChooserCheckOut.setColorForeground(new java.awt.Color(0, 0, 0));
         rsDateChooserCheckOut.setPlaceholder("");
-        jPanel2.add(rsDateChooserCheckOut, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 40, -1, -1));
+        jPanel2.add(rsDateChooserCheckOut, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 60, -1, -1));
 
         jLabel4.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(102, 102, 102));
         jLabel4.setText("Check-out Date");
-        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 20, -1, -1));
+        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 40, -1, -1));
 
         jLabel13.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
         jLabel13.setForeground(new java.awt.Color(102, 102, 102));
         jLabel13.setText("Adult");
-        jPanel2.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 20, -1, -1));
+        jPanel2.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 40, -1, -1));
 
         adultsSpinner.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
         adultsSpinner.setLabelText("");
-        jPanel2.add(adultsSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 40, 240, 40));
+        jPanel2.add(adultsSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 60, 240, 40));
 
         jLabel14.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
         jLabel14.setForeground(new java.awt.Color(102, 102, 102));
         jLabel14.setText("Child");
-        jPanel2.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(870, 20, -1, -1));
+        jPanel2.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(870, 40, -1, -1));
 
         childrenSpinner.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
         childrenSpinner.setLabelText("");
-        jPanel2.add(childrenSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(870, 40, 240, 40));
+        jPanel2.add(childrenSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(870, 60, 240, 40));
 
-        jPanel8.setBackground(new java.awt.Color(0, 153, 255));
-        jPanel8.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        panelRound3.setBackground(new java.awt.Color(0, 153, 255));
+        panelRound3.setRoundBottomLeft(20);
+        panelRound3.setRoundBottomRight(20);
+        panelRound3.setRoundTopLeft(20);
+        panelRound3.setRoundTopRight(20);
+        panelRound3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                panelRound3MouseClicked(evt);
+            }
+        });
+        panelRound3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel12.setBackground(new java.awt.Color(255, 255, 255));
         jLabel12.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
         jLabel12.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel12.setText("SEACH");
+        jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel12.setText("SEACH YOUR ROOM");
         jLabel12.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel12MouseClicked(evt);
             }
         });
-        jPanel8.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 10, -1, 30));
+        panelRound3.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(2, 0, 180, 40));
 
-        jPanel2.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(1130, 30, 230, 50));
+        jPanel2.add(panelRound3, new org.netbeans.lib.awtextra.AbsoluteConstraints(1130, 60, 180, 40));
 
-        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 60, 1440, 110));
+        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 60, 1440, 140));
 
         jPanel6.setBackground(new java.awt.Color(255, 255, 255));
         jPanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -521,7 +522,7 @@ private boolean validateDates(Date checkInDate, Date checkOutDate) {
         jLabel22.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/profile.png"))); // NOI18N
         panelRound1.add(jLabel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(1270, 0, 30, 60));
 
-        panelRound2.setBackground(new java.awt.Color(0, 153, 255));
+        panelRound2.setBackground(new java.awt.Color(255, 255, 255));
         panelRound2.setRoundBottomLeft(20);
         panelRound2.setRoundBottomRight(20);
         panelRound2.setRoundTopLeft(20);
@@ -534,7 +535,7 @@ private boolean validateDates(Date checkInDate, Date checkOutDate) {
         panelRound2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel3.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("Logout");
         jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -614,6 +615,10 @@ private boolean validateDates(Date checkInDate, Date checkOutDate) {
     private void panelRound2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelRound2MouseClicked
 
     }//GEN-LAST:event_panelRound2MouseClicked
+
+    private void panelRound3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelRound3MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_panelRound3MouseClicked
 
     /**
      * @param args the command line arguments
@@ -734,11 +739,11 @@ private boolean validateDates(Date checkInDate, Date checkOutDate) {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel6;
-    private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
     private GUI.PanelRound panelRound1;
     private GUI.PanelRound panelRound2;
+    private GUI.PanelRound panelRound3;
     private rojeru_san.componentes.RSDateChooser rsDateChooserCheckIn;
     private rojeru_san.componentes.RSDateChooser rsDateChooserCheckOut;
     private rojerusan.RSTableMetro tblRoomDetails;

@@ -257,12 +257,12 @@ private void selectBoat(int row) {
         tblBoatDetails = new rojerusan.RSTableMetro();
         jPanel2 = new javax.swing.JPanel();
         jLabel13 = new javax.swing.JLabel();
-        jPanel8 = new javax.swing.JPanel();
-        jLabel12 = new javax.swing.JLabel();
         comboBoxPeriod = new rojerusan.RSComboMetro();
         jLabel16 = new javax.swing.JLabel();
         dateComboBox = new rojerusan.RSComboMetro();
         spinnerTime = new spinner.Spinner();
+        panelRound3 = new GUI.PanelRound();
+        jLabel12 = new javax.swing.JLabel();
         panelRound1 = new GUI.PanelRound();
         jLabel17 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
@@ -280,25 +280,15 @@ private void selectBoat(int row) {
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel9.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel9.setBorder(javax.swing.BorderFactory.createMatteBorder(2, 0, 0, 0, new java.awt.Color(204, 204, 204)));
+        jPanel9.setBackground(new java.awt.Color(242, 242, 242));
+        jPanel9.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, new java.awt.Color(204, 204, 204)));
         jPanel9.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         tblBoatDetails.setBackground(new java.awt.Color(255, 255, 255));
-        tblBoatDetails.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
         tblBoatDetails.setForeground(new java.awt.Color(255, 255, 255));
         tblBoatDetails.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
                 "Boat Name", "Description", "Price", "Action"
@@ -335,9 +325,9 @@ private void selectBoat(int row) {
         });
         jScrollPane1.setViewportView(tblBoatDetails);
 
-        jPanel9.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 620));
+        jPanel9.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 40, 1360, 510));
 
-        jPanel1.add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 170, 1440, 620));
+        jPanel1.add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 200, 1440, 590));
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -345,23 +335,7 @@ private void selectBoat(int row) {
         jLabel13.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
         jLabel13.setForeground(new java.awt.Color(102, 102, 102));
         jLabel13.setText("DATE");
-        jPanel2.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 20, -1, -1));
-
-        jPanel8.setBackground(new java.awt.Color(0, 153, 255));
-        jPanel8.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel12.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel12.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
-        jLabel12.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel12.setText("SEACH");
-        jLabel12.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel12MouseClicked(evt);
-            }
-        });
-        jPanel8.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 0, -1, 40));
-
-        jPanel2.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(870, 40, 230, 40));
+        jPanel2.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 40, -1, -1));
 
         comboBoxPeriod.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "PM", "AM", " " }));
         comboBoxPeriod.setColorArrow(new java.awt.Color(27, 59, 95));
@@ -377,12 +351,12 @@ private void selectBoat(int row) {
                 comboBoxPeriodPropertyChange(evt);
             }
         });
-        jPanel2.add(comboBoxPeriod, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 40, 100, 40));
+        jPanel2.add(comboBoxPeriod, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 60, 100, 40));
 
         jLabel16.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
         jLabel16.setForeground(new java.awt.Color(102, 102, 102));
         jLabel16.setText("Time");
-        jPanel2.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 20, -1, -1));
+        jPanel2.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 40, -1, -1));
 
         dateComboBox.setColorArrow(new java.awt.Color(27, 59, 95));
         dateComboBox.setColorBorde(new java.awt.Color(39, 114, 160));
@@ -397,13 +371,39 @@ private void selectBoat(int row) {
                 dateComboBoxPropertyChange(evt);
             }
         });
-        jPanel2.add(dateComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 40, 220, 40));
+        jPanel2.add(dateComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 60, 220, 40));
 
         spinnerTime.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
         spinnerTime.setLabelText("");
-        jPanel2.add(spinnerTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 40, 120, 40));
+        jPanel2.add(spinnerTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 60, 120, 40));
 
-        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 60, 1440, 110));
+        panelRound3.setBackground(new java.awt.Color(0, 153, 255));
+        panelRound3.setRoundBottomLeft(20);
+        panelRound3.setRoundBottomRight(20);
+        panelRound3.setRoundTopLeft(20);
+        panelRound3.setRoundTopRight(20);
+        panelRound3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                panelRound3MouseClicked(evt);
+            }
+        });
+        panelRound3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel12.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel12.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
+        jLabel12.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel12.setText("SEACH");
+        jLabel12.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel12MouseClicked(evt);
+            }
+        });
+        panelRound3.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 0, 90, 40));
+
+        jPanel2.add(panelRound3, new org.netbeans.lib.awtextra.AbsoluteConstraints(870, 60, 130, 40));
+
+        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 60, 1440, 140));
 
         panelRound1.setBackground(new java.awt.Color(27, 59, 95));
         panelRound1.setRoundBottomLeft(50);
@@ -438,7 +438,7 @@ private void selectBoat(int row) {
         jLabel22.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/profile.png"))); // NOI18N
         panelRound1.add(jLabel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(1270, 0, 30, 60));
 
-        panelRound2.setBackground(new java.awt.Color(0, 153, 255));
+        panelRound2.setBackground(new java.awt.Color(255, 255, 255));
         panelRound2.setRoundBottomLeft(20);
         panelRound2.setRoundBottomRight(20);
         panelRound2.setRoundTopLeft(20);
@@ -451,7 +451,7 @@ private void selectBoat(int row) {
         panelRound2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel3.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("Logout");
         jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -595,7 +595,7 @@ private void selectBoat(int row) {
             boatName,
             description,
             "₱" + String.format("%.2f", rate),
-            "Select"
+            "Action"
         });
     }
     
@@ -664,6 +664,10 @@ private void selectBoat(int row) {
     private void panelRound2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelRound2MouseClicked
 
     }//GEN-LAST:event_panelRound2MouseClicked
+
+    private void panelRound3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelRound3MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_panelRound3MouseClicked
 
     /**
      * @param args the command line arguments
@@ -840,11 +844,11 @@ private void selectBoat(int row) {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
     private GUI.PanelRound panelRound1;
     private GUI.PanelRound panelRound2;
+    private GUI.PanelRound panelRound3;
     private spinner.Spinner spinnerTime;
     private rojerusan.RSTableMetro tblBoatDetails;
     // End of variables declaration//GEN-END:variables

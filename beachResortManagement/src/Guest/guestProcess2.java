@@ -5,6 +5,7 @@
 package Guest;
 
 import Guest.guestSelectRoom;
+import Login.landingPage;
 import java.awt.Color;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -780,7 +781,8 @@ public class guestProcess2 extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel25MouseClicked
 
     private void jLabel6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel6MouseClicked
-        insertToDatabase();
+          this.dispose();
+       new landingPage().setVisible(true);
     }//GEN-LAST:event_jLabel6MouseClicked
 
     private void panelRound2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelRound2MouseClicked
