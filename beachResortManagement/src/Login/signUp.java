@@ -166,6 +166,11 @@ private void clearFields() {
         textField1.setBackground(new java.awt.Color(255, 255, 255));
         textField1.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
         textField1.setLabelText("Last Name");
+        textField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                textField1ActionPerformed(evt);
+            }
+        });
         pnllogin.add(textField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 230, 160, 45));
 
         textField4.setBackground(new java.awt.Color(255, 255, 255));
@@ -274,6 +279,10 @@ private void clearFields() {
     private void panelRound2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelRound2MouseClicked
       
     }//GEN-LAST:event_panelRound2MouseClicked
+
+    private void textField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textField1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_textField1ActionPerformed
 
     /**
      * @param args the command line arguments

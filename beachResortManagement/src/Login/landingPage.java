@@ -8,8 +8,9 @@ import Admin.adminMainHome;
 
 import Guest.guestHome;
 import Staff.staffHome;
+
 import Staff.staffMainHome;
-import java.awt.BorderLayout;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.sql.DriverManager;
@@ -36,9 +37,9 @@ public class landingPage extends javax.swing.JFrame {
      */
     public landingPage() {
         initComponents();
- 
+ DatabaseConnection();
           txterror.setText("");
-        DatabaseConnection();
+      
        
         
     }
@@ -320,9 +321,9 @@ public class landingPage extends javax.swing.JFrame {
 
         jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/background copy.png"))); // NOI18N
         jLabel7.setText("jLabel7");
-        pnlgraphics.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(-20, 90, -1, -1));
+        pnlgraphics.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(-60, 90, -1, -1));
 
-        pnlmain.add(pnlgraphics, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 0, 890, 790));
+        pnlmain.add(pnlgraphics, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 0, 860, 790));
 
         getContentPane().add(pnlmain, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 790));
 

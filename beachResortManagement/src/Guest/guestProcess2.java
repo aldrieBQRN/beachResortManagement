@@ -11,9 +11,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import com.raven.datechooser.EventDateChooser;
-import com.raven.datechooser.SelectedAction;
-import com.raven.datechooser.SelectedDate;
+
 import com.toedter.calendar.JCalendar;
 import java.awt.HeadlessException;
 import java.beans.Statement;
@@ -55,6 +53,7 @@ public class guestProcess2 extends javax.swing.JFrame {
 
         
         initComponents();  // Initialize UI components (if any)
+         pnlPayment.setVisible(false);
         DatabaseConnection();
 
         // Store the parameters in the instance variables
@@ -230,7 +229,7 @@ public class guestProcess2 extends javax.swing.JFrame {
         txtLName = new textfield.TextField();
         txtFName = new textfield.TextField();
         panelRound4 = new GUI.PanelRound();
-        jLabel1 = new javax.swing.JLabel();
+        lbl = new javax.swing.JLabel();
         jPanel12 = new javax.swing.JPanel();
         jPanel13 = new javax.swing.JPanel();
         jLabel30 = new javax.swing.JLabel();
@@ -264,14 +263,14 @@ public class guestProcess2 extends javax.swing.JFrame {
         lblGuestInfo = new javax.swing.JLabel();
         jLabel46 = new javax.swing.JLabel();
         jLabel48 = new javax.swing.JLabel();
-        jPanel2 = new javax.swing.JPanel();
+        pnlPayment = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         paymentMethodComboBox = new rojerusan.RSComboMetro();
         lblDownPayment2 = new javax.swing.JLabel();
         txtmessage = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         panelRound5 = new GUI.PanelRound();
-        jLabel2 = new javax.swing.JLabel();
+        lblPayment = new javax.swing.JLabel();
         panelRound1 = new GUI.PanelRound();
         jLabel16 = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
@@ -324,7 +323,7 @@ public class guestProcess2 extends javax.swing.JFrame {
                 txtAddressActionPerformed(evt);
             }
         });
-        jPanel14.add(txtAddress, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 260, 790, 45));
+        jPanel14.add(txtAddress, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 260, 780, 45));
 
         txtEmail.setBackground(new java.awt.Color(255, 255, 255));
         txtEmail.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
@@ -334,6 +333,11 @@ public class guestProcess2 extends javax.swing.JFrame {
         txtContact.setBackground(new java.awt.Color(255, 255, 255));
         txtContact.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
         txtContact.setLabelText("Contact Number");
+        txtContact.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtContactActionPerformed(evt);
+            }
+        });
         jPanel14.add(txtContact, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 200, 790, 45));
 
         txtLName.setBackground(new java.awt.Color(255, 255, 255));
@@ -353,16 +357,16 @@ public class guestProcess2 extends javax.swing.JFrame {
         panelRound4.setRoundTopRight(20);
         panelRound4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel1.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Procced to Payment");
-        jLabel1.addMouseListener(new java.awt.event.MouseAdapter() {
+        lbl.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
+        lbl.setForeground(new java.awt.Color(255, 255, 255));
+        lbl.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lbl.setText("Procced to Payment");
+        lbl.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel1MouseClicked(evt);
+                lblMouseClicked(evt);
             }
         });
-        panelRound4.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 770, 40));
+        panelRound4.add(lbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 770, 40));
 
         jPanel14.add(panelRound4, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 335, 790, 40));
 
@@ -571,14 +575,14 @@ public class guestProcess2 extends javax.swing.JFrame {
 
         jPanel11.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(940, 360, 470, 250));
 
-        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel2.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        pnlPayment.setBackground(new java.awt.Color(255, 255, 255));
+        pnlPayment.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
+        pnlPayment.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel5.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(0, 0, 0));
         jLabel5.setText("Digital Payment");
-        jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, -1, 60));
+        pnlPayment.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, -1, 60));
 
         paymentMethodComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "GCash", "Maya", "PayPal" }));
         paymentMethodComboBox.setColorArrow(new java.awt.Color(27, 59, 95));
@@ -594,20 +598,20 @@ public class guestProcess2 extends javax.swing.JFrame {
                 paymentMethodComboBoxActionPerformed(evt);
             }
         });
-        jPanel2.add(paymentMethodComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 70, 790, 30));
+        pnlPayment.add(paymentMethodComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 70, 790, 30));
 
         lblDownPayment2.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
         lblDownPayment2.setForeground(new java.awt.Color(102, 102, 102));
         lblDownPayment2.setText("₱ 5,236.85");
-        jPanel2.add(lblDownPayment2, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 140, 310, -1));
+        pnlPayment.add(lblDownPayment2, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 140, 310, -1));
 
         txtmessage.setForeground(new java.awt.Color(102, 102, 102));
         txtmessage.setText("You have chosen to pay by GCash. You will be forwarded to the GCash website to proceed with this transaction.");
-        jPanel2.add(txtmessage, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 120, 800, -1));
+        pnlPayment.add(txtmessage, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 120, 800, -1));
 
         jLabel11.setForeground(new java.awt.Color(102, 102, 102));
         jLabel11.setText("The total amount to be pay is:");
-        jPanel2.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 140, 180, -1));
+        pnlPayment.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 140, 180, -1));
 
         panelRound5.setBackground(new java.awt.Color(0, 153, 255));
         panelRound5.setRoundBottomLeft(20);
@@ -616,20 +620,20 @@ public class guestProcess2 extends javax.swing.JFrame {
         panelRound5.setRoundTopRight(20);
         panelRound5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel2.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("Pay with GCash");
-        jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
+        lblPayment.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
+        lblPayment.setForeground(new java.awt.Color(255, 255, 255));
+        lblPayment.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblPayment.setText("Pay with GCash");
+        lblPayment.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel2MouseClicked(evt);
+                lblPaymentMouseClicked(evt);
             }
         });
-        panelRound5.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 770, 40));
+        panelRound5.add(lblPayment, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 770, 40));
 
-        jPanel2.add(panelRound5, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 180, 790, 40));
+        pnlPayment.add(panelRound5, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 180, 790, 40));
 
-        jPanel11.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 450, 870, 250));
+        jPanel11.add(pnlPayment, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 450, 870, 250));
 
         jPanel1.add(jPanel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 60, 1440, 730));
 
@@ -725,12 +729,15 @@ public class guestProcess2 extends javax.swing.JFrame {
             if (selectedPaymentMethod.equals("GCash")) {
                 // Action for GCash
                 txtmessage.setText("You have chosen to pay by GCash. You will be forwarded to the GCash website to proceed with this transaction.");
+                lblPayment.setText("Pay with GCash");
             } else if (selectedPaymentMethod.equals("Maya")) {
                 // Action for Maya
                 txtmessage.setText("You have chosen to pay by Maya. You will be forwarded to the Maya website to proceed with this transaction.");
+                 lblPayment.setText("Pay with Maya");
             } else if (selectedPaymentMethod.equals("PayPal")) {
                 // Action for PayMaya
                 txtmessage.setText("You have chosen to pay by PayPal. You will be forwarded to the PayPal website to proceed with this transaction.");
+                 lblPayment.setText("Pay with PayPal");
             } else {
                 // Handle the case where no valid payment method is selected
                 txtmessage.setText("Invalid Payment Method");
@@ -744,37 +751,85 @@ public class guestProcess2 extends javax.swing.JFrame {
 
     }//GEN-LAST:event_paymentMethodComboBoxActionPerformed
 
-    private void jLabel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseClicked
+    private void lblMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblMouseClicked
+            pnlPayment.setVisible(true);
+    }//GEN-LAST:event_lblMouseClicked
 
-    }//GEN-LAST:event_jLabel1MouseClicked
+    private void lblPaymentMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblPaymentMouseClicked
+      String reservationNumber = lblReservationNumber.getText();
+String guestName = txtFName.getText() + " " + txtLName.getText();
+String email = txtEmail.getText();
+String contact = txtContact.getText();
+String address = txtAddress.getText();
 
-    private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
-        String reservationNumber = lblReservationNumber.getText();
-        String guestName = txtFName.getText() + " " + txtLName.getText();  // Assuming txtFName and txtLName are the JTextFields for first and last name
-        String email = txtEmail.getText();  // Assuming txtEmail is the JTextField for email
-        String contact = txtContact.getText();  // Assuming txtContact is the JTextField for contact
-        String address = txtAddress.getText();
-        double totalPrice = roomPrice * TimeUnit.MILLISECONDS.toDays(checkOutDate.getTime() - checkInDate.getTime())
-  
+double totalPrice = roomPrice * TimeUnit.MILLISECONDS.toDays(checkOutDate.getTime() - checkInDate.getTime())
         + (100.0 + 20.0) * (numAdults + numChildren);
-        double downPayment = totalPrice * 0.30;
+double downPayment = totalPrice * 0.30;
 
-        new guestGcashPayment(
-            checkInDate,
-            checkOutDate,
-            roomNumber,
-            roomType,
-            roomDescription,
-            roomPrice,
-            numAdults,
-            numChildren,
-            userID,
-            totalPrice,
-            downPayment, guestName, email, contact, address, reservationNumber
+String paymentMethod = (String) paymentMethodComboBox.getSelectedItem();
 
-        ).setVisible(true);
+if ("Gacash".equalsIgnoreCase(paymentMethod)) {
+    new guestGcashPayment(
+        checkInDate,
+        checkOutDate,
+        roomNumber,
+        roomType,
+        roomDescription,
+        roomPrice,
+        numAdults,
+        numChildren,
+        userID,
+        totalPrice,
+        downPayment,
+        guestName,
+        email,
+        contact,
+        address,
+        reservationNumber
+    ).setVisible(true);
+} else if ("Maya".equalsIgnoreCase(paymentMethod)) {
+    new guestMayaPayment(
+        checkInDate,
+        checkOutDate,
+        roomNumber,
+        roomType,
+        roomDescription,
+        roomPrice,
+        numAdults,
+        numChildren,
+        userID,
+        totalPrice,
+        downPayment,
+        guestName,
+        email,
+        contact,
+        address,
+        reservationNumber
+    ).setVisible(true);
+} else if ("Paypal".equalsIgnoreCase(paymentMethod)) {
+    new guestPaypalPayment(
+        checkInDate,
+        checkOutDate,
+        roomNumber,
+        roomType,
+        roomDescription,
+        roomPrice,
+        numAdults,
+        numChildren,
+        userID,
+        totalPrice,
+        downPayment,
+        guestName,
+        email,
+        contact,
+        address,
+        reservationNumber
+    ).setVisible(true);
+} else {
+    JOptionPane.showMessageDialog(this, "Please select a valid payment method.");
+}
 
-    }//GEN-LAST:event_jLabel2MouseClicked
+    }//GEN-LAST:event_lblPaymentMouseClicked
 
     private void jLabel25MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel25MouseClicked
         // TODO add your handling code here:
@@ -788,6 +843,10 @@ public class guestProcess2 extends javax.swing.JFrame {
     private void panelRound2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelRound2MouseClicked
 
     }//GEN-LAST:event_panelRound2MouseClicked
+
+    private void txtContactActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtContactActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtContactActionPerformed
 
     /**
      * @param args the command line arguments
@@ -899,14 +958,12 @@ public class guestProcess2 extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
@@ -930,12 +987,12 @@ public class guestProcess2 extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
+    private javax.swing.JLabel lbl;
     private javax.swing.JLabel lblCheckIn;
     private javax.swing.JLabel lblCheckOut;
     private javax.swing.JLabel lblDownPayment;
@@ -945,6 +1002,7 @@ public class guestProcess2 extends javax.swing.JFrame {
     private javax.swing.JLabel lblGrandTotal;
     private javax.swing.JLabel lblGuestInfo;
     private javax.swing.JLabel lblNumberOfNights;
+    private javax.swing.JLabel lblPayment;
     private javax.swing.JLabel lblReservationNumber;
     private javax.swing.JLabel lblRoomDescription;
     private javax.swing.JLabel lblRoomNumber;
@@ -955,6 +1013,7 @@ public class guestProcess2 extends javax.swing.JFrame {
     private GUI.PanelRound panelRound4;
     private GUI.PanelRound panelRound5;
     private rojerusan.RSComboMetro paymentMethodComboBox;
+    private javax.swing.JPanel pnlPayment;
     private textfield.TextField txtAddress;
     private textfield.TextField txtContact;
     private textfield.TextField txtEmail;

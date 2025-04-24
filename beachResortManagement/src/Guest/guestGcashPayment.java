@@ -580,6 +580,8 @@ private void handleDatabaseError(String message, SQLException e) {
         txtReferenceNumber.setForeground(new java.awt.Color(102, 102, 102));
         txtReferenceNumber.setText("Enter Gcash Reference No.");
         txtReferenceNumber.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        txtReferenceNumber.setSelectedTextColor(new java.awt.Color(102, 102, 102));
+        txtReferenceNumber.setSelectionColor(new java.awt.Color(255, 255, 255));
         jPanel2.add(txtReferenceNumber, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 40, 410, -1));
 
         jLabel29.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N

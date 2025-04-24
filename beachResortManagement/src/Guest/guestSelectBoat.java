@@ -12,10 +12,14 @@ import java.sql.SQLException;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import javax.swing.DefaultCellEditor;
@@ -23,8 +27,11 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
+import raven.datetime.component.time.TimeEvent;
+import raven.datetime.component.time.TimeSelectionListener;
 
 
 
@@ -64,6 +71,9 @@ public class guestSelectBoat extends javax.swing.JFrame {
         displayValues();
          
         DatabaseConnection();
+        
+     
+     
        
 
         
@@ -206,37 +216,61 @@ private void selectBoat(int row) {
    
     
     if (wantsWaterActivities) {
+    try {
         // Get the selected date and parse it
         String selectedDateString = (String) dateComboBox.getSelectedItem();
-        
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy (EEE)", Locale.ENGLISH);
-        LocalDate selectedDate = LocalDate.parse(selectedDateString, formatter);
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy (EEE)", Locale.ENGLISH);
+        LocalDate selectedDate = LocalDate.parse(selectedDateString, dateFormatter);
         java.sql.Date sqlDate = java.sql.Date.valueOf(selectedDate);
 
-        // Get selected time and convert it to 24-hour format
-        int hour = (int) spinnerTime.getValue();
-        String period = (String) comboBoxPeriod.getSelectedItem();
-
-        // Adjust the hour for AM/PM format
-        if ("PM".equals(period) && hour < 12) {
-            hour += 12; // Convert PM time to 24-hour format
-        } else if ("AM".equals(period) && hour == 12) {
-            hour = 0; // Convert 12 AM to 0
+        // Get time from text field and parse it
+        String timeText = txtTime.getText().trim();
+        SimpleDateFormat timeFormat12hr = new SimpleDateFormat("hh:mm a");
+        SimpleDateFormat timeFormat24hr = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat timeFormat24hrWithAMPM = new SimpleDateFormat("HH:mm a");
+        
+        Date timeDate;
+        
+        try {
+            // Try parsing with AM/PM first (12-hour format)
+            timeDate = timeFormat12hr.parse(timeText);
+        } catch (ParseException e1) {
+            try {
+                // Try parsing as 24-hour format without AM/PM
+                timeDate = timeFormat24hr.parse(timeText);
+            } catch (ParseException e2) {
+                try {
+                    // Try parsing as 24-hour format with AM/PM (unlikely but possible)
+                    timeDate = timeFormat24hrWithAMPM.parse(timeText);
+                } catch (ParseException e3) {
+                    JOptionPane.showMessageDialog(this, "Invalid time format. Please use HH:mm (24-hour) or hh:mm a (12-hour) format.");
+                    return;
+                }
+            }
         }
 
-        String timeString = String.format("%02d:00:00", hour);
-        java.sql.Time sqlStartTime = java.sql.Time.valueOf(timeString);
+        // Convert to SQL Time
+        java.sql.Time sqlStartTime = new java.sql.Time(timeDate.getTime());
+        
+        // Add 3 hours to get end time
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(sqlStartTime);
+        cal.add(Calendar.HOUR_OF_DAY, 3);
+        java.sql.Time sqlEndTime = new java.sql.Time(cal.getTimeInMillis());
 
-        // Add 3 hours to the start time to calculate the end time for the water activity
-        java.sql.Time sqlEndTime = new java.sql.Time(sqlStartTime.getTime() + (3 * 60 * 60 * 1000)); // 3 hours in milliseconds
-
-        // Proceed with creating a new instance of guestProcess with all details
-       new guestProcess(checkInDate, checkOutDate, roomNumber, roomType, roomDescription, 
-                 roomPrice, sqlDate, sqlStartTime, sqlEndTime, boatName, 
-                 boatPrice, adults, children, userID).setVisible(true);
-    } else {
-         new guestProcess2(checkInDate, checkOutDate, roomNumber, roomType, roomDescription, roomPrice, adults, children, userID).setVisible(true);
+        // Proceed with creating a new instance
+        new guestProcess(checkInDate, checkOutDate, roomNumber, roomType, roomDescription, 
+                roomPrice, sqlDate, sqlStartTime, sqlEndTime, boatName, 
+                boatPrice, adults, children, userID).setVisible(true);
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, "Error processing time: " + ex.getMessage());
+        ex.printStackTrace();
     }
+} else {
+    new guestProcess2(checkInDate, checkOutDate, roomNumber, roomType, 
+            roomDescription, roomPrice, adults, children, userID).setVisible(true);
+}
+    
 }
 
 
@@ -251,27 +285,30 @@ private void selectBoat(int row) {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        timePicker = new com.raven.swing.TimePicker();
         jPanel1 = new javax.swing.JPanel();
-        jPanel9 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tblBoatDetails = new rojerusan.RSTableMetro();
-        jPanel2 = new javax.swing.JPanel();
+        panelRound5 = new GUI.PanelRound();
         jLabel13 = new javax.swing.JLabel();
-        comboBoxPeriod = new rojerusan.RSComboMetro();
         jLabel16 = new javax.swing.JLabel();
-        dateComboBox = new rojerusan.RSComboMetro();
-        spinnerTime = new spinner.Spinner();
         panelRound3 = new GUI.PanelRound();
         jLabel12 = new javax.swing.JLabel();
+        txtTime = new textfield_suggestion.TextFieldSuggestion();
+        jLabel1 = new javax.swing.JLabel();
+        dateComboBox = new GUI.ComboBoxSuggestion();
+        panelRound4 = new GUI.PanelRound();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblBoatDetails = new rojerusan.RSTableMetro();
         panelRound1 = new GUI.PanelRound();
         jLabel17 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
-        jLabel20 = new javax.swing.JLabel();
+        jLabel25 = new javax.swing.JLabel();
         jLabel19 = new javax.swing.JLabel();
-        jLabel22 = new javax.swing.JLabel();
+        jLabel26 = new javax.swing.JLabel();
         panelRound2 = new GUI.PanelRound();
-        jLabel3 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
+
+        timePicker.setDisplayText(txtTime);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
@@ -280,9 +317,76 @@ private void selectBoat(int row) {
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel9.setBackground(new java.awt.Color(242, 242, 242));
-        jPanel9.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, new java.awt.Color(204, 204, 204)));
-        jPanel9.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        panelRound5.setBackground(new java.awt.Color(255, 255, 255));
+        panelRound5.setRoundBottomLeft(10);
+        panelRound5.setRoundBottomRight(10);
+        panelRound5.setRoundTopLeft(10);
+        panelRound5.setRoundTopRight(10);
+        panelRound5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel13.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        jLabel13.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel13.setText("DATE");
+        panelRound5.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, -1, -1));
+
+        jLabel16.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        jLabel16.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel16.setText("Time");
+        panelRound5.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 10, -1, -1));
+
+        panelRound3.setBackground(new java.awt.Color(0, 153, 255));
+        panelRound3.setRoundBottomLeft(20);
+        panelRound3.setRoundBottomRight(20);
+        panelRound3.setRoundTopLeft(20);
+        panelRound3.setRoundTopRight(20);
+        panelRound3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                panelRound3MouseClicked(evt);
+            }
+        });
+        panelRound3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel12.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel12.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
+        jLabel12.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel12.setText("SEACH");
+        jLabel12.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel12MouseClicked(evt);
+            }
+        });
+        panelRound3.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 0, 90, 40));
+
+        panelRound5.add(panelRound3, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 30, 130, 40));
+
+        txtTime.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtTimeMouseClicked(evt);
+            }
+        });
+        txtTime.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtTimeActionPerformed(evt);
+            }
+        });
+        panelRound5.add(txtTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 30, 100, -1));
+
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/clock.png"))); // NOI18N
+        jLabel1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel1MouseClicked(evt);
+            }
+        });
+        panelRound5.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 30, -1, 40));
+        panelRound5.add(dateComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 30, 180, 40));
+
+        jPanel1.add(panelRound5, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 80, 570, 80));
+
+        panelRound4.setBackground(new java.awt.Color(242, 242, 242));
+        panelRound4.setRoundTopLeft(50);
+        panelRound4.setRoundTopRight(50);
+        panelRound4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         tblBoatDetails.setBackground(new java.awt.Color(255, 255, 255));
         tblBoatDetails.setForeground(new java.awt.Color(255, 255, 255));
@@ -325,120 +429,42 @@ private void selectBoat(int row) {
         });
         jScrollPane1.setViewportView(tblBoatDetails);
 
-        jPanel9.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 40, 1360, 510));
+        panelRound4.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 90, 1360, 540));
 
-        jPanel1.add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 200, 1440, 590));
-
-        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel13.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
-        jLabel13.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel13.setText("DATE");
-        jPanel2.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 40, -1, -1));
-
-        comboBoxPeriod.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "PM", "AM", " " }));
-        comboBoxPeriod.setColorArrow(new java.awt.Color(27, 59, 95));
-        comboBoxPeriod.setColorBorde(new java.awt.Color(39, 114, 160));
-        comboBoxPeriod.setColorFondo(new java.awt.Color(39, 114, 160));
-        comboBoxPeriod.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                comboBoxPeriodActionPerformed(evt);
-            }
-        });
-        comboBoxPeriod.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-            public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                comboBoxPeriodPropertyChange(evt);
-            }
-        });
-        jPanel2.add(comboBoxPeriod, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 60, 100, 40));
-
-        jLabel16.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
-        jLabel16.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel16.setText("Time");
-        jPanel2.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 40, -1, -1));
-
-        dateComboBox.setColorArrow(new java.awt.Color(27, 59, 95));
-        dateComboBox.setColorBorde(new java.awt.Color(39, 114, 160));
-        dateComboBox.setColorFondo(new java.awt.Color(39, 114, 160));
-        dateComboBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                dateComboBoxActionPerformed(evt);
-            }
-        });
-        dateComboBox.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-            public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                dateComboBoxPropertyChange(evt);
-            }
-        });
-        jPanel2.add(dateComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 60, 220, 40));
-
-        spinnerTime.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
-        spinnerTime.setLabelText("");
-        jPanel2.add(spinnerTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 60, 120, 40));
-
-        panelRound3.setBackground(new java.awt.Color(0, 153, 255));
-        panelRound3.setRoundBottomLeft(20);
-        panelRound3.setRoundBottomRight(20);
-        panelRound3.setRoundTopLeft(20);
-        panelRound3.setRoundTopRight(20);
-        panelRound3.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                panelRound3MouseClicked(evt);
-            }
-        });
-        panelRound3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel12.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel12.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
-        jLabel12.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel12.setText("SEACH");
-        jLabel12.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel12MouseClicked(evt);
-            }
-        });
-        panelRound3.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 0, 90, 40));
-
-        jPanel2.add(panelRound3, new org.netbeans.lib.awtextra.AbsoluteConstraints(870, 60, 130, 40));
-
-        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 60, 1440, 140));
+        jPanel1.add(panelRound4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 120, 1440, 670));
 
         panelRound1.setBackground(new java.awt.Color(27, 59, 95));
-        panelRound1.setRoundBottomLeft(50);
-        panelRound1.setRoundBottomRight(50);
         panelRound1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel17.setFont(new java.awt.Font("Tahoma", 1, 30)); // NOI18N
+        jLabel17.setFont(new java.awt.Font("Tahoma", 1, 25)); // NOI18N
         jLabel17.setForeground(new java.awt.Color(255, 255, 255));
         jLabel17.setText("Welcome,");
-        panelRound1.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 0, 180, 60));
+        panelRound1.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 0, 180, 60));
 
-        jLabel18.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
+        jLabel18.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 14)); // NOI18N
         jLabel18.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel18.setText("enjoy and have fun!");
-        panelRound1.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 20, -1, 30));
+        jLabel18.setText("to Papaya Beach Resort");
+        panelRound1.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 20, -1, 30));
 
-        jLabel20.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
-        jLabel20.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel20.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/iconHome.png"))); // NOI18N
-        jLabel20.addMouseListener(new java.awt.event.MouseAdapter() {
+        jLabel25.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel25.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel25.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/iconHome.png"))); // NOI18N
+        jLabel25.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel20MouseClicked(evt);
+                jLabel25MouseClicked(evt);
             }
         });
-        panelRound1.add(jLabel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(1170, 0, -1, 60));
+        panelRound1.add(jLabel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(1170, 0, -1, 60));
 
         jLabel19.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
         jLabel19.setForeground(new java.awt.Color(255, 255, 255));
         jLabel19.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/iconNotif.png"))); // NOI18N
         panelRound1.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(1220, 0, -1, 60));
 
-        jLabel22.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/profile.png"))); // NOI18N
-        panelRound1.add(jLabel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(1270, 0, 30, 60));
+        jLabel26.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/profile.png"))); // NOI18N
+        panelRound1.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(1270, 0, 30, 60));
 
-        panelRound2.setBackground(new java.awt.Color(255, 255, 255));
+        panelRound2.setBackground(new java.awt.Color(0, 153, 255));
         panelRound2.setRoundBottomLeft(20);
         panelRound2.setRoundBottomRight(20);
         panelRound2.setRoundTopLeft(20);
@@ -450,20 +476,20 @@ private void selectBoat(int row) {
         });
         panelRound2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel3.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setText("Logout");
-        jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
+        jLabel6.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel6.setText("Logout");
+        jLabel6.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel3MouseClicked(evt);
+                jLabel6MouseClicked(evt);
             }
         });
-        panelRound2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 70, 35));
+        panelRound2.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 70, 35));
 
         panelRound1.add(panelRound2, new org.netbeans.lib.awtextra.AbsoluteConstraints(1320, 12, 90, -1));
 
-        jPanel1.add(panelRound1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 60));
+        jPanel1.add(panelRound1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 160));
 
         jPanel4.setBackground(new java.awt.Color(39, 114, 160));
 
@@ -496,178 +522,168 @@ private void selectBoat(int row) {
 
     }//GEN-LAST:event_tblBoatDetailsMouseClicked
 
+    private void panelRound3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelRound3MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_panelRound3MouseClicked
+
     private void jLabel12MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel12MouseClicked
-   try {
-    // Get selected date and time
-    String selectedDateString = (String) dateComboBox.getSelectedItem();
-    if (selectedDateString == null || selectedDateString.equals("Select a date")) {
-        JOptionPane.showMessageDialog(this, "Please select a valid date.");
+        try {
+            // Get selected date and time
+            String selectedDateString = (String) dateComboBox.getSelectedItem();
+            if (selectedDateString == null || selectedDateString.equals("Select a date")) {
+                JOptionPane.showMessageDialog(this, "Please select a valid date.");
+                return;
+            }
+
+            // Parse selected date
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy (EEE)", Locale.ENGLISH);
+            LocalDate selectedDate = LocalDate.parse(selectedDateString, formatter);
+            java.sql.Date sqlDate = java.sql.Date.valueOf(selectedDate);
+
+            // Debug: Print selected date
+
+            // Get selected time and convert to 24-hour format
+           // Get time from text field, expected format: "hh:mm a" or "HH:mm"
+String timeInput = txtTime.getText().trim();
+
+LocalTime localStartTime;
+try {
+    // Try parsing with AM/PM format first
+    DateTimeFormatter amPmFormatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.ENGLISH);
+    localStartTime = LocalTime.parse(timeInput.toUpperCase(), amPmFormatter);
+} catch (DateTimeParseException e1) {
+    try {
+        // Fallback to 24-hour format
+        DateTimeFormatter twentyFourHrFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        localStartTime = LocalTime.parse(timeInput, twentyFourHrFormatter);
+    } catch (DateTimeParseException e2) {
+        JOptionPane.showMessageDialog(this, "Invalid time format. Please use hh:mm AM/PM or HH:mm (24hr).");
         return;
     }
-
-    // Parse selected date
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy (EEE)", Locale.ENGLISH);
-    LocalDate selectedDate = LocalDate.parse(selectedDateString, formatter);
-    java.sql.Date sqlDate = java.sql.Date.valueOf(selectedDate);
-    
-    // Debug: Print selected date
-  
-
-    // Get selected time and convert to 24-hour format
-    int hour = (int) spinnerTime.getValue();
-    String period = (String) comboBoxPeriod.getSelectedItem();
-
-    if ("PM".equals(period) && hour < 12) {
-        hour += 12;
-    } else if ("AM".equals(period) && hour == 12) {
-        hour = 0;
-    }
-
-    String timeString = String.format("%02d:00:00", hour);
-    java.sql.Time sqlStartTime = java.sql.Time.valueOf(timeString);
-
-    // Add 3 hours to the start time to calculate the end time
-    java.sql.Time sqlEndTime = new java.sql.Time(sqlStartTime.getTime() + (3 * 60 * 60 * 1000)); // 3 hours in milliseconds
-    
-    int guestTotal = this.adults + this.children;
-
-  
-
-    // Query for available boats with the updated condition for reservation overlap
-   String boatQuery = """
-    SELECT b.boat_name, b.description, b.tour_price 
-    FROM boat b 
-    WHERE b.capacity >= ?  -- Minimum capacity requirement
-    AND b.boat_id NOT IN (
-        SELECT br.boat_id 
-        FROM boat_reservation br 
-        WHERE br.status = 'Reserved' 
-        AND br.boat_tour_date = ? 
-        AND (? < br.boat_tour_end_time AND ? > br.boat_tour_start_time)  -- Time overlap check
-    ) 
-    ORDER BY b.tour_price ASC;
-""";
-
-
-    pst = con.prepareStatement(boatQuery);
-    pst.setInt(1, guestTotal);     // Capacity check (number of guests)
-    pst.setDate(2, sqlDate);       // Selected date for reservation
-    pst.setTime(3, sqlStartTime);  // Start time for reservation
-    pst.setTime(4, sqlEndTime);    // End time for reservation
-
-    rs = pst.executeQuery();
-
-    // Create table model for boats
-    DefaultTableModel boatModel = new DefaultTableModel(
-        new Object[]{"Boat Name", "Description", "Price/Ride", "Select"}, 
-        0
-    ) {
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return column == 3;  // Only the 'Select' button column is editable
-        }
-
-        @Override
-        public Class<?> getColumnClass(int columnIndex) {
-            if (columnIndex == 3) {
-                return JButton.class;  // Select column to be a button
-            }
-            return super.getColumnClass(columnIndex);
-        }
-    };
-
-    tblBoatDetails.setModel(boatModel); // Set the model to the table
-    tblBoatDetails.getColumnModel().getColumn(3).setCellRenderer(new ButtonRenderer());
-    tblBoatDetails.getColumnModel().getColumn(3).setCellEditor(new ButtonEditor(new JCheckBox()));
-
-    boolean foundBoats = false;
-
-    // Process result set and populate the table with available boats
-    while (rs.next()) {
-        foundBoats = true;
-        String boatName = rs.getString("boat_name");
-        String description = rs.getString("description");
-        double rate = rs.getDouble("tour_price");
-
-        System.out.println("Boat Name: " + boatName + " | Description: " + description + " | ₱" + rate);
-
-        boatModel.addRow(new Object[]{
-            boatName,
-            description,
-            "₱" + String.format("%.2f", rate),
-            "Action"
-        });
-    }
-    
-      // Debug: Print start and end times
-    System.out.println("Start Time: " + sqlStartTime);
-    System.out.println("End Time: " + sqlEndTime);
-      System.out.println("Selected Date: " + sqlDate);
-
-    // If no available boats found, show message to the user
-    if (!foundBoats) {
-        JOptionPane.showMessageDialog(this, "No available boats found for the selected date and time.");
-    }
-
-} catch (SQLException ex) {
-    ex.printStackTrace();
-    JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage());
-} catch (DateTimeParseException ex) {
-    JOptionPane.showMessageDialog(this, "Invalid date format: " + ex.getMessage());
-} catch (Exception ex) {
-    ex.printStackTrace();
-    JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
 }
 
+java.sql.Time sqlStartTime = java.sql.Time.valueOf(localStartTime);
 
+// Add 3 hours
+java.sql.Time sqlEndTime = java.sql.Time.valueOf(localStartTime.plusHours(3));
 
-
-   
-
-     
-   
-   
-    }//GEN-LAST:event_jLabel12MouseClicked
-
-    private void comboBoxPeriodActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBoxPeriodActionPerformed
-         String selected = (String) dateComboBox.getSelectedItem();
-               if ("AM".equals(selected)) {
-        spinnerTime.setModel(new javax.swing.SpinnerNumberModel(7, 7, 11, 1));
-    } else if ("PM".equals(selected)) {
-        spinnerTime.setModel(new javax.swing.SpinnerNumberModel(12, 12, 15, 1)); // 12 to 3 PM
-    }
             
 
-    }//GEN-LAST:event_comboBoxPeriodActionPerformed
+            // Add 3 hours to the start time to calculate the end time
+          
 
-    private void comboBoxPeriodPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_comboBoxPeriodPropertyChange
-     
-    }//GEN-LAST:event_comboBoxPeriodPropertyChange
+            int guestTotal = this.adults + this.children;
 
-    private void dateComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dateComboBoxActionPerformed
+            // Query for available boats with the updated condition for reservation overlap
+            String boatQuery = """
+            SELECT b.boat_name, b.description, b.tour_price
+            FROM boat b
+            WHERE b.capacity >= ?  -- Minimum capacity requirement
+            AND b.boat_id NOT IN (
+                SELECT br.boat_id
+                FROM boat_reservation br
+                WHERE br.status = 'Reserved'
+                AND br.boat_tour_date = ?
+                AND (? < br.boat_tour_end_time AND ? > br.boat_tour_start_time)  -- Time overlap check
+            )
+            ORDER BY b.tour_price ASC;
+            """;
+
+            pst = con.prepareStatement(boatQuery);
+            pst.setInt(1, guestTotal);     // Capacity check (number of guests)
+            pst.setDate(2, sqlDate);       // Selected date for reservation
+            pst.setTime(3, sqlStartTime);  // Start time for reservation
+            pst.setTime(4, sqlEndTime);    // End time for reservation
+
+            rs = pst.executeQuery();
+
+            // Create table model for boats
+            DefaultTableModel boatModel = new DefaultTableModel(
+                new Object[]{"Boat Name", "Description", "Price/Ride", "Select"},
+                0
+            ) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return column == 3;  // Only the 'Select' button column is editable
+                }
+
+                @Override
+                public Class<?> getColumnClass(int columnIndex) {
+                    if (columnIndex == 3) {
+                        return JButton.class;  // Select column to be a button
+                    }
+                    return super.getColumnClass(columnIndex);
+                }
+            };
+
+            tblBoatDetails.setModel(boatModel); // Set the model to the table
+            tblBoatDetails.getColumnModel().getColumn(3).setCellRenderer(new ButtonRenderer());
+            tblBoatDetails.getColumnModel().getColumn(3).setCellEditor(new ButtonEditor(new JCheckBox()));
+
+            boolean foundBoats = false;
+
+            // Process result set and populate the table with available boats
+            while (rs.next()) {
+                foundBoats = true;
+                String boatName = rs.getString("boat_name");
+                String description = rs.getString("description");
+                double rate = rs.getDouble("tour_price");
+
+                System.out.println("Boat Name: " + boatName + " | Description: " + description + " | ₱" + rate);
+
+                boatModel.addRow(new Object[]{
+                    boatName,
+                    description,
+                    "₱" + String.format("%.2f", rate),
+                    "Action"
+                });
+            }
+
+            // Debug: Print start and end times
+            System.out.println("Start Time: " + sqlStartTime);
+            System.out.println("End Time: " + sqlEndTime);
+            System.out.println("Selected Date: " + sqlDate);
+
+            // If no available boats found, show message to the user
+            if (!foundBoats) {
+                JOptionPane.showMessageDialog(this, "No available boats found for the selected date and time.");
+            }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage());
+        } catch (DateTimeParseException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid date format: " + ex.getMessage());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_jLabel12MouseClicked
+
+    private void jLabel25MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel25MouseClicked
         // TODO add your handling code here:
-    }//GEN-LAST:event_dateComboBoxActionPerformed
+    }//GEN-LAST:event_jLabel25MouseClicked
 
-    private void dateComboBoxPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_dateComboBoxPropertyChange
-        // TODO add your handling code here:
-    }//GEN-LAST:event_dateComboBoxPropertyChange
-
-    private void jLabel20MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel20MouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jLabel20MouseClicked
-
-    private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
-       this.dispose();
-       new landingPage().setVisible(true);
-    }//GEN-LAST:event_jLabel3MouseClicked
+    private void jLabel6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel6MouseClicked
+        this.dispose();
+        new landingPage().setVisible(true);
+    }//GEN-LAST:event_jLabel6MouseClicked
 
     private void panelRound2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelRound2MouseClicked
 
     }//GEN-LAST:event_panelRound2MouseClicked
 
-    private void panelRound3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelRound3MouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_panelRound3MouseClicked
+    private void txtTimeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTimeActionPerformed
+         
+    }//GEN-LAST:event_txtTimeActionPerformed
+
+    private void jLabel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseClicked
+ timePicker.showPopup(this, 100, 100);  
+    }//GEN-LAST:event_jLabel1MouseClicked
+
+    private void txtTimeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtTimeMouseClicked
+         timePicker.showPopup(this, 100, 100);  
+    }//GEN-LAST:event_txtTimeMouseClicked
 
     /**
      * @param args the command line arguments
@@ -830,26 +846,27 @@ private void selectBoat(int row) {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private rojerusan.RSComboMetro comboBoxPeriod;
-    private rojerusan.RSComboMetro dateComboBox;
+    private GUI.ComboBoxSuggestion dateComboBox;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
-    private javax.swing.JLabel jLabel20;
-    private javax.swing.JLabel jLabel22;
-    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel26;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
     private GUI.PanelRound panelRound1;
     private GUI.PanelRound panelRound2;
     private GUI.PanelRound panelRound3;
-    private spinner.Spinner spinnerTime;
+    private GUI.PanelRound panelRound4;
+    private GUI.PanelRound panelRound5;
     private rojerusan.RSTableMetro tblBoatDetails;
+    private com.raven.swing.TimePicker timePicker;
+    private textfield_suggestion.TextFieldSuggestion txtTime;
     // End of variables declaration//GEN-END:variables
 }

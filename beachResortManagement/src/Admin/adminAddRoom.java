@@ -5,11 +5,22 @@
 package Admin;
 
 import Staff.*;
+import java.awt.Image;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -17,9 +28,13 @@ import javax.swing.JOptionPane;
  */
 public class adminAddRoom extends javax.swing.JFrame {
 
-    /**
-     * Creates new form roomAdd
-     */
+    File f = null;
+    String path = null;
+    private ImageIcon format = null;
+    String fname = null;
+    int s = 0;
+    byte[] pimage = null;
+
     public adminAddRoom() {
         initComponents();
         DatabaseConnection();
@@ -78,7 +93,11 @@ public class adminAddRoom extends javax.swing.JFrame {
         txtRoomPrice = new javax.swing.JTextField();
         rSButtonHover1 = new rojeru_san.complementos.RSButtonHover();
         rSButtonHover2 = new rojeru_san.complementos.RSButtonHover();
-        cmbRoomType = new rojerusan.RSComboMetro();
+        timePickerButton1 = new com.raven.swing.TimePickerButton();
+        jLabel7 = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        labelImage = new javax.swing.JLabel();
+        cmbRoomType = new GUI.ComboBoxSuggestion();
         jLabel6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -95,23 +114,23 @@ public class adminAddRoom extends javax.swing.JFrame {
 
         jLabel1.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel1.setText("BOAT NUMBER");
-        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 50, 122, 30));
+        jLabel1.setText("ROOM IMAGE");
+        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 90, 122, 30));
 
         txtRoomNumber.setBackground(new java.awt.Color(255, 255, 255));
         txtRoomNumber.setForeground(new java.awt.Color(102, 102, 102));
         txtRoomNumber.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jPanel2.add(txtRoomNumber, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 50, 240, 30));
+        jPanel2.add(txtRoomNumber, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 50, 240, 30));
 
         jLabel2.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(0, 0, 0));
         jLabel2.setText("ROOM TYPE");
-        jPanel2.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 90, 122, 30));
+        jPanel2.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 300, 122, 30));
 
         jLabel4.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(0, 0, 0));
         jLabel4.setText("MAX OCCUPANCY");
-        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 230, 140, 30));
+        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 440, 140, 30));
 
         txtDescription.setBackground(new java.awt.Color(255, 255, 255));
         txtDescription.setColumns(20);
@@ -120,25 +139,25 @@ public class adminAddRoom extends javax.swing.JFrame {
         txtDescription.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jScrollPane1.setViewportView(txtDescription);
 
-        jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 130, 240, -1));
+        jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 340, 240, -1));
 
         spinnerMaxOccupancy.setBorder(null);
-        jPanel2.add(spinnerMaxOccupancy, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 230, 240, 30));
+        jPanel2.add(spinnerMaxOccupancy, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 440, 240, 30));
 
         jLabel5.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(0, 0, 0));
         jLabel5.setText("DESCRIPTION");
-        jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 130, 122, 30));
+        jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 340, 122, 30));
 
         jLabel3.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(0, 0, 0));
         jLabel3.setText("PRICE/DAY");
-        jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 270, 122, 30));
+        jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 480, 122, 30));
 
         txtRoomPrice.setBackground(new java.awt.Color(255, 255, 255));
         txtRoomPrice.setForeground(new java.awt.Color(102, 102, 102));
         txtRoomPrice.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jPanel2.add(txtRoomPrice, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 270, 240, 30));
+        jPanel2.add(txtRoomPrice, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 480, 240, 30));
 
         rSButtonHover1.setBackground(new java.awt.Color(27, 59, 95));
         rSButtonHover1.setText("CANCEL");
@@ -147,7 +166,7 @@ public class adminAddRoom extends javax.swing.JFrame {
                 rSButtonHover1ActionPerformed(evt);
             }
         });
-        jPanel2.add(rSButtonHover1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 320, 160, -1));
+        jPanel2.add(rSButtonHover1, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 530, 160, -1));
 
         rSButtonHover2.setBackground(new java.awt.Color(27, 59, 95));
         rSButtonHover2.setText("CONTINUE");
@@ -156,29 +175,50 @@ public class adminAddRoom extends javax.swing.JFrame {
                 rSButtonHover2ActionPerformed(evt);
             }
         });
-        jPanel2.add(rSButtonHover2, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 320, 240, -1));
+        jPanel2.add(rSButtonHover2, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 530, 240, -1));
 
-        cmbRoomType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Single", "Double", "Suite", " " }));
-        cmbRoomType.setSelectedIndex(-1);
-        cmbRoomType.setColorArrow(new java.awt.Color(27, 59, 95));
-        cmbRoomType.setColorBorde(new java.awt.Color(39, 114, 160));
-        cmbRoomType.setColorFondo(new java.awt.Color(39, 114, 160));
-        cmbRoomType.addActionListener(new java.awt.event.ActionListener() {
+        timePickerButton1.setBackground(new java.awt.Color(27, 59, 95));
+        timePickerButton1.setText("Choose Image");
+        timePickerButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbRoomTypeActionPerformed(evt);
+                timePickerButton1ActionPerformed(evt);
             }
         });
-        jPanel2.add(cmbRoomType, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 90, 240, 30));
+        jPanel2.add(timePickerButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 260, 240, -1));
 
-        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, 560, 390));
+        jLabel7.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel7.setText("BOAT NUMBER");
+        jPanel2.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 50, 122, 30));
+
+        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel3.addContainerListener(new java.awt.event.ContainerAdapter() {
+            public void componentAdded(java.awt.event.ContainerEvent evt) {
+                jPanel3ComponentAdded(evt);
+            }
+        });
+        jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        labelImage.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelImage.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
+        jPanel3.add(labelImage, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 240, 160));
+
+        jPanel2.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 90, 240, 160));
+
+        cmbRoomType.setEditable(false);
+        cmbRoomType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Single", "Double" }));
+        cmbRoomType.setSelectedIndex(-1);
+        jPanel2.add(cmbRoomType, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 297, 240, -1));
+
+        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 80, 620, 600));
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(0, 0, 0));
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel6.setText("Add Room");
-        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, 560, 60));
+        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, 640, 60));
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 620, 500));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 700, 700));
 
         pack();
         setLocationRelativeTo(null);
@@ -190,76 +230,117 @@ public class adminAddRoom extends javax.swing.JFrame {
 
     private void rSButtonHover2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSButtonHover2ActionPerformed
        
+        if (path == null || path.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please select an image for the room!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+    
+    File f = new File(path);
+    System.out.println("Image Path - " + path);
+    System.out.println("Image Name - " + f.getName());
+    
+    if (!f.exists()) {
+        JOptionPane.showMessageDialog(this, "Selected image file does not exist!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
 
-        String roomNumber = txtRoomNumber.getText().trim();
-        String roomType = (String) cmbRoomType.getSelectedItem();  // Get selected item from combo box
-        String description = txtDescription.getText().trim();
-        int maxOccupancy;
-        double roomPrice;
+    String roomNumber = txtRoomNumber.getText().trim();
+    String roomType = (String) cmbRoomType.getSelectedItem();
+    String description = txtDescription.getText().trim();
+    int maxOccupancy;
+    double roomPrice;
 
-        // Validate required fields
-        if (roomNumber.isEmpty() || roomType == null || roomType.isEmpty() || description.isEmpty() || txtRoomPrice.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "All fields must be filled!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+    // Validate required fields
+    if (roomNumber.isEmpty() || roomType == null || roomType.isEmpty() || description.isEmpty() || txtRoomPrice.getText().trim().isEmpty()) {
+        JOptionPane.showMessageDialog(this, "All fields must be filled!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    try {
+        // Validate Max Occupancy
+        maxOccupancy = (int) spinnerMaxOccupancy.getValue();
+        if (maxOccupancy <= 0) {
+            JOptionPane.showMessageDialog(this, "Max Occupancy must be greater than 0!", "Validation Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        try {
-            // Validate Max Occupancy
-            maxOccupancy = (int) spinnerMaxOccupancy.getValue();
-            if (maxOccupancy <= 0) {
-                JOptionPane.showMessageDialog(this, "Max Occupancy must be greater than 0!", "Validation Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+        // Validate Room Price
+        roomPrice = Double.parseDouble(txtRoomPrice.getText().trim());
+        if (roomPrice <= 0) {
+            JOptionPane.showMessageDialog(this, "Room price must be a positive number!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-            // Validate Room Price
-            roomPrice = Double.parseDouble(txtRoomPrice.getText().trim());
-            if (roomPrice <= 0) {
-                JOptionPane.showMessageDialog(this, "Room price must be a positive number!", "Validation Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+        // Confirmation dialog
+        int confirm = JOptionPane.showConfirmDialog(this, 
+                "Are you sure you want to register this room?\n\n" + 
+                "Room Number: " + roomNumber + "\n" + 
+                "Room Type: " + roomType + "\n" + 
+                "Description: " + description + "\n" + 
+                "Max Occupancy: " + maxOccupancy + "\n" + 
+                "Room Price: $" + roomPrice, 
+                "Confirm Registration", JOptionPane.YES_NO_OPTION);
 
-            // Confirmation before insertion
-            int confirm = JOptionPane.showConfirmDialog(this, 
-                    "Are you sure you want to register this room?\n\n" + 
-                    "Room Number: " + roomNumber + "\n" + 
-                    "Room Type: " + roomType + "\n" + 
-                    "Description: " + description + "\n" + 
-                    "Max Occupancy: " + maxOccupancy + "\n" + 
-                    "Room Price: $" + roomPrice, 
-                    "Confirm Registration", JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
 
-            if (confirm != JOptionPane.YES_OPTION) {
-                return;
-            }
-
-            // Database Insertion
-            String sql = "INSERT INTO room (room_number, room_type, description, max_occupancy, room_price) VALUES (?, ?, ?, ?, ?)";
-            pst = con.prepareStatement(sql);
+        // Database operations
+        try (InputStream is = new FileInputStream(f);
+             PreparedStatement pst = con.prepareStatement(
+                 "INSERT INTO room (room_number, room_image, room_type, description, max_occupancy, room_price) " +
+                 "VALUES (?, ?, ?, ?, ?, ?)")) {
+            
             pst.setString(1, roomNumber);
-            pst.setString(2, roomType);  // Insert selected room type
-            pst.setString(3, description);
-            pst.setInt(4, maxOccupancy);
-            pst.setDouble(5, roomPrice);
+            pst.setBlob(2, is);
+            pst.setString(3, roomType);
+            pst.setString(4, description);
+            pst.setInt(5, maxOccupancy);
+            pst.setDouble(6, roomPrice);
 
             int rowsInserted = pst.executeUpdate();
             if (rowsInserted > 0) {
                 JOptionPane.showMessageDialog(this, "Room registered successfully!");
                 this.dispose();
             }
-
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Invalid input! Ensure Max Occupancy and Room Price are numbers.", "Input Error", JOptionPane.ERROR_MESSAGE);
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
         }
 
-
-
+    } catch (NumberFormatException ex) {
+        JOptionPane.showMessageDialog(this, "Invalid input! Ensure Max Occupancy and Room Price are numbers.", 
+            "Input Error", JOptionPane.ERROR_MESSAGE);
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), 
+            "Database Error", JOptionPane.ERROR_MESSAGE);
+    } catch (IOException ex) {
+        JOptionPane.showMessageDialog(this, "Error processing image file: " + ex.getMessage(), 
+            "File Error", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_rSButtonHover2ActionPerformed
+
+    private void timePickerButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_timePickerButton1ActionPerformed
+        JFileChooser fileChooser = new JFileChooser();
+FileNameExtensionFilter fnwf = new FileNameExtensionFilter("PNG AND JPEG", "png", "jpeg", "jpg");
+fileChooser.addChoosableFileFilter(fnwf);
+int load = fileChooser.showOpenDialog(null);
+
+if(load == fileChooser.APPROVE_OPTION){
+    f = fileChooser.getSelectedFile();
+    path = f.getAbsolutePath();
+ 
+    ImageIcon ii = new ImageIcon(path);
+    Image img = ii.getImage().getScaledInstance(labelImage.getWidth(), 
+                            labelImage.getHeight(),  Image.SCALE_SMOOTH);
+    labelImage.setIcon(new ImageIcon(img));
+}
+    }//GEN-LAST:event_timePickerButton1ActionPerformed
 
     private void cmbRoomTypeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbRoomTypeActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_cmbRoomTypeActionPerformed
+
+    private void jPanel3ComponentAdded(java.awt.event.ContainerEvent evt) {//GEN-FIRST:event_jPanel3ComponentAdded
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jPanel3ComponentAdded
 
     /**
      * @param args the command line arguments
@@ -298,19 +379,23 @@ public class adminAddRoom extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private rojerusan.RSComboMetro cmbRoomType;
+    private GUI.ComboBoxSuggestion cmbRoomType;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel labelImage;
     private rojeru_san.complementos.RSButtonHover rSButtonHover1;
     private rojeru_san.complementos.RSButtonHover rSButtonHover2;
     private javax.swing.JSpinner spinnerMaxOccupancy;
+    private com.raven.swing.TimePickerButton timePickerButton1;
     private javax.swing.JTextArea txtDescription;
     private javax.swing.JTextField txtRoomNumber;
     private javax.swing.JTextField txtRoomPrice;

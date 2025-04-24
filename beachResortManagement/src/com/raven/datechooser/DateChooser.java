@@ -88,20 +88,20 @@ public final class DateChooser extends javax.swing.JPanel {
         }
     }
 
-    private Event getEventDay(Dates dates) {
-        return (MouseEvent evt, int num) -> {
-            dates.clearSelected();
-            dates.setSelected(num);
-            DAY = num;
-            selectedDate.setDay(DAY);
-            selectedDate.setMonth(MONTH);
-            selectedDate.setYear(YEAR);
-            setText(true, 1);
-            if (evt != null && evt.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(evt)) {
-                popup.setVisible(false);
-            }
-        };
-    }
+  private Event getEventDay(Dates dates) {
+    return (MouseEvent evt, int num) -> {
+        dates.clearSelected();
+        dates.setSelected(num);
+        DAY = num;
+        selectedDate.setDay(DAY);
+        selectedDate.setMonth(MONTH);
+        selectedDate.setYear(YEAR);
+        setText(true, 1);
+        if (evt != null && SwingUtilities.isLeftMouseButton(evt)) {
+            popup.setVisible(false);  // Close on single click
+        }
+    };
+}
 
     private Event getEventMonth() {
         return (MouseEvent evt, int num) -> {
@@ -237,7 +237,7 @@ public final class DateChooser extends javax.swing.JPanel {
 
         setBackground(new java.awt.Color(255, 255, 255));
 
-        header.setBackground(new java.awt.Color(204, 93, 93));
+        header.setBackground(new java.awt.Color(0, 112, 192));
         header.setMaximumSize(new java.awt.Dimension(262, 40));
 
         cmdForward.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));

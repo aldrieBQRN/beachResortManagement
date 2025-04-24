@@ -1,3 +1,6 @@
+
+import test.GradientDropdownMenu;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -14,6 +17,12 @@ public class NewJFrame extends javax.swing.JFrame {
      */
     public NewJFrame() {
         initComponents();
+       
+        menu.addItem("Home");
+        menu.addItem("Features", "Ticker New", "Featured Styles", "Content Blocks");
+       
+        menu.setFont(new java.awt.Font("sansserif", 1, 14));
+        menu.applay(this);
     }
 
     /**
@@ -26,145 +35,113 @@ public class NewJFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         spinnerUI1 = new spinner.SpinnerUI();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tblbooking = new rojerusan.RSTableMetro();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        tblbooking1 = new rojerusan.RSTableMetro();
-        passwordField1 = new textfield.PasswordField();
-        spinner1 = new spinner.Spinner();
+        timePicker1 = new com.raven.swing.TimePicker();
+        jLabel1 = new javax.swing.JLabel();
+        txtEditor = new textfield_suggestion.TextFieldSuggestion();
+        timePickerButton1 = new com.raven.swing.TimePickerButton();
+        timePickerLabel1 = new com.raven.swing.TimePickerLabel();
+        flatTextField1 = new com.formdev.flatlaf.extras.components.FlatTextField();
+        menu = new test.GradientDropdownMenu();
+
+        timePicker1.setDisplayText(txtEditor);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        tblbooking.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "Booking ID", "Room", "Check-in", "Check-out", "Total"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, true
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        tblbooking.setColorBackgoundHead(new java.awt.Color(255, 255, 255));
-        tblbooking.setColorBordeFilas(new java.awt.Color(255, 255, 255));
-        tblbooking.setColorBordeHead(new java.awt.Color(255, 255, 255));
-        tblbooking.setColorFilasBackgound2(new java.awt.Color(255, 255, 255));
-        tblbooking.setColorFilasForeground1(new java.awt.Color(61, 58, 87));
-        tblbooking.setColorFilasForeground2(new java.awt.Color(61, 58, 87));
-        tblbooking.setColorForegroundHead(new java.awt.Color(0, 0, 0));
-        tblbooking.setColorSelBackgound(new java.awt.Color(61, 58, 87));
-        tblbooking.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
-        tblbooking.setFuenteFilas(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        tblbooking.setFuenteFilasSelect(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        tblbooking.setGridColor(new java.awt.Color(204, 204, 204));
-        tblbooking.setRowHeight(30);
-        tblbooking.setSelectionBackground(new java.awt.Color(61, 58, 87));
-        tblbooking.setSelectionForeground(new java.awt.Color(255, 255, 255));
-        tblbooking.setShowGrid(false);
-        tblbooking.addMouseListener(new java.awt.event.MouseAdapter() {
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/clock.png"))); // NOI18N
+        jLabel1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tblbookingMouseClicked(evt);
+                jLabel1MouseClicked(evt);
             }
         });
-        jScrollPane1.setViewportView(tblbooking);
 
-        tblbooking1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "Booking ID"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        tblbooking1.setColorBackgoundHead(new java.awt.Color(255, 255, 255));
-        tblbooking1.setColorBordeFilas(new java.awt.Color(255, 255, 255));
-        tblbooking1.setColorBordeHead(new java.awt.Color(255, 255, 255));
-        tblbooking1.setColorFilasBackgound2(new java.awt.Color(255, 255, 255));
-        tblbooking1.setColorFilasForeground1(new java.awt.Color(61, 58, 87));
-        tblbooking1.setColorFilasForeground2(new java.awt.Color(61, 58, 87));
-        tblbooking1.setColorForegroundHead(new java.awt.Color(0, 0, 0));
-        tblbooking1.setColorSelBackgound(new java.awt.Color(61, 58, 87));
-        tblbooking1.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
-        tblbooking1.setFuenteFilas(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        tblbooking1.setFuenteFilasSelect(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        tblbooking1.setGridColor(new java.awt.Color(204, 204, 204));
-        tblbooking1.setRowHeight(30);
-        tblbooking1.setSelectionBackground(new java.awt.Color(61, 58, 87));
-        tblbooking1.setSelectionForeground(new java.awt.Color(255, 255, 255));
-        tblbooking1.setShowGrid(false);
-        tblbooking1.addMouseListener(new java.awt.event.MouseAdapter() {
+        txtEditor.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tblbooking1MouseClicked(evt);
+                txtEditorMouseClicked(evt);
             }
         });
-        jScrollPane2.setViewportView(tblbooking1);
+        txtEditor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtEditorActionPerformed(evt);
+            }
+        });
 
-        passwordField1.setText("passwordField1");
+        timePickerButton1.setText("timePickerButton1");
+
+        timePickerLabel1.setBackground(new java.awt.Color(0, 0, 0));
+        timePickerLabel1.setText("jajjn");
+        timePickerLabel1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                timePickerLabel1MouseClicked(evt);
+            }
+        });
+
+        flatTextField1.setText("flatTextField1");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(350, Short.MAX_VALUE)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(306, 306, 306))
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap(495, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(68, 68, 68)
-                        .addComponent(passwordField1, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(132, 132, 132)
-                        .addComponent(spinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 604, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(190, Short.MAX_VALUE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(timePickerButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(199, 199, 199))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(timePickerLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(148, 148, 148))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(flatTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtEditor, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(10, 10, 10)
+                        .addComponent(jLabel1)
+                        .addGap(32, 32, 32))))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(64, 64, 64)
+                .addComponent(menu, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(spinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(15, 15, 15)
-                .addComponent(passwordField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 260, Short.MAX_VALUE)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(86, 86, 86))
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(185, 185, 185)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(279, Short.MAX_VALUE)))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(50, 50, 50)
+                .addComponent(menu, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(71, 71, 71)
+                .addComponent(timePickerButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(30, 30, 30)
+                .addComponent(flatTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(58, 58, 58)
+                .addComponent(timePickerLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 106, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtEditor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(2, 2, 2)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(0, 73, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void tblbookingMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblbookingMouseClicked
-        
-    }//GEN-LAST:event_tblbookingMouseClicked
+    private void jLabel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseClicked
 
-    private void tblbooking1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblbooking1MouseClicked
+        timePicker1.showPopup(this, 100, 100);
+    }//GEN-LAST:event_jLabel1MouseClicked
+
+    private void txtEditorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtEditorActionPerformed
+        timePicker1.showPopup(this, 100, 100);
+    }//GEN-LAST:event_txtEditorActionPerformed
+
+    private void timePickerLabel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_timePickerLabel1MouseClicked
+   timePicker1.showPopup(this, 100, 100);        // TODO add your handling code here:
+    }//GEN-LAST:event_timePickerLabel1MouseClicked
+
+    private void txtEditorMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtEditorMouseClicked
         // TODO add your handling code here:
-    }//GEN-LAST:event_tblbooking1MouseClicked
+        timePicker1.showPopup(this, 100, 100);    
+    }//GEN-LAST:event_txtEditorMouseClicked
 
     /**
      * @param args the command line arguments
@@ -202,12 +179,13 @@ public class NewJFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private textfield.PasswordField passwordField1;
-    private spinner.Spinner spinner1;
+    private com.formdev.flatlaf.extras.components.FlatTextField flatTextField1;
+    private javax.swing.JLabel jLabel1;
+    private test.GradientDropdownMenu menu;
     private spinner.SpinnerUI spinnerUI1;
-    private rojerusan.RSTableMetro tblbooking;
-    private rojerusan.RSTableMetro tblbooking1;
+    private com.raven.swing.TimePicker timePicker1;
+    private com.raven.swing.TimePickerButton timePickerButton1;
+    private com.raven.swing.TimePickerLabel timePickerLabel1;
+    private textfield_suggestion.TextFieldSuggestion txtEditor;
     // End of variables declaration//GEN-END:variables
 }

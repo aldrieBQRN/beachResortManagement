@@ -14,8 +14,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 import Database.DatabaseConnection; 
+import java.awt.Component;
+import java.awt.Image;
 import java.awt.Insets;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -71,51 +82,72 @@ public class adminRoom extends javax.swing.JInternalFrame {
         UI.setNorthPane(null); 
     }
     
-    public final void showRoomDetails(){
-   
-        
-        try {
-    
-           
-            
-            // Prepare the SQL query to select all rooms from the table
-            pst = con.prepareStatement("SELECT * FROM room");
-            
-            // Execute the query and get the results
-            rs = pst.executeQuery();
-            
-            // Set up the table model to display the data in the JTable
-            DefaultTableModel roomModel = (DefaultTableModel) tblroom.getModel();
-            
-            // Clear any previous rows
-            roomModel.setRowCount(0);
-            
-           
-            // Iterate over the result set and add data to the table
-            while (rs.next()) {
-               
-                String roomNumber = rs.getString("room_number");
-                String roomType = rs.getString("room_type");
-                double price = rs.getDouble("room_price");
-                String description = rs.getString("description");
-                int maxOccupancy = rs.getInt("max_occupancy");
-                String createdAt = rs.getString("created_at");
+ public final void showRoomDetails() {
+    try {
+        pst = con.prepareStatement("SELECT * FROM room");
+        rs = pst.executeQuery();
 
-                // Add data to the table model
-                roomModel.addRow(new Object[] { roomNumber, createdAt, roomType, description, maxOccupancy, price });
+        DefaultTableModel roomModel = (DefaultTableModel) tblroom.getModel();
+        roomModel.setRowCount(0); // clear table
+
+        // Add custom renderer just for the image column (column 1)
+        tblroom.getColumnModel().getColumn(1).setCellRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+                if (value instanceof ImageIcon) {
+                    JLabel label = new JLabel((ImageIcon) value);
+                    label.setHorizontalAlignment(JLabel.CENTER);
+                    if (isSelected) {
+                        label.setBackground(table.getSelectionBackground());
+                        label.setOpaque(true);
+                    }
+                    return label;
+                }
+                return super.getTableCellRendererComponent(table, value, isSelected, 
+                        hasFocus, row, column);
             }
-        } catch (SQLException ex) {
-            // Handle any SQL exceptions
-            Logger.getLogger(adminRoom.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("Error fetching room data: " + ex.getMessage());
-        }
-        
-    }
-    
-   
+        });
 
-    
-   
+        while (rs.next()) {
+            String roomNumber = rs.getString("room_number");
+            String roomType = rs.getString("room_type");
+            double price = rs.getDouble("room_price");
+            String description = rs.getString("description");
+            int maxOccupancy = rs.getInt("max_occupancy");
+
+            // Get the image as bytes
+            byte[] imgBytes = rs.getBytes("room_image");
+            ImageIcon imageIcon = null;
+
+            if (imgBytes != null) {
+                Image img = new ImageIcon(imgBytes).getImage();
+                img = img.getScaledInstance(100, 80, Image.SCALE_SMOOTH);
+                imageIcon = new ImageIcon(img);
+            } else {
+                // Set a default blank icon if no image exists
+                imageIcon = new ImageIcon(new BufferedImage(100, 80, BufferedImage.TYPE_INT_ARGB));
+            }
+
+            // Add row to model
+            roomModel.addRow(new Object[] {
+                roomNumber,
+                imageIcon,
+                roomType,
+                description,
+                maxOccupancy,
+                price
+            });
+        }
+
+        // Set the row height to fit the image
+        tblroom.setRowHeight(80);
+
+    } catch (SQLException ex) {
+        Logger.getLogger(adminRoom.class.getName()).log(Level.SEVERE, null, ex);
+        System.out.println("Error fetching room data: " + ex.getMessage());
+    }
+}
 
 
     /**
@@ -172,7 +204,7 @@ public class adminRoom extends javax.swing.JInternalFrame {
                 {null, null, null, null, null, null}
             },
             new String [] {
-                "Room Number", "Date Created", "Type", "Description", "Max Occupancy", "Price/Day"
+                "Room Number", "Room Image", "Type", "Description", "Max Occupancy", "Price/Day"
             }
         ) {
             boolean[] canEdit = new boolean [] {

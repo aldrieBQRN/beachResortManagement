@@ -279,7 +279,14 @@ showHome();
     }//GEN-LAST:event_jLabel26MouseClicked
 
     private void jLabel7MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel7MouseClicked
-        // TODO add your handling code here:
+         adminUsers user = new adminUsers();
+        pnlmain.removeAll(); // Remove existing components
+        pnlmain.setLayout(new BorderLayout()); // Set the layout
+        pnlmain.add(user, BorderLayout.CENTER); // Add new component
+        pnlmain.revalidate(); // Revalidate to reflect changes
+        pnlmain.repaint(); // Repaint the panel to show updates
+        user.setVisible(true); 
+        
     }//GEN-LAST:event_jLabel7MouseClicked
 
     /**
