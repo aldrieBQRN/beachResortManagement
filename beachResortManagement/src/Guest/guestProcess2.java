@@ -797,7 +797,24 @@ public class guestProcess2 extends javax.swing.JFrame {
     }//GEN-LAST:event_paymentMethodComboBoxActionPerformed
 
     private void lblMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblMouseClicked
-            pnlPayment.setVisible(true);
+            String reservationNumber = lblReservationNumber.getText();
+            String guestName = txtFName.getText().trim() + " " + txtLName.getText().trim();
+            String email = txtEmail.getText().trim();
+            String contact = txtContact.getText().trim();
+            String address = txtAddress.getText().trim();
+
+            // Basic validation
+            if (reservationNumber.isEmpty() || txtFName.getText().trim().isEmpty() || 
+                txtLName.getText().trim().isEmpty() || email.isEmpty() || 
+                contact.isEmpty() || address.isEmpty()) {
+
+                JOptionPane.showMessageDialog(this, "Please fill in all the required fields.", "Missing Information", JOptionPane.WARNING_MESSAGE);
+                return; // Stop here if validation fails
+            }
+
+            // You can add more checks (e.g., email format, contact number length) if needed
+
+            pnlPayment.setVisible(true); // Show payment panel only if validation passes
     }//GEN-LAST:event_lblMouseClicked
 
     private void lblPaymentMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblPaymentMouseClicked

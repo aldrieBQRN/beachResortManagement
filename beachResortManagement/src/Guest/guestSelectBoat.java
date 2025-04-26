@@ -383,7 +383,7 @@ private void selectBoat(int row) {
         dateComboBox.setEditable(false);
         panelRound5.add(dateComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 30, 180, 40));
 
-        jPanel1.add(panelRound5, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 80, 570, 80));
+        jPanel1.add(panelRound5, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 80, 570, 80));
 
         panelRound4.setBackground(new java.awt.Color(242, 242, 242));
         panelRound4.setRoundTopLeft(50);

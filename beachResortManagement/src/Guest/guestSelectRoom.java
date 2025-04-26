@@ -511,7 +511,7 @@ private void selectRoom(int row) {
         panelRound1.setRoundTopRight(10);
         panelRound1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        panelRound3.setBackground(new java.awt.Color(39, 114, 160));
+        panelRound3.setBackground(new java.awt.Color(0, 153, 255));
         panelRound3.setRoundBottomLeft(20);
         panelRound3.setRoundBottomRight(20);
         panelRound3.setRoundTopLeft(20);
@@ -533,7 +533,7 @@ private void selectRoom(int row) {
                 jLabel12MouseClicked(evt);
             }
         });
-        panelRound3.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 0, 170, 40));
+        panelRound3.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 0, 160, 40));
 
         panelRound1.add(panelRound3, new org.netbeans.lib.awtextra.AbsoluteConstraints(1050, 30, 180, 40));
 

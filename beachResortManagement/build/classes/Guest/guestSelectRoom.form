@@ -241,7 +241,7 @@
                 <Container class="GUI.PanelRound" name="panelRound3">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                      <Color blue="a0" green="72" red="27" type="rgb"/>
+                      <Color blue="ff" green="99" red="0" type="rgb"/>
                     </Property>
                     <Property name="roundBottomLeft" type="int" value="20"/>
                     <Property name="roundBottomRight" type="int" value="20"/>
@@ -280,7 +280,7 @@
                       </Events>
                       <Constraints>
                         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-                          <AbsoluteConstraints x="12" y="0" width="170" height="40"/>
+                          <AbsoluteConstraints x="12" y="0" width="160" height="40"/>
                         </Constraint>
                       </Constraints>
                     </Component>
