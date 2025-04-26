@@ -5,6 +5,12 @@
 package Admin;
 
 import Staff.*;
+import java.awt.Color;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -17,7 +23,39 @@ public class adminDeleteUser extends javax.swing.JFrame {
      */
     public adminDeleteUser() {
         initComponents();
+        DatabaseConnection();
     }
+    
+      
+    java.sql.Connection con; 
+    PreparedStatement pst;
+    ResultSet rs; 
+    
+    public final void DatabaseConnection() {
+          String url = "jdbc:mysql://localhost:3306/beachResortManagement";
+        String user = "root"; // MySQL username
+        String password = ""; // MySQL password
+        
+        // Establishing the connection
+        try {
+            // Load MySQL JDBC driver (optional in newer versions of JDBC)
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            
+            // Create the connection
+            con = DriverManager.getConnection(url, user, password);
+            
+            System.out.println("Connected to the database successfully!");
+
+            // Perform database operations here...
+
+      
+        } catch (SQLException e) {
+            System.out.println("Error connecting to the database: " + e.getMessage());
+        } catch (ClassNotFoundException e) {
+            System.out.println("MySQL JDBC Driver not found: " + e.getMessage());
+        }
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -30,7 +68,7 @@ public class adminDeleteUser extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        jTextField3 = new javax.swing.JTextField();
+        txtUserId = new javax.swing.JTextField();
         rSButtonHover3 = new rojeru_san.complementos.RSButtonHover();
         rSButtonHover5 = new rojeru_san.complementos.RSButtonHover();
         jLabel6 = new javax.swing.JLabel();
@@ -47,18 +85,23 @@ public class adminDeleteUser extends javax.swing.JFrame {
         jPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 0, 0, 0, new java.awt.Color(27, 59, 95)));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jTextField3.setBackground(new java.awt.Color(255, 255, 255));
-        jTextField3.setForeground(new java.awt.Color(102, 102, 102));
-        jTextField3.setText("Enter user id here...");
-        jTextField3.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jTextField3.addActionListener(new java.awt.event.ActionListener() {
+        txtUserId.setBackground(new java.awt.Color(255, 255, 255));
+        txtUserId.setForeground(new java.awt.Color(102, 102, 102));
+        txtUserId.setText("Enter user id here...");
+        txtUserId.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
+        txtUserId.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField3ActionPerformed(evt);
+                txtUserIdActionPerformed(evt);
             }
         });
-        jPanel2.add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 80, 290, 50));
+        txtUserId.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtUserIdKeyTyped(evt);
+            }
+        });
+        jPanel2.add(txtUserId, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 80, 290, 50));
 
-        rSButtonHover3.setBackground(new java.awt.Color(27, 59, 95));
+        rSButtonHover3.setBackground(new java.awt.Color(255, 0, 0));
         rSButtonHover3.setText("CANCEL");
         rSButtonHover3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -67,7 +110,7 @@ public class adminDeleteUser extends javax.swing.JFrame {
         });
         jPanel2.add(rSButtonHover3, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 140, 140, -1));
 
-        rSButtonHover5.setBackground(new java.awt.Color(27, 59, 95));
+        rSButtonHover5.setBackground(new java.awt.Color(0, 204, 0));
         rSButtonHover5.setText("CONTINUE");
         rSButtonHover5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -96,12 +139,57 @@ public class adminDeleteUser extends javax.swing.JFrame {
     }//GEN-LAST:event_rSButtonHover3ActionPerformed
 
     private void rSButtonHover5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSButtonHover5ActionPerformed
-        // TODO add your handling code here:
+       try {
+    String userId = txtUserId.getText().trim(); // Get User ID from text field
+
+    if (userId.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please enter a User ID!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // Confirm before deletion
+    int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this user?", "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+    if (confirm != JOptionPane.YES_OPTION) {
+        return;
+    }
+
+    // Check if user exists
+    String checkSql = "SELECT * FROM user_details WHERE user_id = ?";
+    PreparedStatement pst = con.prepareStatement(checkSql);
+    pst.setString(1, userId);
+    ResultSet rs = pst.executeQuery();
+
+    if (!rs.next()) {
+        JOptionPane.showMessageDialog(this, "User ID not found!", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // Delete user
+    String deleteSql = "DELETE FROM user_details WHERE user_id = ?";
+    pst = con.prepareStatement(deleteSql);
+    pst.setString(1, userId);
+
+    int rowsAffected = pst.executeUpdate();
+    if (rowsAffected > 0) {
+        JOptionPane.showMessageDialog(this, "User deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+        txtUserId.setText(""); // Clear field
+    }
+} catch (SQLException ex) {
+    java.util.logging.Logger.getLogger(adminDeleteUser.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+}
+
     }//GEN-LAST:event_rSButtonHover5ActionPerformed
 
-    private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
+    private void txtUserIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUserIdActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField3ActionPerformed
+    }//GEN-LAST:event_txtUserIdActionPerformed
+
+    private void txtUserIdKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtUserIdKeyTyped
+        if(txtUserId.getText().equals("Enter user id here...")){
+            txtUserId.setText("");
+            setForeground(new Color(152,153,153));
+        }
+    }//GEN-LAST:event_txtUserIdKeyTyped
 
     /**
      * @param args the command line arguments
@@ -173,8 +261,8 @@ public class adminDeleteUser extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JTextField jTextField3;
     private rojeru_san.complementos.RSButtonHover rSButtonHover3;
     private rojeru_san.complementos.RSButtonHover rSButtonHover5;
+    private javax.swing.JTextField txtUserId;
     // End of variables declaration//GEN-END:variables
 }

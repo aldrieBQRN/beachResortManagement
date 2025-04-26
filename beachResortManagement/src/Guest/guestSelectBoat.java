@@ -379,6 +379,8 @@ private void selectBoat(int row) {
             }
         });
         panelRound5.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 30, -1, 40));
+
+        dateComboBox.setEditable(false);
         panelRound5.add(dateComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 30, 180, 40));
 
         jPanel1.add(panelRound5, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 80, 570, 80));
@@ -575,19 +577,17 @@ java.sql.Time sqlEndTime = java.sql.Time.valueOf(localStartTime.plusHours(3));
             int guestTotal = this.adults + this.children;
 
             // Query for available boats with the updated condition for reservation overlap
-            String boatQuery = """
-            SELECT b.boat_name, b.description, b.tour_price
-            FROM boat b
-            WHERE b.capacity >= ?  -- Minimum capacity requirement
-            AND b.boat_id NOT IN (
-                SELECT br.boat_id
-                FROM boat_reservation br
-                WHERE br.status = 'Reserved'
-                AND br.boat_tour_date = ?
-                AND (? < br.boat_tour_end_time AND ? > br.boat_tour_start_time)  -- Time overlap check
-            )
-            ORDER BY b.tour_price ASC;
-            """;
+            String boatQuery = "SELECT b.boat_name, b.description, b.tour_price\n" +
+"FROM boat b\n" +
+"WHERE b.capacity >= ?\n" +
+"AND b.boat_id NOT IN (\n" +
+"    SELECT br.boat_id\n" +
+"    FROM boat_reservation br\n" +
+"    WHERE br.status = 'Reserved'\n" +
+"    AND br.boat_tour_date = ?\n" +
+"    AND (? < br.boat_tour_end_time AND ? > br.boat_tour_start_time)\n" +
+")\n" +
+"ORDER BY b.tour_price ASC;";
 
             pst = con.prepareStatement(boatQuery);
             pst.setInt(1, guestTotal);     // Capacity check (number of guests)
@@ -599,7 +599,7 @@ java.sql.Time sqlEndTime = java.sql.Time.valueOf(localStartTime.plusHours(3));
 
             // Create table model for boats
             DefaultTableModel boatModel = new DefaultTableModel(
-                new Object[]{"Boat Name", "Description", "Price/Ride", "Select"},
+                new Object[]{"Boat Name", "Description", "Price/Ride", "Action"},
                 0
             ) {
                 @Override
@@ -635,7 +635,7 @@ java.sql.Time sqlEndTime = java.sql.Time.valueOf(localStartTime.plusHours(3));
                     boatName,
                     description,
                     "₱" + String.format("%.2f", rate),
-                    "Action"
+                    "Select"
                 });
             }
 

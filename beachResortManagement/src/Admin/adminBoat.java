@@ -5,6 +5,9 @@
 package Admin;
 
 import Staff.*;
+import java.awt.Component;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -13,7 +16,10 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JTable;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -68,49 +74,72 @@ public class adminBoat extends javax.swing.JInternalFrame {
         }
     }
     
-    public final void showBoatDetails() {
-        try {
-            // Prepare the SQL query to select all boats from the boat_details table
-            pst = con.prepareStatement("SELECT * FROM boat");
+   public final void showBoatDetails() {
+    try {
+        pst = con.prepareStatement("SELECT * FROM boat");
+        rs = pst.executeQuery();
 
-            // Execute the query and get the results
-            rs = pst.executeQuery();
+        DefaultTableModel boatModel = (DefaultTableModel) tblBoatDetails.getModel();
+        boatModel.setRowCount(0); // clear table
 
-            // Set up the table model to display the data in the JTable
-            DefaultTableModel boatModel = (DefaultTableModel) tblBoatDetails.getModel();
-
-            // Clear any previous rows
-            boatModel.setRowCount(0);
-
-            // Iterate over the result set and add data to the table
-            while (rs.next()) {
-                // Fetch the boat details from the result set
-                String boatNumber = rs.getString("boat_number");
-                String boatName = rs.getString("boat_name");
-                String description = rs.getString("description");
-                int capacity = rs.getInt("capacity");
-                String registrationDate = rs.getString("registration_date");
-                double price = rs.getDouble("tour_price");
-
-                // Add data to the table model
-                boatModel.addRow(new Object[] { 
-                    boatNumber, 
-                    registrationDate, 
-                    boatName, 
-                    description, 
-                    capacity, 
-                    price, 
-                    new ImageIcon(getClass().getResource("/Image/show.png")),
-                    new ImageIcon(getClass().getResource("/Image/show.png")),
-                    new ImageIcon(getClass().getResource("/Image/show.png"))
-                });
+        // Add custom renderer just for the image column (column 1)
+        tblBoatDetails.getColumnModel().getColumn(1).setCellRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+                if (value instanceof ImageIcon) {
+                    JLabel label = new JLabel((ImageIcon) value);
+                    label.setHorizontalAlignment(JLabel.CENTER);
+                    if (isSelected) {
+                        label.setBackground(table.getSelectionBackground());
+                        label.setOpaque(true);
+                    }
+                    return label;
+                }
+                return super.getTableCellRendererComponent(table, value, isSelected, 
+                        hasFocus, row, column);
             }
-        } catch (SQLException ex) {
-            // Handle any SQL exceptions
-            Logger.getLogger(adminBoat.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("Error fetching boat details: " + ex.getMessage());
+        });
+
+        while (rs.next()) {
+            String boatNumber = rs.getString("boat_number");
+            String boatName = rs.getString("boat_name");
+            String description = rs.getString("description");
+            int capacity = rs.getInt("capacity");
+            double tourPrice = rs.getDouble("tour_price");
+
+            // Get the image as bytes
+            byte[] imgBytes = rs.getBytes("boat_image");
+            ImageIcon imageIcon = null;
+
+            if (imgBytes != null) {
+                Image img = new ImageIcon(imgBytes).getImage();
+                img = img.getScaledInstance(100, 80, Image.SCALE_SMOOTH);
+                imageIcon = new ImageIcon(img);
+            } else {
+                // Set a default blank icon if no image exists
+                imageIcon = new ImageIcon(new BufferedImage(100, 80, BufferedImage.TYPE_INT_ARGB));
+            }
+
+            // Add row to model
+            boatModel.addRow(new Object[] {
+                boatNumber,
+                imageIcon,
+                boatName,
+                description,
+                capacity,
+                tourPrice
+            });
         }
+
+        // Set the row height to fit the image
+        tblBoatDetails.setRowHeight(80);
+
+    } catch (SQLException ex) {
+        Logger.getLogger(adminBoat.class.getName()).log(Level.SEVERE, null, ex);
+        System.out.println("Error fetching boat data: " + ex.getMessage());
     }
+}
 
     /**
      * This method is called from within the constructor to initialize the form.

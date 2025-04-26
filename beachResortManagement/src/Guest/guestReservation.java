@@ -22,13 +22,14 @@ import javax.swing.table.DefaultTableModel;
  */
 public class guestReservation extends javax.swing.JFrame {
 
-    /**
-     * Creates new form roomAdd
-     */
-    public guestReservation() {
+    private int userId;
+    
+    public guestReservation(int userId) {
+        this.userId = userId;
         initComponents();
         DatabaseConnection();
-        showReservedRoomReservations();
+        showPendingRoomReservations();
+        showCompleteRoomReservations();
     }
     
     Connection con; 
@@ -60,40 +61,74 @@ public class guestReservation extends javax.swing.JFrame {
         }
     }
     
-    public final void showReservedRoomReservations() {
+    public final void showPendingRoomReservations() {
     // Ensure that the database connection is valid
-    if (con == null) {
-        System.out.println("Database connection is not established.");
-        return;
-    }
-    
-    // Prepare the SQL query to select only guest_id, check_in_date, and check_out_date where status = 'Reserved'
-    String query = "SELECT reservation_number, check_in_date, check_out_date FROM room_reservation WHERE status = 'Reserved'";
-    
-    // Set up the table model to display the data in the JTable
-    DefaultTableModel reservationModel = (DefaultTableModel) tblRoomReservation.getModel();
-    
-    // Clear any previous rows from the table
-    reservationModel.setRowCount(0);
-    
-    // Use try-with-resources to automatically close the resources
-    try (PreparedStatement pst = con.prepareStatement(query);
-         ResultSet rs = pst.executeQuery()) {
-        
-        // Iterate over the result set and add data to the table
+   if (con == null) {
+    System.out.println("Database connection is not established.");
+    return;
+}
+
+String query = "SELECT reservation_number, check_in_date, check_out_date FROM reservation WHERE status = 'Pending' AND user_id = ?";
+
+// Get the table model
+DefaultTableModel reservationModel = (DefaultTableModel) tblRoomReservationPending.getModel();
+reservationModel.setRowCount(0); // Clear old data
+
+try (PreparedStatement pst = con.prepareStatement(query)) {
+
+    // Set the user ID parameter (replace with your actual user ID variable)
+    pst.setInt(1, userId); // Example: if userId = "GUEST123"
+
+    try (ResultSet rs = pst.executeQuery()) {
         while (rs.next()) {
-            // Fetch each column's data
-            String guestId = rs.getString("reservation_number");
+            String reservationNumber = rs.getString("reservation_number");
             Date checkInDate = rs.getDate("check_in_date");
             Date checkOutDate = rs.getDate("check_out_date");
 
-            // Add data to the table model
-            reservationModel.addRow(new Object[] { guestId, checkInDate, checkOutDate });
+            reservationModel.addRow(new Object[]{reservationNumber, checkInDate, checkOutDate});
         }
-    } catch (SQLException e) {
-            System.out.println("Error connecting to the database: " + e.getMessage());
-        }
+    }
+
+} catch (SQLException e) {
+    System.out.println("Error retrieving data: " + e.getMessage());
 }
+
+}
+    
+    public final void showCompleteRoomReservations() {
+    // Ensure that the database connection is valid
+   if (con == null) {
+    System.out.println("Database connection is not established.");
+    return;
+}
+
+String query = "SELECT reservation_number, check_in_date, check_out_date FROM reservation WHERE status = 'Check-out' AND user_id = ?";
+
+// Get the table model
+DefaultTableModel reservationModel = (DefaultTableModel) tblRoomReservationComplete.getModel();
+reservationModel.setRowCount(0); // Clear old data
+
+try (PreparedStatement pst = con.prepareStatement(query)) {
+
+    // Set the user ID parameter (replace with your actual user ID variable)
+    pst.setInt(1, userId); // Example: if userId = "GUEST123"
+
+    try (ResultSet rs = pst.executeQuery()) {
+        while (rs.next()) {
+            String reservationNumber = rs.getString("reservation_number");
+            Date checkInDate = rs.getDate("check_in_date");
+            Date checkOutDate = rs.getDate("check_out_date");
+
+            reservationModel.addRow(new Object[]{reservationNumber, checkInDate, checkOutDate});
+        }
+    }
+
+} catch (SQLException e) {
+    System.out.println("Error retrieving data: " + e.getMessage());
+}
+
+}
+    
 
 
     /**
@@ -110,10 +145,10 @@ public class guestReservation extends javax.swing.JFrame {
         materialTabbed1 = new GUI.MaterialTabbed();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        tblRoomReservation = new rojerusan.RSTableMetro();
+        tblRoomReservationPending = new rojerusan.RSTableMetro();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        tblRoomReservation1 = new rojerusan.RSTableMetro();
+        tblRoomReservationComplete = new rojerusan.RSTableMetro();
         jLabel6 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
 
@@ -134,8 +169,8 @@ public class guestReservation extends javax.swing.JFrame {
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        tblRoomReservation.setBackground(new java.awt.Color(242, 242, 242));
-        tblRoomReservation.setModel(new javax.swing.table.DefaultTableModel(
+        tblRoomReservationPending.setBackground(new java.awt.Color(242, 242, 242));
+        tblRoomReservationPending.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -151,29 +186,29 @@ public class guestReservation extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        tblRoomReservation.setColorBackgoundHead(new java.awt.Color(255, 255, 255));
-        tblRoomReservation.setColorBordeFilas(new java.awt.Color(255, 255, 255));
-        tblRoomReservation.setColorBordeHead(new java.awt.Color(255, 255, 255));
-        tblRoomReservation.setColorFilasBackgound2(new java.awt.Color(255, 255, 255));
-        tblRoomReservation.setColorFilasForeground1(new java.awt.Color(27, 59, 95));
-        tblRoomReservation.setColorFilasForeground2(new java.awt.Color(27, 59, 95));
-        tblRoomReservation.setColorForegroundHead(new java.awt.Color(0, 0, 0));
-        tblRoomReservation.setColorSelBackgound(new java.awt.Color(39, 114, 160));
-        tblRoomReservation.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
-        tblRoomReservation.setFuenteFilas(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        tblRoomReservation.setFuenteFilasSelect(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        tblRoomReservation.setFuenteHead(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        tblRoomReservation.setGridColor(new java.awt.Color(204, 204, 204));
-        tblRoomReservation.setRowHeight(30);
-        tblRoomReservation.setSelectionBackground(new java.awt.Color(61, 58, 87));
-        tblRoomReservation.setSelectionForeground(new java.awt.Color(255, 255, 255));
-        tblRoomReservation.setShowGrid(false);
-        tblRoomReservation.addMouseListener(new java.awt.event.MouseAdapter() {
+        tblRoomReservationPending.setColorBackgoundHead(new java.awt.Color(255, 255, 255));
+        tblRoomReservationPending.setColorBordeFilas(new java.awt.Color(255, 255, 255));
+        tblRoomReservationPending.setColorBordeHead(new java.awt.Color(255, 255, 255));
+        tblRoomReservationPending.setColorFilasBackgound2(new java.awt.Color(255, 255, 255));
+        tblRoomReservationPending.setColorFilasForeground1(new java.awt.Color(27, 59, 95));
+        tblRoomReservationPending.setColorFilasForeground2(new java.awt.Color(27, 59, 95));
+        tblRoomReservationPending.setColorForegroundHead(new java.awt.Color(0, 0, 0));
+        tblRoomReservationPending.setColorSelBackgound(new java.awt.Color(39, 114, 160));
+        tblRoomReservationPending.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
+        tblRoomReservationPending.setFuenteFilas(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        tblRoomReservationPending.setFuenteFilasSelect(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        tblRoomReservationPending.setFuenteHead(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        tblRoomReservationPending.setGridColor(new java.awt.Color(204, 204, 204));
+        tblRoomReservationPending.setRowHeight(30);
+        tblRoomReservationPending.setSelectionBackground(new java.awt.Color(61, 58, 87));
+        tblRoomReservationPending.setSelectionForeground(new java.awt.Color(255, 255, 255));
+        tblRoomReservationPending.setShowGrid(false);
+        tblRoomReservationPending.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tblRoomReservationMouseClicked(evt);
+                tblRoomReservationPendingMouseClicked(evt);
             }
         });
-        jScrollPane2.setViewportView(tblRoomReservation);
+        jScrollPane2.setViewportView(tblRoomReservationPending);
 
         jPanel3.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 560, 320));
 
@@ -182,8 +217,8 @@ public class guestReservation extends javax.swing.JFrame {
         jPanel4.setBackground(new java.awt.Color(255, 255, 255));
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        tblRoomReservation1.setBackground(new java.awt.Color(242, 242, 242));
-        tblRoomReservation1.setModel(new javax.swing.table.DefaultTableModel(
+        tblRoomReservationComplete.setBackground(new java.awt.Color(242, 242, 242));
+        tblRoomReservationComplete.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -199,29 +234,29 @@ public class guestReservation extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        tblRoomReservation1.setColorBackgoundHead(new java.awt.Color(255, 255, 255));
-        tblRoomReservation1.setColorBordeFilas(new java.awt.Color(255, 255, 255));
-        tblRoomReservation1.setColorBordeHead(new java.awt.Color(255, 255, 255));
-        tblRoomReservation1.setColorFilasBackgound2(new java.awt.Color(255, 255, 255));
-        tblRoomReservation1.setColorFilasForeground1(new java.awt.Color(27, 59, 95));
-        tblRoomReservation1.setColorFilasForeground2(new java.awt.Color(27, 59, 95));
-        tblRoomReservation1.setColorForegroundHead(new java.awt.Color(0, 0, 0));
-        tblRoomReservation1.setColorSelBackgound(new java.awt.Color(39, 114, 160));
-        tblRoomReservation1.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
-        tblRoomReservation1.setFuenteFilas(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        tblRoomReservation1.setFuenteFilasSelect(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        tblRoomReservation1.setFuenteHead(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        tblRoomReservation1.setGridColor(new java.awt.Color(204, 204, 204));
-        tblRoomReservation1.setRowHeight(30);
-        tblRoomReservation1.setSelectionBackground(new java.awt.Color(61, 58, 87));
-        tblRoomReservation1.setSelectionForeground(new java.awt.Color(255, 255, 255));
-        tblRoomReservation1.setShowGrid(false);
-        tblRoomReservation1.addMouseListener(new java.awt.event.MouseAdapter() {
+        tblRoomReservationComplete.setColorBackgoundHead(new java.awt.Color(255, 255, 255));
+        tblRoomReservationComplete.setColorBordeFilas(new java.awt.Color(255, 255, 255));
+        tblRoomReservationComplete.setColorBordeHead(new java.awt.Color(255, 255, 255));
+        tblRoomReservationComplete.setColorFilasBackgound2(new java.awt.Color(255, 255, 255));
+        tblRoomReservationComplete.setColorFilasForeground1(new java.awt.Color(27, 59, 95));
+        tblRoomReservationComplete.setColorFilasForeground2(new java.awt.Color(27, 59, 95));
+        tblRoomReservationComplete.setColorForegroundHead(new java.awt.Color(0, 0, 0));
+        tblRoomReservationComplete.setColorSelBackgound(new java.awt.Color(39, 114, 160));
+        tblRoomReservationComplete.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
+        tblRoomReservationComplete.setFuenteFilas(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        tblRoomReservationComplete.setFuenteFilasSelect(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        tblRoomReservationComplete.setFuenteHead(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        tblRoomReservationComplete.setGridColor(new java.awt.Color(204, 204, 204));
+        tblRoomReservationComplete.setRowHeight(30);
+        tblRoomReservationComplete.setSelectionBackground(new java.awt.Color(61, 58, 87));
+        tblRoomReservationComplete.setSelectionForeground(new java.awt.Color(255, 255, 255));
+        tblRoomReservationComplete.setShowGrid(false);
+        tblRoomReservationComplete.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tblRoomReservation1MouseClicked(evt);
+                tblRoomReservationCompleteMouseClicked(evt);
             }
         });
-        jScrollPane3.setViewportView(tblRoomReservation1);
+        jScrollPane3.setViewportView(tblRoomReservationComplete);
 
         jPanel4.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 560, 320));
 
@@ -253,17 +288,17 @@ public class guestReservation extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void tblRoomReservationMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblRoomReservationMouseClicked
+    private void tblRoomReservationPendingMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblRoomReservationPendingMouseClicked
         // TODO add your handling code here:
-    }//GEN-LAST:event_tblRoomReservationMouseClicked
+    }//GEN-LAST:event_tblRoomReservationPendingMouseClicked
 
     private void jLabel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseClicked
 this.dispose();        // TODO add your handling code here:
     }//GEN-LAST:event_jLabel1MouseClicked
 
-    private void tblRoomReservation1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblRoomReservation1MouseClicked
+    private void tblRoomReservationCompleteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblRoomReservationCompleteMouseClicked
         // TODO add your handling code here:
-    }//GEN-LAST:event_tblRoomReservation1MouseClicked
+    }//GEN-LAST:event_tblRoomReservationCompleteMouseClicked
 
     /**
      * @param args the command line arguments
@@ -550,7 +585,8 @@ this.dispose();        // TODO add your handling code here:
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new guestReservation().setVisible(true);
+                int userId = 0;
+                new guestReservation(userId).setVisible(true);
             }
         });
     }
@@ -565,7 +601,7 @@ this.dispose();        // TODO add your handling code here:
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private GUI.MaterialTabbed materialTabbed1;
-    private rojerusan.RSTableMetro tblRoomReservation;
-    private rojerusan.RSTableMetro tblRoomReservation1;
+    private rojerusan.RSTableMetro tblRoomReservationComplete;
+    private rojerusan.RSTableMetro tblRoomReservationPending;
     // End of variables declaration//GEN-END:variables
 }

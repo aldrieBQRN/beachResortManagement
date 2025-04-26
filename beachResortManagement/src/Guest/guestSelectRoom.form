@@ -8,6 +8,9 @@
           <Color blue="c0" green="70" red="0" type="rgb"/>
         </Property>
         <Property name="dateFormat" type="java.lang.String" value="MMMM dd, yyyy"/>
+        <Property name="textRefernce" type="javax.swing.JTextField" editor="org.netbeans.modules.form.ComponentChooserEditor">
+          <ComponentRef name="txtCheckin"/>
+        </Property>
       </Properties>
     </Component>
     <Component class="com.raven.datechooser.DateChooser" name="dateChooserCheckout">
@@ -16,6 +19,9 @@
           <Color blue="c0" green="70" red="0" type="rgb"/>
         </Property>
         <Property name="dateFormat" type="java.lang.String" value=" MMMM dd, yyyy"/>
+        <Property name="textRefernce" type="javax.swing.JTextField" editor="org.netbeans.modules.form.ComponentChooserEditor">
+          <ComponentRef name="txtCheckout"/>
+        </Property>
       </Properties>
     </Component>
   </NonVisualComponents>
@@ -97,11 +103,13 @@
                       <Color blue="ff" green="ff" red="ff" type="rgb"/>
                     </Property>
                     <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                      <Table columnCount="4" rowCount="0">
+                      <Table columnCount="6" rowCount="4">
                         <Column editable="false" title="Room Number" type="java.lang.Object"/>
+                        <Column editable="false" title="Room Image" type="java.lang.Object"/>
                         <Column editable="false" title="Room Category" type="java.lang.Object"/>
                         <Column editable="false" title="Description" type="java.lang.Object"/>
                         <Column editable="false" title="Price/Night" type="java.lang.Object"/>
+                        <Column editable="false" title="Action" type="java.lang.Object"/>
                       </Table>
                     </Property>
                     <Property name="colorBackgoundHead" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
@@ -114,7 +122,7 @@
                       <Color blue="ff" green="ff" red="ff" type="rgb"/>
                     </Property>
                     <Property name="colorFilasBackgound2" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                      <Color blue="f2" green="f2" red="f2" type="rgb"/>
+                      <Color blue="ff" green="ff" red="ff" type="rgb"/>
                     </Property>
                     <Property name="colorFilasForeground1" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="5f" green="3b" red="1b" type="rgb"/>
@@ -143,6 +151,16 @@
                           <Renderer/>
                         </Column>
                         <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                          <Title/>
+                          <Editor/>
+                          <Renderer/>
+                        </Column>
+                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                          <Title/>
+                          <Editor/>
+                          <Renderer/>
+                        </Column>
+                        <Column maxWidth="-1" minWidth="-1" prefWidth="10" resizable="true">
                           <Title/>
                           <Editor/>
                           <Renderer/>

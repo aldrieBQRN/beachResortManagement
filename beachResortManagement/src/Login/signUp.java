@@ -4,10 +4,13 @@
  */
 package Login;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -56,66 +59,108 @@ public class signUp extends javax.swing.JFrame {
         }
     }
     
-     private void insertToDatabase() {
+   private void insertToDatabase() {
+    // Get the form data
+    String firstName = textField3.getText().trim();
+    String lastName = textField1.getText().trim();
+    String phone = textField4.getText().trim();
+    String email = textField2.getText().trim();
+    String password1 = new String(passwordField1.getPassword());
+    String password2 = new String(passwordField1.getPassword());
+    
+    // Validate all required fields
+    if (firstName.isEmpty() || lastName.isEmpty() || phone.isEmpty() || 
+        email.isEmpty() || password1.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "All fields are required!", 
+            "Validation Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+    
+    // Validate password match
+    if (!password1.equals(password2)) {
+        JOptionPane.showMessageDialog(this, "Passwords do not match!", 
+            "Validation Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+    
+    // Validate password strength
+    if (password1.length() < 8) {
+        JOptionPane.showMessageDialog(this, "Password must be at least 8 characters!", 
+            "Validation Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+    
+    // Validate email format
+    if (!email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")) {
+        JOptionPane.showMessageDialog(this, "Invalid email format!", 
+            "Validation Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+    
+    // Validate phone format (basic check)
+    if (!phone.matches("^\\d{10,15}$")) {
+        JOptionPane.showMessageDialog(this, "Phone must be 10-15 digits!", 
+            "Validation Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
 
-        try {
-            // Get the form data
-            String firstName = textField3.getText();
-            String lastName = textField1.getText();
-            String phone = textField4.getText();
-            String email = textField2.getText();
-            
-            // Get the passwords from password fields (convert char[] to String)
-            String password1 = new String(passwordField1.getPassword());
-            String password2 = new String(passwordField2.getPassword());
-            
-            // Concatenate first name and last name
-            String fullName = firstName + " " + lastName;
-            
-            // Check if the passwords match
-            if (!password1.equals(password2)) {
-                JOptionPane.showMessageDialog(this, "Passwords do not match!", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            
-            // SQL query to insert data into the table (change table_name and column names)
-            String query = "INSERT INTO user_details (full_name, phone, email, password) VALUES (?, ?, ?, ?)";
-            
        
-                    // Create a PreparedStatement to execute the query
-                    PreparedStatement pst = con.prepareStatement(query);
-                    
-                    // Set the parameters for the SQL query
-                    pst.setString(1, fullName);  // Set the concatenated full name
-                    pst.setString(2, phone);      // Set the phone number
-                    pst.setString(3, email);      // Set the email
-                    pst.setString(4, password1);  // Set the password
-                    
-                    // Execute the update (insertion)
-                    int rowsAffected = pst.executeUpdate();
-                    
-                    // Check if the insertion was successful
-                    if (rowsAffected > 0) {
-                        JOptionPane.showMessageDialog(this, "Account created successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-                        clearFields();// Clear the fields after successful insertion
-                    } else {
-                        JOptionPane.showMessageDialog(this, "Error creating account. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
+    // Create full name
+    String fullName = firstName + " " + lastName;
+    
+    PreparedStatement pst = null;
+    try {
+        // Check if email already exists
+        String checkQuery = "SELECT email FROM user_details WHERE email = ?";
+        pst = con.prepareStatement(checkQuery);
+        pst.setString(1, email);
+        ResultSet rs = pst.executeQuery();
+        
+        if (rs.next()) {
+            JOptionPane.showMessageDialog(this, "Email already registered!", 
+                "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        // Insert new user
+        String insertQuery = "INSERT INTO user_details (full_name, phone, email, password, role) " +
+                           "VALUES (?, ?, ?, ?, 'Guest')"; // Default role as Guest
+        pst = con.prepareStatement(insertQuery);
+        pst.setString(1, fullName);
+        pst.setString(2, phone);
+        pst.setString(3, email);
+        pst.setString(4, password1);
+        
+        int rowsAffected = pst.executeUpdate();
+        
+        if (rowsAffected > 0) {
+            JOptionPane.showMessageDialog(this, "Account created successfully!", 
+                "Success", JOptionPane.INFORMATION_MESSAGE);
+            clearFields();
+        }
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), 
+            "Error", JOptionPane.ERROR_MESSAGE);
+        Logger.getLogger(signUp.class.getName()).log(Level.SEVERE, null, ex);
+    } finally {
+        try {
+            if (pst != null) pst.close();
         } catch (SQLException ex) {
             Logger.getLogger(signUp.class.getName()).log(Level.SEVERE, null, ex);
         }
-   
+    }
 }
+
+   
+
 private void clearFields() {
     textField3.setText("");
     textField1.setText("");
     textField4.setText("");
     textField2.setText("");
     passwordField1.setText("");
-    passwordField2.setText("");
+    passwordField1.setText("");
 }
-
-
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -134,11 +179,11 @@ private void clearFields() {
         textField4 = new textfield.TextField();
         textField2 = new textfield.TextField();
         passwordField1 = new textfield.PasswordField();
-        passwordField2 = new textfield.PasswordField();
         jLabel5 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         panelRound2 = new GUI.PanelRound();
         jLabel1 = new javax.swing.JLabel();
+        passwordField3 = new textfield.PasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -186,18 +231,13 @@ private void clearFields() {
         passwordField1.setBackground(new java.awt.Color(255, 255, 255));
         passwordField1.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
         passwordField1.setLabelText("Password");
-        pnllogin.add(passwordField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 410, 330, 45));
-
-        passwordField2.setBackground(new java.awt.Color(255, 255, 255));
-        passwordField2.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
-        passwordField2.setLabelText("Confirm Password");
-        passwordField2.setShowAndHide(true);
-        passwordField2.addActionListener(new java.awt.event.ActionListener() {
+        passwordField1.setShowAndHide(true);
+        passwordField1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                passwordField2ActionPerformed(evt);
+                passwordField1ActionPerformed(evt);
             }
         });
-        pnllogin.add(passwordField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 470, 330, 45));
+        pnllogin.add(passwordField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 410, 330, 45));
 
         jLabel5.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(0, 0, 0));
@@ -239,6 +279,17 @@ private void clearFields() {
 
         pnllogin.add(panelRound2, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 540, 90, 35));
 
+        passwordField3.setBackground(new java.awt.Color(255, 255, 255));
+        passwordField3.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        passwordField3.setLabelText("Confirm Password");
+        passwordField3.setShowAndHide(true);
+        passwordField3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                passwordField3ActionPerformed(evt);
+            }
+        });
+        pnllogin.add(passwordField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 470, 330, 45));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -264,9 +315,9 @@ private void clearFields() {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void passwordField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordField2ActionPerformed
+    private void passwordField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordField1ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_passwordField2ActionPerformed
+    }//GEN-LAST:event_passwordField1ActionPerformed
 
     private void jLabel7MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel7MouseClicked
         this.dispose();
@@ -283,6 +334,10 @@ private void clearFields() {
     private void textField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textField1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_textField1ActionPerformed
+
+    private void passwordField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordField3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_passwordField3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -328,7 +383,7 @@ private void clearFields() {
     private javax.swing.JLabel jLabel7;
     private GUI.PanelRound panelRound2;
     private textfield.PasswordField passwordField1;
-    private textfield.PasswordField passwordField2;
+    private textfield.PasswordField passwordField3;
     private javax.swing.JPanel pnllogin;
     private textfield.TextField textField1;
     private textfield.TextField textField2;

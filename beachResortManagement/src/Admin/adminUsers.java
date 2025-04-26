@@ -4,6 +4,8 @@
  */
 package Admin;
 
+import Admin.adminAddUser;
+import Admin.adminUpdateUser;
 import Staff.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -318,16 +320,48 @@ public class adminUsers extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_txtsearchActionPerformed
 
     private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
-        new adminAddUser().setVisible(true);
+       
+        adminAddUser add = new adminAddUser();
+        add.setVisible(true);
+
+        // Add a WindowListener to call showBoatDetails when the adminAddBoat window is closed/disposed
+        add.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                // Call showBoatDetails after adminAddBoat is closed
+                showUserDetails();
+            }
+        });
     }//GEN-LAST:event_jLabel3MouseClicked
 
     private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
-         new adminUpdateUser().setVisible(true);
+            adminUpdateUser update = new adminUpdateUser();
+        update.setVisible(true);
+
+        // Add a WindowListener to call showBoatDetails when the adminAddBoat window is closed/disposed
+        update.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                // Call showBoatDetails after adminAddBoat is closed
+                showUserDetails();
+            }
+        });
+           
     }//GEN-LAST:event_jLabel2MouseClicked
 
     private void jLabel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel5MouseClicked
        
-        new adminDeleteUser().setVisible(true);
+        adminDeleteUser delete = new adminDeleteUser();
+        delete.setVisible(true);
+
+        // Add a WindowListener to call showBoatDetails when the adminAddBoat window is closed/disposed
+        delete.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                // Call showBoatDetails after adminAddBoat is closed
+                showUserDetails();
+            }
+        });
     }//GEN-LAST:event_jLabel5MouseClicked
 
 

@@ -36,8 +36,14 @@ public class adminAddRoom extends javax.swing.JFrame {
     byte[] pimage = null;
 
     public adminAddRoom() {
-        initComponents();
-        DatabaseConnection();
+        try {
+            initComponents();
+            DatabaseConnection();
+            String roomNumber = generateNextRoomNumber(); 
+            txtRoomNumber.setText(roomNumber);
+        } catch (SQLException ex) {
+            Logger.getLogger(adminAddRoom.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     java.sql.Connection con; 
@@ -69,6 +75,25 @@ public class adminAddRoom extends javax.swing.JFrame {
         }
     }
     
+    public String generateNextRoomNumber() throws SQLException {
+    String sql = "SELECT MAX(room_number) FROM room WHERE room_number LIKE 'R%'";
+    String nextRoomNumber = "R001"; // Default starting number
+    
+    try (PreparedStatement pst = con.prepareStatement(sql);
+         ResultSet rs = pst.executeQuery()) {
+        
+        if (rs.next()) {
+            String maxNumber = rs.getString(1);
+            if (maxNumber != null) {
+                // Extract numeric part and increment
+                int num = Integer.parseInt(maxNumber.substring(1)) + 1;
+                nextRoomNumber = String.format("R%03d", num);
+            }
+        }
+    }
+    return nextRoomNumber;
+}
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -81,7 +106,6 @@ public class adminAddRoom extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
         txtRoomNumber = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -112,25 +136,21 @@ public class adminAddRoom extends javax.swing.JFrame {
         jPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 0, 0, 0, new java.awt.Color(27, 59, 95)));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel1.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel1.setText("ROOM IMAGE");
-        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 90, 122, 30));
-
+        txtRoomNumber.setEditable(false);
         txtRoomNumber.setBackground(new java.awt.Color(255, 255, 255));
         txtRoomNumber.setForeground(new java.awt.Color(102, 102, 102));
         txtRoomNumber.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jPanel2.add(txtRoomNumber, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 50, 240, 30));
+        jPanel2.add(txtRoomNumber, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 60, 240, 30));
 
         jLabel2.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(0, 0, 0));
         jLabel2.setText("ROOM TYPE");
-        jPanel2.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 300, 122, 30));
+        jPanel2.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 110, 122, 30));
 
         jLabel4.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(0, 0, 0));
         jLabel4.setText("MAX OCCUPANCY");
-        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 440, 140, 30));
+        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 250, 140, 30));
 
         txtDescription.setBackground(new java.awt.Color(255, 255, 255));
         txtDescription.setColumns(20);
@@ -139,43 +159,43 @@ public class adminAddRoom extends javax.swing.JFrame {
         txtDescription.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jScrollPane1.setViewportView(txtDescription);
 
-        jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 340, 240, -1));
+        jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 150, 240, -1));
 
         spinnerMaxOccupancy.setBorder(null);
-        jPanel2.add(spinnerMaxOccupancy, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 440, 240, 30));
+        jPanel2.add(spinnerMaxOccupancy, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 250, 240, 30));
 
         jLabel5.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(0, 0, 0));
         jLabel5.setText("DESCRIPTION");
-        jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 340, 122, 30));
+        jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 150, 122, 30));
 
         jLabel3.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(0, 0, 0));
         jLabel3.setText("PRICE/DAY");
-        jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 480, 122, 30));
+        jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 290, 122, 30));
 
         txtRoomPrice.setBackground(new java.awt.Color(255, 255, 255));
         txtRoomPrice.setForeground(new java.awt.Color(102, 102, 102));
         txtRoomPrice.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jPanel2.add(txtRoomPrice, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 480, 240, 30));
+        jPanel2.add(txtRoomPrice, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 290, 240, 30));
 
-        rSButtonHover1.setBackground(new java.awt.Color(27, 59, 95));
+        rSButtonHover1.setBackground(new java.awt.Color(255, 0, 51));
         rSButtonHover1.setText("CANCEL");
         rSButtonHover1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 rSButtonHover1ActionPerformed(evt);
             }
         });
-        jPanel2.add(rSButtonHover1, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 530, 160, -1));
+        jPanel2.add(rSButtonHover1, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 340, 110, -1));
 
-        rSButtonHover2.setBackground(new java.awt.Color(27, 59, 95));
-        rSButtonHover2.setText("CONTINUE");
+        rSButtonHover2.setBackground(new java.awt.Color(51, 204, 0));
+        rSButtonHover2.setText("CRAETE");
         rSButtonHover2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 rSButtonHover2ActionPerformed(evt);
             }
         });
-        jPanel2.add(rSButtonHover2, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 530, 240, -1));
+        jPanel2.add(rSButtonHover2, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 340, 110, -1));
 
         timePickerButton1.setBackground(new java.awt.Color(27, 59, 95));
         timePickerButton1.setText("Choose Image");
@@ -184,14 +204,15 @@ public class adminAddRoom extends javax.swing.JFrame {
                 timePickerButton1ActionPerformed(evt);
             }
         });
-        jPanel2.add(timePickerButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 260, 240, -1));
+        jPanel2.add(timePickerButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 290, 260, -1));
 
         jLabel7.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(0, 0, 0));
         jLabel7.setText("BOAT NUMBER");
-        jPanel2.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 50, 122, 30));
+        jPanel2.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 60, 122, 30));
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel3.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jPanel3.addContainerListener(new java.awt.event.ContainerAdapter() {
             public void componentAdded(java.awt.event.ContainerEvent evt) {
                 jPanel3ComponentAdded(evt);
@@ -201,24 +222,24 @@ public class adminAddRoom extends javax.swing.JFrame {
 
         labelImage.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         labelImage.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jPanel3.add(labelImage, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 240, 160));
+        jPanel3.add(labelImage, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 260, 220));
 
-        jPanel2.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 90, 240, 160));
+        jPanel2.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 60, 260, 220));
 
         cmbRoomType.setEditable(false);
-        cmbRoomType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Single", "Double" }));
+        cmbRoomType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Deluxe Room", "Family Suite", "Beachfront Villa", "Cabana", "Premium Suite" }));
         cmbRoomType.setSelectedIndex(-1);
-        jPanel2.add(cmbRoomType, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 297, 240, -1));
+        jPanel2.add(cmbRoomType, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 100, 240, -1));
 
-        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 80, 620, 600));
+        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 80, 790, 430));
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(0, 0, 0));
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel6.setText("Add Room");
-        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, 640, 60));
+        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 20, 790, 60));
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 700, 700));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 870, 520));
 
         pack();
         setLocationRelativeTo(null);
@@ -318,6 +339,7 @@ public class adminAddRoom extends javax.swing.JFrame {
     }//GEN-LAST:event_rSButtonHover2ActionPerformed
 
     private void timePickerButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_timePickerButton1ActionPerformed
+                                                 
         JFileChooser fileChooser = new JFileChooser();
 FileNameExtensionFilter fnwf = new FileNameExtensionFilter("PNG AND JPEG", "png", "jpeg", "jpg");
 fileChooser.addChoosableFileFilter(fnwf);
@@ -380,7 +402,6 @@ if(load == fileChooser.APPROVE_OPTION){
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private GUI.ComboBoxSuggestion cmbRoomType;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

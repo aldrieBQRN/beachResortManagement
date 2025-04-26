@@ -448,6 +448,7 @@ private void handleButtonClick(int row, String action, JTable sourceTable) {
 private void processOnSitePayment(int reservationId, double balanceAmount) {
     try {
         DatabaseConnection();
+        
 
         // Prompt user to enter the amount paid
         String input = JOptionPane.showInputDialog(this,

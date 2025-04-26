@@ -14,6 +14,7 @@ import java.sql.SQLException;
 
 import com.toedter.calendar.JCalendar;
 import java.awt.HeadlessException;
+import java.awt.Image;
 import java.beans.Statement;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -21,6 +22,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -112,6 +116,28 @@ public class guestProcess2 extends javax.swing.JFrame {
         String formattedDownPayment = String.format("₱%.2f", downPayment);
         lblDownPayment.setText(formattedDownPayment);
         lblDownPayment2.setText(formattedDownPayment);
+        
+          try {
+            // Prepare the SQL query to fetch all room details including image
+            String sql = "SELECT room_type, description, room_price, max_occupancy, room_image FROM room WHERE room_number = ?";
+            pst = con.prepareStatement(sql);
+            pst.setString(1, roomNumber);
+            
+            // Execute the query
+            rs = pst.executeQuery();
+
+            // Check if the room exists in the database
+            if (rs.next()) {
+
+
+                // Load and display the room image
+                loadRoomImage(rs.getBytes("room_image"));
+            } else {
+                JOptionPane.showMessageDialog(this, "Room not found in database", "Error", JOptionPane.WARNING_MESSAGE);
+
+}       } catch (SQLException ex) {   
+            Logger.getLogger(guestProcess.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
        
@@ -205,7 +231,25 @@ public class guestProcess2 extends javax.swing.JFrame {
     
     
 
+      
+    private void loadRoomImage(byte[] imageData) {
+    try {
+        if (imageData == null || imageData.length == 0) {
+            labelDisplayImage.setIcon(null);
+            return;
+        }
 
+        ImageIcon originalIcon = new ImageIcon(imageData);
+        Image scaledImage = originalIcon.getImage()
+            .getScaledInstance(labelDisplayImage.getWidth(), 
+                            labelDisplayImage.getHeight(), 
+                            Image.SCALE_SMOOTH);
+        labelDisplayImage.setIcon(new ImageIcon(scaledImage));
+    } catch (Exception e) {
+        labelDisplayImage.setIcon(null);
+        System.err.println("Error loading image: " + e.getMessage());
+    }
+}
    
     
 
@@ -231,13 +275,14 @@ public class guestProcess2 extends javax.swing.JFrame {
         panelRound4 = new GUI.PanelRound();
         lbl = new javax.swing.JLabel();
         jPanel12 = new javax.swing.JPanel();
-        jPanel13 = new javax.swing.JPanel();
         jLabel30 = new javax.swing.JLabel();
         lblRoomNumber = new javax.swing.JLabel();
         lblRoomType = new javax.swing.JLabel();
         lblRoomDescription = new javax.swing.JLabel();
         jLabel39 = new javax.swing.JLabel();
         jLabel41 = new javax.swing.JLabel();
+        jPanel5 = new javax.swing.JPanel();
+        labelDisplayImage = new javax.swing.JLabel();
         jPanel8 = new javax.swing.JPanel();
         lblNumberOfNights = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
@@ -376,21 +421,6 @@ public class guestProcess2 extends javax.swing.JFrame {
         jPanel12.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jPanel12.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel13.setBackground(new java.awt.Color(204, 204, 204));
-
-        javax.swing.GroupLayout jPanel13Layout = new javax.swing.GroupLayout(jPanel13);
-        jPanel13.setLayout(jPanel13Layout);
-        jPanel13Layout.setHorizontalGroup(
-            jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 240, Short.MAX_VALUE)
-        );
-        jPanel13Layout.setVerticalGroup(
-            jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 180, Short.MAX_VALUE)
-        );
-
-        jPanel12.add(jPanel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 240, 180));
-
         jLabel30.setFont(new java.awt.Font("Helvetica Neue", 1, 12)); // NOI18N
         jLabel30.setForeground(new java.awt.Color(0, 0, 0));
         jLabel30.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
@@ -424,6 +454,21 @@ public class guestProcess2 extends javax.swing.JFrame {
         jLabel41.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel41.setText("Category:");
         jPanel12.add(jLabel41, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 40, 120, -1));
+
+        jPanel5.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel5.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
+        jPanel5.addContainerListener(new java.awt.event.ContainerAdapter() {
+            public void componentAdded(java.awt.event.ContainerEvent evt) {
+                jPanel5ComponentAdded(evt);
+            }
+        });
+        jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        labelDisplayImage.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelDisplayImage.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
+        jPanel5.add(labelDisplayImage, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 240, 180));
+
+        jPanel12.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 240, 180));
 
         jPanel11.add(jPanel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(940, 130, 470, 220));
 
@@ -768,7 +813,7 @@ double downPayment = totalPrice * 0.30;
 
 String paymentMethod = (String) paymentMethodComboBox.getSelectedItem();
 
-if ("Gacash".equalsIgnoreCase(paymentMethod)) {
+if ("GCash".equalsIgnoreCase(paymentMethod)) {
     new guestGcashPayment(
         checkInDate,
         checkOutDate,
@@ -847,6 +892,10 @@ if ("Gacash".equalsIgnoreCase(paymentMethod)) {
     private void txtContactActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtContactActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtContactActionPerformed
+
+    private void jPanel5ComponentAdded(java.awt.event.ContainerEvent evt) {//GEN-FIRST:event_jPanel5ComponentAdded
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jPanel5ComponentAdded
 
     /**
      * @param args the command line arguments
@@ -985,13 +1034,14 @@ if ("Gacash".equalsIgnoreCase(paymentMethod)) {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
-    private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
+    private javax.swing.JLabel labelDisplayImage;
     private javax.swing.JLabel lbl;
     private javax.swing.JLabel lblCheckIn;
     private javax.swing.JLabel lblCheckOut;

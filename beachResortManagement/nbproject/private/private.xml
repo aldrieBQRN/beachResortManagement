@@ -54,8 +54,14 @@
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/adminUpdateRoom.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/adminUsers.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/adminUpdateBoat.java</file>
-            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/adminUpdateUser.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/adminReservation.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/adminDeleteUser.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/adminUpdateUser.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Staff/staffCheckin.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Staff/staffHome.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/Background.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Staff/staffRooms.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Staff/staffReservationRoom.java</file>
         </group>
     </open-files>
 </project-private>

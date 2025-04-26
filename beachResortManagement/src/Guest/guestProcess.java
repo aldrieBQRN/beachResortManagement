@@ -4,6 +4,7 @@
  */
 package Guest;
 
+import Admin.adminUpdateRoom;
 import Guest.guestSelectRoom;
 import Login.landingPage;
 import java.awt.Color;
@@ -12,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.awt.HeadlessException;
+import java.awt.Image;
 import java.beans.Statement;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -19,6 +21,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -55,78 +60,100 @@ public class guestProcess extends javax.swing.JFrame {
 
 
         
-        initComponents();  // Initialize UI components (if any)
-        pnlPayment.setVisible(false);
-        DatabaseConnection();
-
-        // Store the parameters in the instance variables
-        this.checkInDate = checkInDate;
-        this.checkOutDate = checkOutDate;
-        this.roomNumber = roomNumber;
-        this.roomType = roomType;
-        this.roomDescription = roomDescription;
-        this.roomPrice = roomPrice;
-        this.sqlDate = sqlDate;
-        this.sqlStartTime = sqlStartTime;
-        this.sqlEndTime = sqlEndTime;
-        this.boatName = boatName;
-        this.boatPrice = boatPrice;
-        this.numAdults = numAdult;
-        this.numChildren = numChildren;  
-        this.userID = userID;
-  
-        
-      
-      
        
-      
-        
-        
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM d", Locale.ENGLISH);
-        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a"); // "hh" for 12-hour format with leading zero, "a" for AM/PM
+            initComponents();  // Initialize UI components (if any)
+            pnlPayment.setVisible(false);
+            DatabaseConnection();
+            
+            // Store the parameters in the instance variables
+            this.checkInDate = checkInDate;
+            this.checkOutDate = checkOutDate;
+            this.roomNumber = roomNumber;
+            this.roomType = roomType;
+            this.roomDescription = roomDescription;
+            this.roomPrice = roomPrice;
+            this.sqlDate = sqlDate;
+            this.sqlStartTime = sqlStartTime;
+            this.sqlEndTime = sqlEndTime;
+            this.boatName = boatName;
+            this.boatPrice = boatPrice;
+            this.numAdults = numAdult;
+            this.numChildren = numChildren;
+            this.userID = userID;
+            
+            
+            
+            
+            
+            
+            
+            
+            SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM d", Locale.ENGLISH);
+            SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a"); // "hh" for 12-hour format with leading zero, "a" for AM/PM
+            
+            lblCheckIn.setText(checkInDate != null ? dateFormat.format(checkInDate) : "N/A");
+            lblCheckOut.setText(checkOutDate != null ? dateFormat.format(checkOutDate) : "N/A");
+            long diffInMillies = checkOutDate.getTime() - checkInDate.getTime();
+            long numberOfNights = TimeUnit.MILLISECONDS.toDays(diffInMillies);
+            
+            lblNumberOfNights.setText("" + numberOfNights);
+            lblRoomNumber.setText(roomNumber != null ? roomNumber : "N/A");
+            lblRoomNumber.setText(roomNumber != null ? roomNumber : "N/A");
+            lblRoomType.setText(roomType != null ? roomType : "N/A");
+            lblRoomDescription.setText(roomDescription != null ? roomDescription : "N/A");
+            lblBoatName.setText(boatName != null ? boatName : "N/A");
+            lblSqlDate.setText(sqlDate != null ? dateFormat.format(sqlDate) : "N/A");
+            lblStartTime.setText(sqlStartTime != null ? timeFormat.format(sqlStartTime) : "N/A");
+            lblEndTime.setText(sqlEndTime != null ? timeFormat.format(sqlEndTime) : "N/A");
+            String reservationNumber = generateReservationNumber();
+            lblReservationNumber.setText("" + reservationNumber);
+            int totalGuests = numAdults + numChildren;
+            String guestInfo;
+            if (numChildren > 0) {
+                guestInfo = numAdults + " Adult" + (numAdults > 1 ? "s" : "") + ", " + numChildren + " Child" + (numChildren > 1 ? "ren" : "");
+            } else {
+                guestInfo = numAdults + " Adult" + (numAdults > 1 ? "s" : "");
+            }
+            lblGuestInfo.setText(guestInfo);  // Make sure lblGuestInfo exists in your form
+            double totalRoomPrice = roomPrice * numberOfNights;
+            String formattedTotalRoomPrice = String.format("₱%.2f", totalRoomPrice);
+            lblTotalRoomPrice.setText(formattedTotalRoomPrice);
+            String formattedBoatPrice = String.format("₱%.2f", boatPrice);
+            lblBoatPrice.setText(formattedBoatPrice);
+            double entranceFee = 100.0 * totalGuests;
+            String formattedEntranceFee = String.format("₱%.2f", entranceFee);
+            lblEntranceFee.setText(formattedEntranceFee);
+            double ecologicalFee = 20.0 * totalGuests;
+            String formattedEcoFee = String.format("₱%.2f", ecologicalFee);
+            lblEcologicalFee.setText(formattedEcoFee);
+            double grandTotal = totalRoomPrice + boatPrice + entranceFee + ecologicalFee;
+            lblGrandTotal.setText(String.format("₱%.2f", grandTotal));
+            double downPayment = grandTotal * 0.30;
+            String formattedDownPayment = String.format("₱%.2f", downPayment);
+            lblDownPayment.setText(formattedDownPayment);
+            lblDownPayment2.setText(formattedDownPayment);
+             try {
+            // Prepare the SQL query to fetch all room details including image
+            String sql = "SELECT room_type, description, room_price, max_occupancy, room_image FROM room WHERE room_number = ?";
+            pst = con.prepareStatement(sql);
+            pst.setString(1, roomNumber);
+            
+            // Execute the query
+            rs = pst.executeQuery();
 
-        lblCheckIn.setText(checkInDate != null ? dateFormat.format(checkInDate) : "N/A");
-        lblCheckOut.setText(checkOutDate != null ? dateFormat.format(checkOutDate) : "N/A");
-        long diffInMillies = checkOutDate.getTime() - checkInDate.getTime();
-        long numberOfNights = TimeUnit.MILLISECONDS.toDays(diffInMillies);
-       
-        lblNumberOfNights.setText("" + numberOfNights);
-        lblRoomNumber.setText(roomNumber != null ? roomNumber : "N/A");
-        lblRoomNumber.setText(roomNumber != null ? roomNumber : "N/A");
-        lblRoomType.setText(roomType != null ? roomType : "N/A");
-        lblRoomDescription.setText(roomDescription != null ? roomDescription : "N/A");
-        lblBoatName.setText(boatName != null ? boatName : "N/A");
-        lblSqlDate.setText(sqlDate != null ? dateFormat.format(sqlDate) : "N/A");
-        lblStartTime.setText(sqlStartTime != null ? timeFormat.format(sqlStartTime) : "N/A");
-        lblEndTime.setText(sqlEndTime != null ? timeFormat.format(sqlEndTime) : "N/A"); 
-        String reservationNumber = generateReservationNumber();
-        lblReservationNumber.setText("" + reservationNumber);
-        int totalGuests = numAdults + numChildren;
-        String guestInfo;
-        if (numChildren > 0) {
-            guestInfo = numAdults + " Adult" + (numAdults > 1 ? "s" : "") + ", " + numChildren + " Child" + (numChildren > 1 ? "ren" : "");
-        } else {
-            guestInfo = numAdults + " Adult" + (numAdults > 1 ? "s" : "");
+            // Check if the room exists in the database
+            if (rs.next()) {
+
+
+                // Load and display the room image
+                loadRoomImage(rs.getBytes("room_image"));
+            } else {
+                JOptionPane.showMessageDialog(this, "Room not found in database", "Error", JOptionPane.WARNING_MESSAGE);
+
+}       } catch (SQLException ex) {   
+            Logger.getLogger(guestProcess.class.getName()).log(Level.SEVERE, null, ex);
         }
-        lblGuestInfo.setText(guestInfo);  // Make sure lblGuestInfo exists in your form
-        double totalRoomPrice = roomPrice * numberOfNights;
-        String formattedTotalRoomPrice = String.format("₱%.2f", totalRoomPrice);
-        lblTotalRoomPrice.setText(formattedTotalRoomPrice);
-        String formattedBoatPrice = String.format("₱%.2f", boatPrice);
-        lblBoatPrice.setText(formattedBoatPrice);
-        double entranceFee = 100.0 * totalGuests;
-        String formattedEntranceFee = String.format("₱%.2f", entranceFee);
-        lblEntranceFee.setText(formattedEntranceFee); 
-        double ecologicalFee = 20.0 * totalGuests;
-        String formattedEcoFee = String.format("₱%.2f", ecologicalFee);
-        lblEcologicalFee.setText(formattedEcoFee);
-        double grandTotal = totalRoomPrice + boatPrice + entranceFee + ecologicalFee;
-        lblGrandTotal.setText(String.format("₱%.2f", grandTotal));
-        double downPayment = grandTotal * 0.30;
-        String formattedDownPayment = String.format("₱%.2f", downPayment);
-        lblDownPayment.setText(formattedDownPayment);
-        lblDownPayment2.setText(formattedDownPayment);
-    }
+}
 
        
     
@@ -217,6 +244,26 @@ public class guestProcess extends javax.swing.JFrame {
         return dateFormat.format(new Date());
     }
     
+    private void loadRoomImage(byte[] imageData) {
+    try {
+        if (imageData == null || imageData.length == 0) {
+            labelDisplayImage.setIcon(null);
+            return;
+        }
+
+        ImageIcon originalIcon = new ImageIcon(imageData);
+        Image scaledImage = originalIcon.getImage()
+            .getScaledInstance(labelDisplayImage.getWidth(), 
+                            labelDisplayImage.getHeight(), 
+                            Image.SCALE_SMOOTH);
+        labelDisplayImage.setIcon(new ImageIcon(scaledImage));
+    } catch (Exception e) {
+        labelDisplayImage.setIcon(null);
+        System.err.println("Error loading image: " + e.getMessage());
+    }
+}
+  
+    
     
     // Assuming you already have a method to establish the database connection
 
@@ -278,7 +325,8 @@ public class guestProcess extends javax.swing.JFrame {
         jLabel22 = new javax.swing.JLabel();
         jLabel23 = new javax.swing.JLabel();
         jPanel12 = new javax.swing.JPanel();
-        jPanel13 = new javax.swing.JPanel();
+        jPanel5 = new javax.swing.JPanel();
+        labelDisplayImage = new javax.swing.JLabel();
         jLabel30 = new javax.swing.JLabel();
         lblRoomNumber = new javax.swing.JLabel();
         lblRoomType = new javax.swing.JLabel();
@@ -607,20 +655,20 @@ public class guestProcess extends javax.swing.JFrame {
         jPanel12.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jPanel12.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel13.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel5.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel5.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
+        jPanel5.addContainerListener(new java.awt.event.ContainerAdapter() {
+            public void componentAdded(java.awt.event.ContainerEvent evt) {
+                jPanel5ComponentAdded(evt);
+            }
+        });
+        jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        javax.swing.GroupLayout jPanel13Layout = new javax.swing.GroupLayout(jPanel13);
-        jPanel13.setLayout(jPanel13Layout);
-        jPanel13Layout.setHorizontalGroup(
-            jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 240, Short.MAX_VALUE)
-        );
-        jPanel13Layout.setVerticalGroup(
-            jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 180, Short.MAX_VALUE)
-        );
+        labelDisplayImage.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelDisplayImage.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
+        jPanel5.add(labelDisplayImage, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 240, 180));
 
-        jPanel12.add(jPanel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 240, 180));
+        jPanel12.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 240, 180));
 
         jLabel30.setFont(new java.awt.Font("Helvetica Neue", 1, 12)); // NOI18N
         jLabel30.setForeground(new java.awt.Color(0, 0, 0));
@@ -638,7 +686,7 @@ public class guestProcess extends javax.swing.JFrame {
         lblRoomType.setForeground(new java.awt.Color(0, 0, 0));
         lblRoomType.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         lblRoomType.setText("Null");
-        jPanel12.add(lblRoomType, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 40, 120, -1));
+        jPanel12.add(lblRoomType, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 40, 90, -1));
 
         lblRoomDescription.setForeground(new java.awt.Color(0, 0, 0));
         lblRoomDescription.setText("jLabel16");
@@ -653,7 +701,7 @@ public class guestProcess extends javax.swing.JFrame {
         jLabel41.setFont(new java.awt.Font("Helvetica Neue", 1, 12)); // NOI18N
         jLabel41.setForeground(new java.awt.Color(0, 0, 0));
         jLabel41.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel41.setText("Category:");
+        jLabel41.setText("Room Type:");
         jPanel12.add(jLabel41, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 40, 120, -1));
 
         jPanel11.add(jPanel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(940, 130, 470, 220));
@@ -843,29 +891,29 @@ double downPayment = totalPrice * 0.30;
 
 String paymentMethod = (String) paymentMethodComboBox.getSelectedItem();
 
-if ("Gacash".equalsIgnoreCase(paymentMethod)) {
+if ("GCash".equalsIgnoreCase(paymentMethod)) {
     new guestGcashPayment(
-        checkInDate, checkOutDate, roomNumber, roomType, roomDescription,
-        roomPrice, numAdults, numChildren, userID, totalPrice,
-        downPayment, guestName, email, contact, address, reservationNumber
+            checkInDate, checkOutDate, roomNumber, roomType, roomDescription,
+       roomPrice, sqlDate, sqlStartTime, sqlEndTime, boatName, boatPrice,
+       numAdults, numChildren, userID, totalPrice, downPayment,
+       guestName, email, contact, address, reservationNumber
     ).setVisible(true);
-
 
 } else if ("Maya".equalsIgnoreCase(paymentMethod)) {
     new guestMayaPayment(
         checkInDate, checkOutDate, roomNumber, roomType, roomDescription,
-        roomPrice, numAdults, numChildren, userID, totalPrice,
-        downPayment, guestName, email, contact, address, reservationNumber
+    roomPrice, sqlDate, sqlStartTime, sqlEndTime, boatName, boatPrice,
+    numAdults, numChildren, userID, totalPrice, downPayment,
+    guestName, email, contact, address, reservationNumber
     ).setVisible(true);
-   
 
 } else if ("Paypal".equalsIgnoreCase(paymentMethod)) {
     new guestPaypalPayment(
         checkInDate, checkOutDate, roomNumber, roomType, roomDescription,
-        roomPrice, numAdults, numChildren, userID, totalPrice,
-        downPayment, guestName, email, contact, address, reservationNumber
+    roomPrice, sqlDate, sqlStartTime, sqlEndTime, boatName, boatPrice,
+    numAdults, numChildren, userID, totalPrice, downPayment,
+    guestName, email, contact, address, reservationNumber
     ).setVisible(true);
-
 
 } else {
     JOptionPane.showMessageDialog(this, "Please select a valid payment method.");
@@ -889,6 +937,10 @@ if ("Gacash".equalsIgnoreCase(paymentMethod)) {
     private void jLabel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseClicked
       pnlPayment.setVisible(true);
     }//GEN-LAST:event_jLabel1MouseClicked
+
+    private void jPanel5ComponentAdded(java.awt.event.ContainerEvent evt) {//GEN-FIRST:event_jPanel5ComponentAdded
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jPanel5ComponentAdded
 
     /**
      * @param args the command line arguments
@@ -1006,14 +1058,15 @@ if ("Gacash".equalsIgnoreCase(paymentMethod)) {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
-    private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
+    private javax.swing.JLabel labelDisplayImage;
     private javax.swing.JLabel lblBoatName;
     private javax.swing.JLabel lblBoatPrice;
     private javax.swing.JLabel lblCheckIn;

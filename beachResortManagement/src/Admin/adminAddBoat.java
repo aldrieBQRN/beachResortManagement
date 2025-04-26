@@ -10,6 +10,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -22,8 +24,14 @@ public class adminAddBoat extends javax.swing.JFrame {
      * Creates new form roomAdd
      */
     public adminAddBoat() {
-        initComponents();
-        DatabaseConnection();
+        try {
+            initComponents();
+            DatabaseConnection(); 
+            String roomNumber = generateNextBoatNumber();
+            txtBoatNumber.setText(roomNumber);
+        } catch (SQLException ex) {
+            Logger.getLogger(adminAddBoat.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     java.sql.Connection con; 
@@ -54,6 +62,25 @@ public class adminAddBoat extends javax.swing.JFrame {
             System.out.println("MySQL JDBC Driver not found: " + e.getMessage());
         }
     }
+    
+    public String generateNextBoatNumber() throws SQLException {
+    String sql = "SELECT MAX(boat_number) FROM boat WHERE boat_number LIKE 'BN-%'";
+    String nextBoatNumber = "BN-001"; // Default starting number
+
+    try (PreparedStatement pst = con.prepareStatement(sql);
+         ResultSet rs = pst.executeQuery()) {
+        
+        if (rs.next()) {
+            String maxNumber = rs.getString(1);
+            if (maxNumber != null && maxNumber.startsWith("BN-")) {
+                int num = Integer.parseInt(maxNumber.substring(3)) + 1;
+                nextBoatNumber = String.format("BN-%03d", num);
+            }
+        }
+    }
+    return nextBoatNumber;
+}
+
     
 
     /**
@@ -164,6 +191,7 @@ public class adminAddBoat extends javax.swing.JFrame {
         });
         jPanel2.add(rSButtonHover2, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 320, 240, -1));
 
+        txtBoatNumber.setEditable(false);
         txtBoatNumber.setBackground(new java.awt.Color(242, 242, 242));
         txtBoatNumber.setForeground(new java.awt.Color(102, 102, 102));
         txtBoatNumber.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));

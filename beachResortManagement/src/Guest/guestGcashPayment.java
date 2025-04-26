@@ -353,8 +353,8 @@ private void handleDatabaseError(String message, SQLException e) {
         try {
             double totalPrice = calculateTotalPrice(true);
 
-            String query = "INSERT INTO reservation (reservation_number, guest_id, room_reservation_id, check_in_date, check_out_date, total_price, status, created_at) "
-                         + "VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
+            String query = "INSERT INTO reservation (reservation_number, guest_id, user_id, room_reservation_id, check_in_date, check_out_date, total_price, status, created_at) "
+                         + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
 
             PreparedStatement pst = con.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
             setMainReservationParameters(pst, guestId, roomReservationId, totalPrice);
@@ -463,11 +463,12 @@ private void handleDatabaseError(String message, SQLException e) {
                                            int roomReservationId, double totalPrice) throws SQLException {
         stmt.setString(1, reservationNumber);
         stmt.setInt(2, guestId);
-        stmt.setInt(3, roomReservationId);
-        stmt.setDate(4, new java.sql.Date(checkInDate.getTime()));
-        stmt.setDate(5, new java.sql.Date(checkOutDate.getTime()));
-        stmt.setDouble(6, totalPrice);
-        stmt.setString(7, "Pending");
+        stmt.setInt(3, userID);
+        stmt.setInt(4, roomReservationId);
+        stmt.setDate(5, new java.sql.Date(checkInDate.getTime()));
+        stmt.setDate(6, new java.sql.Date(checkOutDate.getTime()));
+        stmt.setDouble(7, totalPrice);
+        stmt.setString(8, "Pending");
     }
     
     private void handlePaymentResult(boolean success) {

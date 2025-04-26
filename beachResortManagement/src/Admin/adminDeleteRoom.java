@@ -4,6 +4,7 @@
  */
 package Admin;
 
+import java.awt.Color;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -91,9 +92,14 @@ public class adminDeleteRoom extends javax.swing.JFrame {
                 txtRoomNumberActionPerformed(evt);
             }
         });
+        txtRoomNumber.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtRoomNumberKeyTyped(evt);
+            }
+        });
         jPanel2.add(txtRoomNumber, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 80, 290, 50));
 
-        rSButtonHover3.setBackground(new java.awt.Color(27, 59, 95));
+        rSButtonHover3.setBackground(new java.awt.Color(255, 0, 0));
         rSButtonHover3.setText("CANCEL");
         rSButtonHover3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -102,7 +108,7 @@ public class adminDeleteRoom extends javax.swing.JFrame {
         });
         jPanel2.add(rSButtonHover3, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 140, 140, -1));
 
-        rSButtonHover5.setBackground(new java.awt.Color(27, 59, 95));
+        rSButtonHover5.setBackground(new java.awt.Color(0, 204, 0));
         rSButtonHover5.setText("CONTINUE");
         rSButtonHover5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -173,6 +179,13 @@ public class adminDeleteRoom extends javax.swing.JFrame {
     private void txtRoomNumberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtRoomNumberActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtRoomNumberActionPerformed
+
+    private void txtRoomNumberKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtRoomNumberKeyTyped
+        if(txtRoomNumber.getText().equals("Enter room number here...")){
+            txtRoomNumber.setText("");
+            setForeground(new Color(152,153,153));
+        }
+    }//GEN-LAST:event_txtRoomNumberKeyTyped
 
     /**
      * @param args the command line arguments

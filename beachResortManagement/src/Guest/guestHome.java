@@ -512,7 +512,7 @@ public class guestHome extends javax.swing.JFrame {
     }//GEN-LAST:event_panelRound2MouseClicked
 
     private void jLabel27MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel27MouseClicked
-        new guestReservation().setVisible(true);
+        new guestReservation(userID).setVisible(true);
     }//GEN-LAST:event_jLabel27MouseClicked
 
     /**

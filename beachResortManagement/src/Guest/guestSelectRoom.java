@@ -5,6 +5,7 @@
 package Guest;
 
 import Login.landingPage;
+import com.mysql.cj.jdbc.Blob;
 import java.awt.Color;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -13,8 +14,12 @@ import java.sql.SQLException;
 
 import com.toedter.calendar.JCalendar;
 import java.awt.Component;
+import java.awt.Graphics2D;
+import java.awt.HeadlessException;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,12 +27,16 @@ import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultCellEditor;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 
 
@@ -126,12 +135,17 @@ public class guestSelectRoom extends javax.swing.JFrame {
         e.printStackTrace();
     }
 }
-    
-  private void searchAvailableRooms() {
+
+private void searchAvailableRooms() {
     try {
-        // Ensure check-in and check-out dates are not null
+        // Validate dates
         if (this.checkInDate == null || this.checkOutDate == null) {
             JOptionPane.showMessageDialog(this, "Please select valid check-in and check-out dates.");
+            return;
+        }
+
+        if (!this.checkOutDate.after(this.checkInDate)) {
+            JOptionPane.showMessageDialog(this, "Check-out date must be after check-in date.");
             return;
         }
 
@@ -139,84 +153,133 @@ public class guestSelectRoom extends javax.swing.JFrame {
         java.sql.Date sqlCheckOut = new java.sql.Date(this.checkOutDate.getTime());
         int totalGuests = this.adults + this.children;
 
-        // SQL query to find rooms available based on occupancy and reservation status
-        String query = "SELECT r.room_number, r.room_type, r.description, r.room_price " +
+        String query = "SELECT r.room_number, r.room_type, r.description, r.room_price, r.room_image " +
                        "FROM room r " +
-                       "WHERE r.max_occupancy >= ? " +  // Ensure max occupancy matches
+                       "WHERE r.max_occupancy >= ? " +
                        "AND r.room_number NOT IN (" +
                        "   SELECT room_number FROM room_reservation " +
-                       "   WHERE status = 'Reserved' " +  // Check for reserved rooms
-                       "   AND (? <= check_out_date AND ? >= check_in_date)" +  // Ensure no overlapping reservations
+                       "   WHERE status = 'Reserved' " +
+                       "   AND (? <= check_out_date AND ? >= check_in_date)" +
                        ") " +
-                       "ORDER BY r.room_price ASC";  // Sort by room price
+                       "ORDER BY r.room_price ASC";
 
-        // Prepare the SQL statement and set parameters
         pst = con.prepareStatement(query);
-        pst.setInt(1, totalGuests);  // Number of guests should match room capacity
-        pst.setDate(2, sqlCheckIn);   // Set check-in date
-        pst.setDate(3, sqlCheckOut);  // Set check-out date
+        pst.setInt(1, totalGuests);
+        pst.setDate(2, sqlCheckIn);
+        pst.setDate(3, sqlCheckOut);
 
         rs = pst.executeQuery();
 
-        // Create table model with columns for room details and a "Select" button
         DefaultTableModel roomModel = new DefaultTableModel(
-            new Object[]{"Room Number", "Room Type", "Description", "Price", "Action"}, 
+            new Object[]{"Room Number", "Room Image", "Room Type", "Description", "Price", "Action"}, 
             0
         ) {
             @Override
+            public Class<?> getColumnClass(int columnIndex) {
+                switch (columnIndex) {
+                    case 1: return ImageIcon.class; // Image column
+                    default: return Object.class;
+                }
+            }
+            
+            @Override
             public boolean isCellEditable(int row, int column) {
-                // Only make the "Select" column editable (button column)
-                return column == 4; // Index 4 corresponds to the "Select" button column
+                return column == 5; // Only action column is editable
             }
         };
 
-        // Set the table model for displaying room details
+        // Set model first
         tblRoomDetails.setModel(roomModel);
 
-        // Add button renderer and editor for the "Select" column (index 4)
-        tblRoomDetails.getColumnModel().getColumn(4).setCellRenderer(new ButtonRenderer());
-        tblRoomDetails.getColumnModel().getColumn(4).setCellEditor(new ButtonEditor(new JCheckBox()));
+        // Configure table appearance
+        tblRoomDetails.setRowHeight(80);
+        tblRoomDetails.getColumnModel().getColumn(1).setPreferredWidth(100);
+
+        // Set image renderer
+        tblRoomDetails.getColumnModel().getColumn(1).setCellRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+                if (value instanceof ImageIcon) {
+                    JLabel label = new JLabel((ImageIcon) value);
+                    label.setHorizontalAlignment(JLabel.CENTER);
+                    label.setOpaque(true);
+                    if (isSelected) {
+                        label.setBackground(table.getSelectionBackground());
+                    }
+                    return label;
+                }
+                return super.getTableCellRendererComponent(table, value, isSelected, 
+                        hasFocus, row, column);
+            }
+        });
+
+        // Configure button column
+        TableColumn buttonColumn = tblRoomDetails.getColumnModel().getColumn(5);
+        buttonColumn.setCellRenderer(new ButtonRenderer());
+        buttonColumn.setCellEditor(new ButtonEditor(new JCheckBox()));
 
         boolean found = false;
 
-        // Add data rows for available rooms
         while (rs.next()) {
             found = true;
-
             String roomNumber = rs.getString("room_number");
             String roomType = rs.getString("room_type");
-             String roomDdescription = rs.getString("description");
-            
+            String roomDescription = rs.getString("description");
             double price = rs.getDouble("room_price");
 
-            System.out.println("Room: " + roomNumber + " | Type: " + roomType + " | Description: " + roomDdescription + " | ₱" + price);
+            // Handle image
+            ImageIcon roomImage;
+            try {
+                Blob imageBlob = (Blob) rs.getBlob("room_image");
+                if (imageBlob != null && imageBlob.length() > 0) {
+                    byte[] imgBytes = imageBlob.getBytes(1, (int)imageBlob.length());
+                    ImageIcon originalIcon = new ImageIcon(imgBytes);
+                    Image scaledImage = originalIcon.getImage().getScaledInstance(100, 80, Image.SCALE_SMOOTH);
+                    roomImage = new ImageIcon(scaledImage);
+                } else {
+                    roomImage = createPlaceholderImage();
+                }
+            } catch (SQLException e) {
+                roomImage = createPlaceholderImage();
+                System.err.println("Error loading image: " + e.getMessage());
+            }
 
-            // Add room data to table
             roomModel.addRow(new Object[]{
-                roomNumber, 
-                roomType, 
-                roomDdescription,
-                "₱" + String.format("%.2f", price), // Format price with currency
-                "Select" // Action button for selection
+                roomNumber,
+                roomImage,
+                roomType,
+                roomDescription,
+                "₱" + String.format("%.2f", price),
+                "Select"
             });
         }
 
-        // Inform the user if no rooms are available
         if (!found) {
             JOptionPane.showMessageDialog(this, "No available rooms found for your criteria.");
+            return;
         }
 
     } catch (SQLException ex) {
-        // Handle SQL exceptions
         JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage());
+        ex.printStackTrace();
     } catch (Exception ex) {
-        // Handle general exceptions
         JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+        ex.printStackTrace();
     }
 }
 
-
-
+// Helper method to create placeholder image
+private ImageIcon createPlaceholderImage() {
+    BufferedImage placeholder = new BufferedImage(100, 80, BufferedImage.TYPE_INT_RGB);
+    Graphics2D g2d = placeholder.createGraphics();
+    g2d.setColor(Color.LIGHT_GRAY);
+    g2d.fillRect(0, 0, 100, 80);
+    g2d.setColor(Color.DARK_GRAY);
+    g2d.drawString("No Image", 30, 40);
+    g2d.dispose();
+    return new ImageIcon(placeholder);
+}
 
 // Button Renderer Class
 class ButtonRenderer extends JButton implements TableCellRenderer {
@@ -233,117 +296,96 @@ class ButtonRenderer extends JButton implements TableCellRenderer {
 
 // Button Editor Class
 class ButtonEditor extends DefaultCellEditor {
-    private String label;
     private JButton button;
+    private boolean isPushed;
     private int clickedRow;
-    
+
     public ButtonEditor(JCheckBox checkBox) {
         super(checkBox);
         button = new JButton();
         button.setOpaque(true);
-        button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                fireEditingStopped();
-                selectRoom(clickedRow);
-            }
-        });
+        button.addActionListener(e -> fireEditingStopped());
     }
-    
+
+    @Override
     public Component getTableCellEditorComponent(JTable table, Object value,
             boolean isSelected, int row, int column) {
-        label = (value == null) ? "" : value.toString();
-        button.setText(label);
+        button.setText(value == null ? "" : value.toString());
         clickedRow = row;
+        isPushed = true;
         return button;
     }
-    
+
+    @Override
     public Object getCellEditorValue() {
-        return label;
+        if (isPushed) {
+            // Call selectRoom with the clicked row
+            selectRoom(clickedRow);
+        }
+        isPushed = false;
+        return button.getText();
+    }
+
+    @Override
+    public boolean stopCellEditing() {
+        isPushed = false;
+        return super.stopCellEditing();
     }
 }
 
+
+// Method to handle room selection
 // Method to handle room selection
 // Method to handle room selection
 private void selectRoom(int row) {
     try {
-        // Retrieve room information from the selected row
-        String roomNumber = (String) tblRoomDetails.getValueAt(row, 0); // Room number is in column 0
-        String roomType = (String) tblRoomDetails.getValueAt(row, 1); // Room type is in column 1
-        String description = (String) tblRoomDetails.getValueAt(row, 2); // Description is in column 2
+        DefaultTableModel model = (DefaultTableModel) tblRoomDetails.getModel();
         
-        String priceString = (String) tblRoomDetails.getValueAt(row, 3); // Price is in column 3
-        priceString = priceString.replaceAll("[^0-9.]", "");
-        double price = 0;
+        // Get room details from the selected row
+        String roomNumber = model.getValueAt(row, 0).toString();
+        String roomType = model.getValueAt(row, 2).toString();
+        String description = model.getValueAt(row, 3).toString();
         
-        try {
-            price = Double.parseDouble(priceString); // Parse price
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Invalid price format.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        // Debug: print the selected room information (Remove in production)
-        System.out.println("Selected Room: ");
-        System.out.println("Room Number: " + roomNumber);
-        System.out.println("Room Type: " + roomType);
-        System.out.println("Description: " + description);
-        System.out.println("Price: " + price);
-        
-        // Ask user if they want to add water activities to their booking
-        int response = JOptionPane.showConfirmDialog(
-                this,
-                "Would you like to add water activities to your booking?",
-                "Water Activities",
-                JOptionPane.YES_NO_OPTION
-        );
-        
-        boolean wantsWaterActivities = (response == JOptionPane.YES_OPTION);
-        
-        String checkInStr = txtCheckin.getText().trim();
-        String checkOutStr = txtCheckout.getText().trim();
+        // Parse price
+        String priceStr = model.getValueAt(row, 4).toString().replace("₱", "");
+        double price = Double.parseDouble(priceStr);
 
-        // 2. Define the correct date format that matches your text fields
+        // Get dates from text fields
         SimpleDateFormat displayFormat = new SimpleDateFormat("MMMM dd, yyyy");
-        displayFormat.setLenient(false);
-        
-        // 3. Parse strings into Date objects using the correct format
-        Date checkInDate = displayFormat.parse(checkInStr);
-        Date checkOutDate = displayFormat.parse(checkOutStr);
-        
-        
-        // Get number of guests
+        Date checkInDate = displayFormat.parse(txtCheckin.getText().trim());
+        Date checkOutDate = displayFormat.parse(txtCheckout.getText().trim());
+
+        // Get guest counts
         int adults = (Integer) adultsSpinner.getValue();
         int children = (Integer) childrenSpinner.getValue();
-        int totalGuests = adults + children;
-        
-        // Debug: print the number of guests
-        System.out.println("Total Guests: " + totalGuests);
-        
-        // Pass the details to the next form or action
+
+        // Ask about water activities
+        int response = JOptionPane.showConfirmDialog(
+            this,
+            "Would you like to add water activities to your booking?",
+            "Water Activities",
+            JOptionPane.YES_NO_OPTION
+        );
+
+        boolean wantsWaterActivities = (response == JOptionPane.YES_OPTION);
+
+        // Open appropriate form
         if (wantsWaterActivities) {
-            new guestSelectBoat(checkInDate, checkOutDate, adults, children, roomNumber, roomType, description, price, userID).setVisible(true);
+            new guestSelectBoat(checkInDate, checkOutDate, adults, children, 
+                roomNumber, roomType, description, price, userID).setVisible(true);
         } else {
-            new guestProcess2(checkInDate, checkOutDate, roomNumber, roomType, description, price, adults, children, userID).setVisible(true);
+            new guestProcess2(checkInDate, checkOutDate, roomNumber, 
+                roomType, description, price, adults, children, userID).setVisible(true);
         }
-    } catch (ParseException ex) {
-            Logger.getLogger(guestSelectRoom.class.getName()).log(Level.SEVERE, null, ex);
+        
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, "Error selecting room: " + ex.getMessage());
+        ex.printStackTrace();
     }
 }
 
 // Method to validate check-in and check-out dates
-private boolean validateDates(Date checkInDate, Date checkOutDate) {
-    if (checkInDate == null || checkOutDate == null) {
-        JOptionPane.showMessageDialog(this, "Please select valid check-in and check-out dates.", "Error", JOptionPane.ERROR_MESSAGE);
-        return false;
-    }
 
-    if (checkOutDate.before(checkInDate)) {
-        JOptionPane.showMessageDialog(this, "Check-out date cannot be before check-in date.", "Error", JOptionPane.ERROR_MESSAGE);
-        return false;
-    }
-
-    return true;
-}
 
 
 
@@ -392,9 +434,11 @@ private boolean validateDates(Date checkInDate, Date checkOutDate) {
 
         dateChooserCheckin.setForeground(new java.awt.Color(0, 112, 192));
         dateChooserCheckin.setDateFormat("MMMM dd, yyyy");
+        dateChooserCheckin.setTextRefernce(txtCheckin);
 
         dateChooserCheckout.setForeground(new java.awt.Color(0, 112, 192));
         dateChooserCheckout.setDateFormat(" MMMM dd, yyyy");
+        dateChooserCheckout.setTextRefernce(txtCheckout);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
@@ -410,14 +454,17 @@ private boolean validateDates(Date checkInDate, Date checkOutDate) {
         tblRoomDetails.setForeground(new java.awt.Color(255, 255, 255));
         tblRoomDetails.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "Room Number", "Room Category", "Description", "Price/Night"
+                "Room Number", "Room Image", "Room Category", "Description", "Price/Night", "Action"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -427,7 +474,7 @@ private boolean validateDates(Date checkInDate, Date checkOutDate) {
         tblRoomDetails.setColorBackgoundHead(new java.awt.Color(39, 114, 160));
         tblRoomDetails.setColorBordeFilas(new java.awt.Color(255, 255, 255));
         tblRoomDetails.setColorBordeHead(new java.awt.Color(255, 255, 255));
-        tblRoomDetails.setColorFilasBackgound2(new java.awt.Color(242, 242, 242));
+        tblRoomDetails.setColorFilasBackgound2(new java.awt.Color(255, 255, 255));
         tblRoomDetails.setColorFilasForeground1(new java.awt.Color(27, 59, 95));
         tblRoomDetails.setColorFilasForeground2(new java.awt.Color(27, 59, 95));
         tblRoomDetails.setColorSelBackgound(new java.awt.Color(27, 59, 95));
@@ -446,6 +493,9 @@ private boolean validateDates(Date checkInDate, Date checkOutDate) {
             }
         });
         jScrollPane1.setViewportView(tblRoomDetails);
+        if (tblRoomDetails.getColumnModel().getColumnCount() > 0) {
+            tblRoomDetails.getColumnModel().getColumn(5).setPreferredWidth(10);
+        }
 
         jPanel9.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 30, 1360, 540));
 
@@ -655,20 +705,58 @@ private boolean validateDates(Date checkInDate, Date checkOutDate) {
     }//GEN-LAST:event_tblRoomDetailsMouseClicked
 
     private void jLabel12MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel12MouseClicked
-        String checkInStr = txtCheckin.getText().trim();
-        String checkOutStr = txtCheckout.getText().trim();
+   try {
+    String checkInStr = txtCheckin.getText().trim();
+    String checkOutStr = txtCheckout.getText().trim();
 
-        // 2. Get number of guests
-        int adults = (Integer) adultsSpinner.getValue();
-        int children = (Integer) childrenSpinner.getValue();
-       
-        
-        this.checkInDate = checkInDate;
-        this.checkOutDate = checkOutDate;
-        this.adults = adults;
-        this.children = children;
-        
-        searchAvailableRooms();
+    // Validate input
+    if (checkInStr.isEmpty() || checkOutStr.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Check-in or check-out date cannot be empty.", "Input Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // Use correct date format
+    SimpleDateFormat formatter = new SimpleDateFormat("MMMM dd, yyyy");
+    java.util.Date parsedCheckIn = null;
+    java.util.Date parsedCheckOut = null;
+
+    try {
+        parsedCheckIn = formatter.parse(checkInStr);
+        parsedCheckOut = formatter.parse(checkOutStr);
+    } catch (ParseException pe) {
+        JOptionPane.showMessageDialog(this, "Invalid date format. Please use: MMMM dd, yyyy (e.g., April 26, 2025)", "Date Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    if (parsedCheckOut.before(parsedCheckIn)) {
+        JOptionPane.showMessageDialog(this, "Check-out date cannot be before check-in date.", "Date Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+
+    // Get guest numbers
+    int adults = (Integer) adultsSpinner.getValue();
+    int children = (Integer) childrenSpinner.getValue();
+
+    // Set instance variables
+    this.checkInDate = parsedCheckIn;
+    this.checkOutDate = parsedCheckOut;
+    this.adults = adults;
+    this.children = children;
+
+    // Proceed
+    searchAvailableRooms();
+
+} catch (NullPointerException npe) {
+    Logger.getLogger(guestSelectRoom.class.getName()).log(Level.SEVERE, "Null Pointer Exception: ", npe);
+    JOptionPane.showMessageDialog(this, "There was an error with your dates or inputs. Please check and try again.", "Error", JOptionPane.ERROR_MESSAGE);
+} catch (HeadlessException ex) {
+    Logger.getLogger(guestSelectRoom.class.getName()).log(Level.SEVERE, "An error occurred while processing your request: ", ex);
+    JOptionPane.showMessageDialog(this, "An unexpected error occurred. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+}
+
+
+
     }//GEN-LAST:event_jLabel12MouseClicked
 
     private void panelRound3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelRound3MouseClicked

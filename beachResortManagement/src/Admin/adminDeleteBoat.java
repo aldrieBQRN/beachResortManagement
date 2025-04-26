@@ -5,6 +5,7 @@
 package Admin;
 
 import Staff.*;
+import java.awt.Color;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -86,9 +87,22 @@ public class adminDeleteBoat extends javax.swing.JFrame {
         txtBoatNumber.setForeground(new java.awt.Color(102, 102, 102));
         txtBoatNumber.setText("Enter boat number here...");
         txtBoatNumber.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
+        txtBoatNumber.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtBoatNumberFocusGained(evt);
+            }
+        });
+        txtBoatNumber.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtBoatNumberKeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtBoatNumberKeyTyped(evt);
+            }
+        });
         jPanel2.add(txtBoatNumber, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 80, 290, 50));
 
-        rSButtonHover3.setBackground(new java.awt.Color(27, 59, 95));
+        rSButtonHover3.setBackground(new java.awt.Color(255, 0, 0));
         rSButtonHover3.setText("CANCEL");
         rSButtonHover3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -97,7 +111,7 @@ public class adminDeleteBoat extends javax.swing.JFrame {
         });
         jPanel2.add(rSButtonHover3, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 140, 140, -1));
 
-        rSButtonHover5.setBackground(new java.awt.Color(27, 59, 95));
+        rSButtonHover5.setBackground(new java.awt.Color(0, 204, 0));
         rSButtonHover5.setText("CONTINUE");
         rSButtonHover5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -161,6 +175,21 @@ public class adminDeleteBoat extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Error deleting boat: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_rSButtonHover5ActionPerformed
+
+    private void txtBoatNumberKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBoatNumberKeyTyped
+if(txtBoatNumber.getText().equals("Enter boat number here...")){
+            txtBoatNumber.setText("");
+            setForeground(new Color(152,153,153));
+        }         
+    }//GEN-LAST:event_txtBoatNumberKeyTyped
+
+    private void txtBoatNumberKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBoatNumberKeyReleased
+       
+    }//GEN-LAST:event_txtBoatNumberKeyReleased
+
+    private void txtBoatNumberFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtBoatNumberFocusGained
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtBoatNumberFocusGained
 
     /**
      * @param args the command line arguments

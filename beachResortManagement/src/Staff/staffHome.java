@@ -192,13 +192,13 @@ public class staffHome extends javax.swing.JFrame {
         jLabel28.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
         jLabel28.setForeground(new java.awt.Color(255, 255, 255));
         jLabel28.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel28.setText("Sunlit");
+        jLabel28.setText("PAPAYA");
         jPanel3.add(jLabel28, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 160, 220, 40));
 
         jLabel29.setFont(new java.awt.Font("Tahoma", 1, 20)); // NOI18N
         jLabel29.setForeground(new java.awt.Color(255, 255, 255));
         jLabel29.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel29.setText("Shores Resort");
+        jLabel29.setText("Beach Resort");
         jPanel3.add(jLabel29, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 200, 220, 20));
 
         jPanel14.setBackground(new java.awt.Color(27, 59, 95));
