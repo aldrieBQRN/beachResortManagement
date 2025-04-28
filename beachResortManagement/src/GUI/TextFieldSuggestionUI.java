@@ -50,7 +50,7 @@ public class TextFieldSuggestionUI extends MetalTextFieldUI {
         textfield.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent fe) {
-                border.setColor(new Color(128, 189, 255));
+                border.setColor(new Color(0, 0, 0));
                 textfield.repaint();
             }
 

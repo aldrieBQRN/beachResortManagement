@@ -8,7 +8,6 @@
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/GUI/PanelRound.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Login/landingPage.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Login/signUp.java</file>
-            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Login/Background.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Guest/guestHome.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Guest/guestProcess.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Guest/guestSelectRoom.java</file>
@@ -64,6 +63,29 @@
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Staff/staffReservationRoom.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Staff/staffHistory.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Staff/staffMainHome.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Staff/staffBoatReservation.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Staff/staffReservation.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Staff/staffBoats.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Image/icons8-booking-30.png</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/PieChart/BlankPlotChatRender.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/PieChart/BlankPlotChart.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/PieChart/LabelColor.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/PieChart/ModelChart.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/PieChart/ModelLegend.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/PieChart/NiceScale.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/PieChart/SeriesSize.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/test/NewJFrame1.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/test/adminAddBoat.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/test/adminUpdateBoat.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Staff/ReservationDetailsView.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/test/ReservationViewDetails.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Guest/ReservationViewDetails.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Guest/UserDetailsFetcher.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/PieChart/MinimalPieChart.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/PieChartPanel.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/ResortAdminDashboard.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/PieChart/LegendItem.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/PieChart/Chart.java</file>
         </group>
     </open-files>
 </project-private>

@@ -184,6 +184,7 @@ private void clearFields() {
         panelRound2 = new GUI.PanelRound();
         jLabel1 = new javax.swing.JLabel();
         passwordField3 = new textfield.PasswordField();
+        jPanel1 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -242,7 +243,7 @@ private void clearFields() {
         jLabel5.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(0, 0, 0));
         jLabel5.setText("Have already an account?");
-        pnllogin.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 600, 160, -1));
+        pnllogin.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 600, 160, -1));
 
         jLabel7.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 13)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(0, 0, 0));
@@ -252,7 +253,7 @@ private void clearFields() {
                 jLabel7MouseClicked(evt);
             }
         });
-        pnllogin.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 600, 50, 20));
+        pnllogin.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 600, 50, 20));
 
         panelRound2.setBackground(new java.awt.Color(0, 153, 255));
         panelRound2.setRoundBottomLeft(20);
@@ -289,6 +290,22 @@ private void clearFields() {
             }
         });
         pnllogin.add(passwordField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 470, 330, 45));
+
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, new java.awt.Color(204, 204, 204)));
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 330, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 9, Short.MAX_VALUE)
+        );
+
+        pnllogin.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 590, 330, 10));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -381,6 +398,7 @@ private void clearFields() {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JPanel jPanel1;
     private GUI.PanelRound panelRound2;
     private textfield.PasswordField passwordField1;
     private textfield.PasswordField passwordField3;

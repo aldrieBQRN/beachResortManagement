@@ -647,17 +647,31 @@ private void updateReservationStatus(String reservationNumber, String newStatus)
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        dateChooserCheckin = new com.raven.datechooser.DateChooser();
+        dateChooserCheckin1 = new com.raven.datechooser.DateChooser();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
+        materialTabbed1 = new GUI.MaterialTabbed();
+        jPanel4 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         checkInTable = new rojerusan.RSTableMetro();
-        jPanel8 = new javax.swing.JPanel();
-        jLabel6 = new javax.swing.JLabel();
-        jPanel3 = new javax.swing.JPanel();
+        txtdate = new textfield_suggestion.TextFieldSuggestion();
+        jLabel1 = new javax.swing.JLabel();
+        txtdate1 = new textfield_suggestion.TextFieldSuggestion();
+        jPanel5 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         checkOutTable = new rojerusan.RSTableMetro();
-        jPanel9 = new javax.swing.JPanel();
-        jLabel7 = new javax.swing.JLabel();
+        txtdate2 = new textfield_suggestion.TextFieldSuggestion();
+        txtdate3 = new textfield_suggestion.TextFieldSuggestion();
+        jLabel2 = new javax.swing.JLabel();
+
+        dateChooserCheckin.setForeground(new java.awt.Color(0, 112, 192));
+        dateChooserCheckin.setDateFormat("MMMM dd, yyyy");
+        dateChooserCheckin.setTextRefernce(txtdate);
+
+        dateChooserCheckin1.setForeground(new java.awt.Color(0, 112, 192));
+        dateChooserCheckin1.setDateFormat("MMMM dd, yyyy");
+        dateChooserCheckin1.setTextRefernce(txtdate3);
 
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -666,9 +680,16 @@ private void updateReservationStatus(String reservationNumber, String newStatus)
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, new java.awt.Color(204, 204, 204)));
+        jPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 0, 0, 0, new java.awt.Color(39, 114, 160)));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        materialTabbed1.setForeground(new java.awt.Color(0, 0, 0));
+        materialTabbed1.setFont(new java.awt.Font("Helvetica Neue", 0, 15)); // NOI18N
+
+        jPanel4.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        checkInTable.setBackground(new java.awt.Color(255, 255, 255));
         checkInTable.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
         checkInTable.setForeground(new java.awt.Color(255, 255, 255));
         checkInTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -719,24 +740,35 @@ private void updateReservationStatus(String reservationNumber, String newStatus)
         });
         jScrollPane1.setViewportView(checkInTable);
 
-        jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 1120, 260));
+        jPanel4.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 80, 1120, 550));
 
-        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 1160, 300));
+        txtdate.setHorizontalAlignment(javax.swing.JTextField.LEFT);
+        txtdate.setSelectedTextColor(new java.awt.Color(0, 0, 0));
+        txtdate.setSelectionColor(new java.awt.Color(255, 255, 255));
+        txtdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtdateActionPerformed(evt);
+            }
+        });
+        jPanel4.add(txtdate, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 20, 150, 40));
 
-        jPanel8.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel8.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 0, 0, 0, new java.awt.Color(39, 114, 160)));
-        jPanel8.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/calendarIcon.png"))); // NOI18N
+        jPanel4.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 20, 40, 40));
 
-        jLabel6.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
-        jLabel6.setText("Check-In");
-        jPanel8.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, -1, 40));
+        txtdate1.setForeground(new java.awt.Color(102, 102, 102));
+        txtdate1.setHorizontalAlignment(javax.swing.JTextField.LEFT);
+        txtdate1.setText("Search here..");
+        txtdate1.setSelectedTextColor(new java.awt.Color(102, 102, 102));
+        txtdate1.setSelectionColor(new java.awt.Color(102, 102, 102));
+        jPanel4.add(txtdate1, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 20, 950, 40));
 
-        jPanel1.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 1160, 60));
+        materialTabbed1.addTab("Check-in", jPanel4);
 
-        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel3.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, new java.awt.Color(204, 204, 204)));
-        jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jPanel5.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        checkOutTable.setBackground(new java.awt.Color(255, 255, 255));
         checkOutTable.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
         checkOutTable.setForeground(new java.awt.Color(255, 255, 255));
         checkOutTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -787,19 +819,34 @@ private void updateReservationStatus(String reservationNumber, String newStatus)
         });
         jScrollPane3.setViewportView(checkOutTable);
 
-        jPanel3.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 1120, 230));
+        jPanel5.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 80, 1120, 550));
 
-        jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 460, 1160, 280));
+        txtdate2.setForeground(new java.awt.Color(102, 102, 102));
+        txtdate2.setHorizontalAlignment(javax.swing.JTextField.LEFT);
+        txtdate2.setText("Search here..");
+        txtdate2.setSelectedTextColor(new java.awt.Color(102, 102, 102));
+        txtdate2.setSelectionColor(new java.awt.Color(102, 102, 102));
+        jPanel5.add(txtdate2, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 20, 950, 40));
 
-        jPanel9.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel9.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 0, 0, 0, new java.awt.Color(39, 114, 160)));
-        jPanel9.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        txtdate3.setHorizontalAlignment(javax.swing.JTextField.LEFT);
+        txtdate3.setSelectedTextColor(new java.awt.Color(0, 0, 0));
+        txtdate3.setSelectionColor(new java.awt.Color(255, 255, 255));
+        txtdate3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtdate3ActionPerformed(evt);
+            }
+        });
+        jPanel5.add(txtdate3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 20, 150, 40));
 
-        jLabel7.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
-        jLabel7.setText("Check-Out");
-        jPanel9.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, 40));
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/calendarIcon.png"))); // NOI18N
+        jPanel5.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 20, 40, 40));
 
-        jPanel1.add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 400, 1160, 60));
+        materialTabbed1.addTab("Check-out", jPanel5);
+
+        jPanel2.add(materialTabbed1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 1120, 680));
+
+        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 1160, 720));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1200, 760));
         jPanel1.getAccessibleContext().setAccessibleName("");
@@ -815,18 +862,32 @@ private void updateReservationStatus(String reservationNumber, String newStatus)
         // TODO add your handling code here:
     }//GEN-LAST:event_checkOutTableMouseClicked
 
+    private void txtdate3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtdate3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtdate3ActionPerformed
+
+    private void txtdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtdateActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtdateActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private rojerusan.RSTableMetro checkInTable;
     private rojerusan.RSTableMetro checkOutTable;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
+    private com.raven.datechooser.DateChooser dateChooserCheckin;
+    private com.raven.datechooser.DateChooser dateChooserCheckin1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel8;
-    private javax.swing.JPanel jPanel9;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
+    private GUI.MaterialTabbed materialTabbed1;
+    private textfield_suggestion.TextFieldSuggestion txtdate;
+    private textfield_suggestion.TextFieldSuggestion txtdate1;
+    private textfield_suggestion.TextFieldSuggestion txtdate2;
+    private textfield_suggestion.TextFieldSuggestion txtdate3;
     // End of variables declaration//GEN-END:variables
 }

@@ -187,7 +187,7 @@ public class staffMainHome extends javax.swing.JInternalFrame {
         jLabel11.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 13)); // NOI18N
         jLabel11.setForeground(new java.awt.Color(0, 0, 0));
         jLabel11.setText("Reserve Room");
-        pnlReserveRoom.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, -1));
+        pnlReserveRoom.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, -1, 20));
 
         jLabel12.setForeground(new java.awt.Color(0, 0, 0));
         jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);

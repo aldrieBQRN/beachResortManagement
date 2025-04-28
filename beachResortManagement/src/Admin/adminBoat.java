@@ -82,49 +82,20 @@ public class adminBoat extends javax.swing.JInternalFrame {
         DefaultTableModel boatModel = (DefaultTableModel) tblBoatDetails.getModel();
         boatModel.setRowCount(0); // clear table
 
-        // Add custom renderer just for the image column (column 1)
-        tblBoatDetails.getColumnModel().getColumn(1).setCellRenderer(new DefaultTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value,
-                    boolean isSelected, boolean hasFocus, int row, int column) {
-                if (value instanceof ImageIcon) {
-                    JLabel label = new JLabel((ImageIcon) value);
-                    label.setHorizontalAlignment(JLabel.CENTER);
-                    if (isSelected) {
-                        label.setBackground(table.getSelectionBackground());
-                        label.setOpaque(true);
-                    }
-                    return label;
-                }
-                return super.getTableCellRendererComponent(table, value, isSelected, 
-                        hasFocus, row, column);
-            }
-        });
-
         while (rs.next()) {
             String boatNumber = rs.getString("boat_number");
             String boatName = rs.getString("boat_name");
             String description = rs.getString("description");
             int capacity = rs.getInt("capacity");
             double tourPrice = rs.getDouble("tour_price");
+            
 
-            // Get the image as bytes
-            byte[] imgBytes = rs.getBytes("boat_image");
-            ImageIcon imageIcon = null;
-
-            if (imgBytes != null) {
-                Image img = new ImageIcon(imgBytes).getImage();
-                img = img.getScaledInstance(100, 80, Image.SCALE_SMOOTH);
-                imageIcon = new ImageIcon(img);
-            } else {
-                // Set a default blank icon if no image exists
-                imageIcon = new ImageIcon(new BufferedImage(100, 80, BufferedImage.TYPE_INT_ARGB));
-            }
 
             // Add row to model
             boatModel.addRow(new Object[] {
+               
                 boatNumber,
-                imageIcon,
+               
                 boatName,
                 description,
                 capacity,
@@ -132,9 +103,7 @@ public class adminBoat extends javax.swing.JInternalFrame {
             });
         }
 
-        // Set the row height to fit the image
-        tblBoatDetails.setRowHeight(80);
-
+        
     } catch (SQLException ex) {
         Logger.getLogger(adminBoat.class.getName()).log(Level.SEVERE, null, ex);
         System.out.println("Error fetching boat data: " + ex.getMessage());
@@ -182,23 +151,23 @@ public class adminBoat extends javax.swing.JInternalFrame {
         tblBoatDetails.setForeground(new java.awt.Color(255, 255, 255));
         tblBoatDetails.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Boat Number", "Registration Date", "Name", "Details", "Capacity", "Price/Tour"
+                "Boat Number", "Name", "Details", "Capacity", "Price/Tour"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -230,9 +199,8 @@ public class adminBoat extends javax.swing.JInternalFrame {
         if (tblBoatDetails.getColumnModel().getColumnCount() > 0) {
             tblBoatDetails.getColumnModel().getColumn(0).setPreferredWidth(5);
             tblBoatDetails.getColumnModel().getColumn(1).setPreferredWidth(5);
-            tblBoatDetails.getColumnModel().getColumn(2).setPreferredWidth(5);
+            tblBoatDetails.getColumnModel().getColumn(3).setPreferredWidth(5);
             tblBoatDetails.getColumnModel().getColumn(4).setPreferredWidth(5);
-            tblBoatDetails.getColumnModel().getColumn(5).setPreferredWidth(5);
         }
 
         jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 1120, 570));

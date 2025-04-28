@@ -317,13 +317,13 @@ public class guestProcess2 extends javax.swing.JFrame {
         panelRound5 = new GUI.PanelRound();
         lblPayment = new javax.swing.JLabel();
         panelRound1 = new GUI.PanelRound();
-        jLabel16 = new javax.swing.JLabel();
-        jLabel17 = new javax.swing.JLabel();
         jLabel25 = new javax.swing.JLabel();
-        jLabel19 = new javax.swing.JLabel();
+        jLabel27 = new javax.swing.JLabel();
         jLabel26 = new javax.swing.JLabel();
         panelRound2 = new GUI.PanelRound();
-        jLabel6 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
+        jLabel21 = new javax.swing.JLabel();
         jPanel9 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -687,16 +687,6 @@ public class guestProcess2 extends javax.swing.JFrame {
         panelRound1.setRoundBottomRight(50);
         panelRound1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel16.setFont(new java.awt.Font("Tahoma", 1, 30)); // NOI18N
-        jLabel16.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel16.setText("Welcome,");
-        panelRound1.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 0, 180, 60));
-
-        jLabel17.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
-        jLabel17.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel17.setText("enjoy and have fun!");
-        panelRound1.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 20, -1, 30));
-
         jLabel25.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
         jLabel25.setForeground(new java.awt.Color(255, 255, 255));
         jLabel25.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/iconHome.png"))); // NOI18N
@@ -705,12 +695,17 @@ public class guestProcess2 extends javax.swing.JFrame {
                 jLabel25MouseClicked(evt);
             }
         });
-        panelRound1.add(jLabel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(1170, 0, -1, 60));
+        panelRound1.add(jLabel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(1180, 0, -1, 60));
 
-        jLabel19.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
-        jLabel19.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel19.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/iconNotif.png"))); // NOI18N
-        panelRound1.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(1220, 0, -1, 60));
+        jLabel27.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel27.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel27.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/icons8-book-25.png"))); // NOI18N
+        jLabel27.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel27MouseClicked(evt);
+            }
+        });
+        panelRound1.add(jLabel27, new org.netbeans.lib.awtextra.AbsoluteConstraints(1230, 0, -1, 60));
 
         jLabel26.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/profile.png"))); // NOI18N
         panelRound1.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(1270, 0, 30, 60));
@@ -727,18 +722,28 @@ public class guestProcess2 extends javax.swing.JFrame {
         });
         panelRound2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel6.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel6.setText("Logout");
-        jLabel6.addMouseListener(new java.awt.event.MouseAdapter() {
+        jLabel8.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel8.setText("Logout");
+        jLabel8.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel6MouseClicked(evt);
+                jLabel8MouseClicked(evt);
             }
         });
-        panelRound2.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 70, 35));
+        panelRound2.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 70, 35));
 
         panelRound1.add(panelRound2, new org.netbeans.lib.awtextra.AbsoluteConstraints(1320, 12, 90, -1));
+
+        jLabel17.setFont(new java.awt.Font("Tahoma", 1, 25)); // NOI18N
+        jLabel17.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel17.setText("Welcome,");
+        panelRound1.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 0, 180, 60));
+
+        jLabel21.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 14)); // NOI18N
+        jLabel21.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel21.setText("to Papaya Beach Resort");
+        panelRound1.add(jLabel21, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 20, -1, 30));
 
         jPanel1.add(panelRound1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 60));
 
@@ -893,19 +898,6 @@ if ("GCash".equalsIgnoreCase(paymentMethod)) {
 
     }//GEN-LAST:event_lblPaymentMouseClicked
 
-    private void jLabel25MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel25MouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jLabel25MouseClicked
-
-    private void jLabel6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel6MouseClicked
-          this.dispose();
-       new landingPage().setVisible(true);
-    }//GEN-LAST:event_jLabel6MouseClicked
-
-    private void panelRound2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelRound2MouseClicked
-
-    }//GEN-LAST:event_panelRound2MouseClicked
-
     private void txtContactActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtContactActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtContactActionPerformed
@@ -913,6 +905,23 @@ if ("GCash".equalsIgnoreCase(paymentMethod)) {
     private void jPanel5ComponentAdded(java.awt.event.ContainerEvent evt) {//GEN-FIRST:event_jPanel5ComponentAdded
         // TODO add your handling code here:
     }//GEN-LAST:event_jPanel5ComponentAdded
+
+    private void jLabel25MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel25MouseClicked
+        new guestHome(userID).setVisible(true);
+    }//GEN-LAST:event_jLabel25MouseClicked
+
+    private void jLabel27MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel27MouseClicked
+        new guestReservation(userID).setVisible(true);
+    }//GEN-LAST:event_jLabel27MouseClicked
+
+    private void jLabel8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel8MouseClicked
+        this.dispose();
+        new landingPage().setVisible(true);
+    }//GEN-LAST:event_jLabel8MouseClicked
+
+    private void panelRound2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelRound2MouseClicked
+
+    }//GEN-LAST:event_panelRound2MouseClicked
 
     /**
      * @param args the command line arguments
@@ -1026,15 +1035,15 @@ if ("GCash".equalsIgnoreCase(paymentMethod)) {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
-    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel26;
+    private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel35;
@@ -1047,7 +1056,7 @@ if ("GCash".equalsIgnoreCase(paymentMethod)) {
     private javax.swing.JLabel jLabel47;
     private javax.swing.JLabel jLabel48;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;

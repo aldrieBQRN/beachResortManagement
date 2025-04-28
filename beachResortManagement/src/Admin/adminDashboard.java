@@ -5,6 +5,7 @@
 package Admin;
 
 import Staff.*;
+import PieChart.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -14,11 +15,34 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 import Database.DatabaseConnection; 
+import PieChart.MinimalPieChart;
+import java.awt.BorderLayout;
+
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Insets;
 import java.text.SimpleDateFormat;
+import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
+
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.*;
 
 /**
  *
@@ -33,8 +57,10 @@ public class adminDashboard extends javax.swing.JInternalFrame {
         initComponents();
         removeBackground();
         DatabaseConnection();
-    
- 
+        showPieChart()
+        
+
+       
     }
     
     Connection con; 
@@ -72,6 +98,11 @@ public class adminDashboard extends javax.swing.JInternalFrame {
         UI.setNorthPane(null); 
     }
     
+    public void showPieChart(){
+        
+    }
+    
+
    
    
 
@@ -105,7 +136,7 @@ public class adminDashboard extends javax.swing.JInternalFrame {
         jPanel6 = new javax.swing.JPanel();
         jLabel30 = new javax.swing.JLabel();
         jLabel31 = new javax.swing.JLabel();
-        pnlCheckin2 = new javax.swing.JPanel();
+        pieChart = new javax.swing.JPanel();
 
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -201,9 +232,9 @@ public class adminDashboard extends javax.swing.JInternalFrame {
 
         pnlmain.add(pnlCheckin1, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 100, 270, 150));
 
-        pnlCheckin2.setBackground(new java.awt.Color(255, 255, 255));
-        pnlCheckin2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        pnlmain.add(pnlCheckin2, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 280, 270, 220));
+        pieChart.setBackground(new java.awt.Color(255, 255, 255));
+        pieChart.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        pnlmain.add(pieChart, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 280, 270, 220));
 
         getContentPane().add(pnlmain, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1200, 760));
 
@@ -224,10 +255,10 @@ public class adminDashboard extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel20;
     private javax.swing.JPanel jPanel22;
     private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel pieChart;
     private javax.swing.JPanel pnlAvailableRoom;
     private javax.swing.JPanel pnlCheckin;
     private javax.swing.JPanel pnlCheckin1;
-    private javax.swing.JPanel pnlCheckin2;
     private javax.swing.JPanel pnlConfirmReservation;
     private javax.swing.JPanel pnlReserveRoom;
     private javax.swing.JPanel pnlUpcomming;
