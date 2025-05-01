@@ -57,7 +57,7 @@ public class adminDashboard extends javax.swing.JInternalFrame {
         initComponents();
         removeBackground();
         DatabaseConnection();
-        showPieChart()
+      
         
 
        

@@ -113,21 +113,25 @@ public class guestSelectBoat extends javax.swing.JFrame {
         }
     }
     
-    private void displayValues() {
-       
-        dateComboBox.removeAllItems();
+  private void displayValues() {
+    dateComboBox.removeAllItems();
     
     // Add default/placeholder item
-        dateComboBox.addItem("Select a date");
+    dateComboBox.addItem("Select a date");
 
-        // Return if dates are invalid
-        if (checkInDate == null || checkOutDate == null || checkOutDate.before(checkInDate)) {
-            return;
-        }
+    // Return if dates are invalid
+    if (checkInDate == null || checkOutDate == null || checkOutDate.before(checkInDate)) {
+        return;
+    }
 
-        // Convert to LocalDate for easier manipulation
-        LocalDate startDate = checkInDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        LocalDate endDate = checkOutDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    try {
+        // Convert java.util.Date to LocalDate (safe conversion)
+        LocalDate startDate = checkInDate.toInstant()
+                                  .atZone(ZoneId.systemDefault())
+                                  .toLocalDate();
+        LocalDate endDate = checkOutDate.toInstant()
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDate();
 
         // Format for display
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy (EEE)");
@@ -136,14 +140,24 @@ public class guestSelectBoat extends javax.swing.JFrame {
         for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
             dateComboBox.addItem(date.format(formatter));
         }
-       
-       
+    } catch (UnsupportedOperationException e) {
+        // Fallback for java.sql.Date (which doesn't support toInstant())
+        LocalDate startDate = new java.sql.Date(checkInDate.getTime()).toLocalDate();
+        LocalDate endDate = new java.sql.Date(checkOutDate.getTime()).toLocalDate();
         
-      
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy (EEE)");
         
-        // You can display these values in JLabel or any other component
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+            dateComboBox.addItem(date.format(formatter));
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, 
+            "Error displaying dates: " + e.getMessage(),
+            "Date Error", 
+            JOptionPane.ERROR_MESSAGE);
     }
-    
+}
     class ButtonRenderer extends JButton implements TableCellRenderer {
     public ButtonRenderer() {
         setOpaque(true);

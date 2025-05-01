@@ -18,9 +18,11 @@ import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.RowFilter;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 /**
  *
@@ -123,8 +125,7 @@ public class adminBoat extends javax.swing.JInternalFrame {
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblBoatDetails = new rojerusan.RSTableMetro();
-        jTextField1 = new javax.swing.JTextField();
-        rSComboMetro1 = new rojerusan.RSComboMetro();
+        txtsearch = new textfield_suggestion.TextFieldSuggestion();
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
@@ -205,21 +206,25 @@ public class adminBoat extends javax.swing.JInternalFrame {
 
         jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 1120, 570));
 
-        jTextField1.setBackground(new java.awt.Color(255, 255, 255));
-        jTextField1.setText("Seach here...");
-        jTextField1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
-        jPanel2.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 20, 270, 40));
-
-        rSComboMetro1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All", "Number", "Name", "Capacity", "Price", "", "" }));
-        rSComboMetro1.setColorArrow(new java.awt.Color(27, 59, 95));
-        rSComboMetro1.setColorBorde(new java.awt.Color(39, 114, 160));
-        rSComboMetro1.setColorFondo(new java.awt.Color(39, 114, 160));
-        rSComboMetro1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rSComboMetro1ActionPerformed(evt);
+        txtsearch.setForeground(new java.awt.Color(102, 102, 102));
+        txtsearch.setHorizontalAlignment(javax.swing.JTextField.LEFT);
+        txtsearch.setText("Search here...");
+        txtsearch.setSelectedTextColor(new java.awt.Color(102, 102, 102));
+        txtsearch.setSelectionColor(new java.awt.Color(102, 102, 102));
+        txtsearch.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtsearchFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtsearchFocusLost(evt);
             }
         });
-        jPanel2.add(rSComboMetro1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 100, 40));
+        txtsearch.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtsearchKeyReleased(evt);
+            }
+        });
+        jPanel2.add(txtsearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 270, 40));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 1160, 660));
 
@@ -308,10 +313,6 @@ public class adminBoat extends javax.swing.JInternalFrame {
 
     }//GEN-LAST:event_tblBoatDetailsMouseClicked
 
-    private void rSComboMetro1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSComboMetro1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_rSComboMetro1ActionPerformed
-
     private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
         adminAddBoat addBoatWindow = new adminAddBoat();
         addBoatWindow.setVisible(true);
@@ -360,6 +361,30 @@ public class adminBoat extends javax.swing.JInternalFrame {
         new adminReservationBoat().setVisible(true);
     }//GEN-LAST:event_jLabel4MouseClicked
 
+    private void txtsearchFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtsearchFocusGained
+
+        if(txtsearch.getText().equals("Search here...")){
+            txtsearch.setText("");
+
+        }
+    }//GEN-LAST:event_txtsearchFocusGained
+
+    private void txtsearchFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtsearchFocusLost
+        if(txtsearch.getText().equals("")){
+            txtsearch.setText("Search here...");
+
+        }
+    }//GEN-LAST:event_txtsearchFocusLost
+
+    private void txtsearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtsearchKeyReleased
+
+        DefaultTableModel obj =(DefaultTableModel) tblBoatDetails.getModel();
+        TableRowSorter<DefaultTableModel> obj1=new TableRowSorter<>(obj);
+        tblBoatDetails.setRowSorter(obj1);
+        obj1.setRowFilter(RowFilter.regexFilter(txtsearch.getText()));
+
+    }//GEN-LAST:event_txtsearchKeyReleased
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
@@ -375,8 +400,7 @@ public class adminBoat extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField jTextField1;
-    private rojerusan.RSComboMetro rSComboMetro1;
     private rojerusan.RSTableMetro tblBoatDetails;
+    private textfield_suggestion.TextFieldSuggestion txtsearch;
     // End of variables declaration//GEN-END:variables
 }

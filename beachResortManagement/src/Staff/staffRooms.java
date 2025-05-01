@@ -4,6 +4,7 @@
  */
 package Staff;
 
+import Admin.adminRoom;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -13,9 +14,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 import Database.DatabaseConnection; 
+import java.awt.Component;
+import java.awt.Image;
 import java.awt.Insets;
+import java.awt.image.BufferedImage;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JTable;
+import javax.swing.RowFilter;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 /**
  *
@@ -30,7 +40,7 @@ public class staffRooms extends javax.swing.JInternalFrame {
         initComponents();
         removeBackground();
         DatabaseConnection();
-        showRoom();
+        showRoomDetails();
         
  
     }
@@ -70,46 +80,72 @@ public class staffRooms extends javax.swing.JInternalFrame {
         UI.setNorthPane(null); 
     }
     
-    public final void showRoom(){
-   
-        
-        try {
-    
-           
-            
-            // Prepare the SQL query to select all rooms from the table
-            pst = con.prepareStatement("SELECT * FROM room");
-            
-            // Execute the query and get the results
-            rs = pst.executeQuery();
-            
-            // Set up the table model to display the data in the JTable
-            DefaultTableModel roomModel = (DefaultTableModel) tblroom.getModel();
-            
-            // Clear any previous rows
-            roomModel.setRowCount(0);
-            
-           
-            // Iterate over the result set and add data to the table
-            while (rs.next()) {
-               
-                String roomNumber = rs.getString("room_number");
-                String roomType = rs.getString("room_type");
-                double price = rs.getDouble("room_price");
-                String description = rs.getString("description");
-                int maxOccupancy = rs.getInt("max_occupancy");
-                String createdAt = rs.getString("created_at");
+ public final void showRoomDetails() {
+    try {
+        pst = con.prepareStatement("SELECT * FROM room");
+        rs = pst.executeQuery();
 
-                // Add data to the table model
-                roomModel.addRow(new Object[] { roomNumber, createdAt, roomType, description, maxOccupancy, price });
+        DefaultTableModel roomModel = (DefaultTableModel) tblroom.getModel();
+        roomModel.setRowCount(0); // clear table
+
+        // Add custom renderer just for the image column (column 1)
+        tblroom.getColumnModel().getColumn(1).setCellRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+                if (value instanceof ImageIcon) {
+                    JLabel label = new JLabel((ImageIcon) value);
+                    label.setHorizontalAlignment(JLabel.CENTER);
+                    if (isSelected) {
+                        label.setBackground(table.getSelectionBackground());
+                        label.setOpaque(true);
+                    }
+                    return label;
+                }
+                return super.getTableCellRendererComponent(table, value, isSelected, 
+                        hasFocus, row, column);
             }
-        } catch (SQLException ex) {
-            // Handle any SQL exceptions
-            Logger.getLogger(staffRooms.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("Error fetching room data: " + ex.getMessage());
+        });
+
+        while (rs.next()) {
+            String roomNumber = rs.getString("room_number");
+            String roomType = rs.getString("room_type");
+            double price = rs.getDouble("room_price");
+            String description = rs.getString("description");
+            int maxOccupancy = rs.getInt("max_occupancy");
+
+            // Get the image as bytes
+            byte[] imgBytes = rs.getBytes("room_image");
+            ImageIcon imageIcon = null;
+
+            if (imgBytes != null) {
+                Image img = new ImageIcon(imgBytes).getImage();
+                img = img.getScaledInstance(100, 80, Image.SCALE_SMOOTH);
+                imageIcon = new ImageIcon(img);
+            } else {
+                // Set a default blank icon if no image exists
+                imageIcon = new ImageIcon(new BufferedImage(100, 80, BufferedImage.TYPE_INT_ARGB));
+            }
+
+            // Add row to model
+            roomModel.addRow(new Object[] {
+                roomNumber,
+                imageIcon,
+                roomType,
+                description,
+                maxOccupancy,
+                price
+            });
         }
-        
+
+        // Set the row height to fit the image
+        tblroom.setRowHeight(80);
+
+    } catch (SQLException ex) {
+        Logger.getLogger(adminRoom.class.getName()).log(Level.SEVERE, null, ex);
+        System.out.println("Error fetching room data: " + ex.getMessage());
     }
+}
     
    
 
@@ -130,8 +166,7 @@ public class staffRooms extends javax.swing.JInternalFrame {
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblroom = new rojerusan.RSTableMetro();
-        txtsearch = new javax.swing.JTextField();
-        rSComboMetro1 = new rojerusan.RSComboMetro();
+        txtsearch = new textfield_suggestion.TextFieldSuggestion();
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
@@ -164,7 +199,7 @@ public class staffRooms extends javax.swing.JInternalFrame {
                 {null, null, null, null, null, null}
             },
             new String [] {
-                "Room Number", "Date Created", "Type", "Description", "Max Occupancy", "Price/Day"
+                "Room Number", "Room Image", "Type", "Description", "Max Occupancy", "Price/Day"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -213,28 +248,25 @@ public class staffRooms extends javax.swing.JInternalFrame {
 
         jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 1120, 570));
 
-        txtsearch.setBackground(new java.awt.Color(255, 255, 255));
         txtsearch.setForeground(new java.awt.Color(102, 102, 102));
-        txtsearch.setText("Seach here...");
-        txtsearch.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
-        txtsearch.setBounds(new java.awt.Rectangle(0, 5, 0, 0));
-        txtsearch.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtsearchActionPerformed(evt);
+        txtsearch.setHorizontalAlignment(javax.swing.JTextField.LEFT);
+        txtsearch.setText("Search here...");
+        txtsearch.setSelectedTextColor(new java.awt.Color(102, 102, 102));
+        txtsearch.setSelectionColor(new java.awt.Color(102, 102, 102));
+        txtsearch.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtsearchFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtsearchFocusLost(evt);
             }
         });
-        jPanel2.add(txtsearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 20, 270, 40));
-
-        rSComboMetro1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All", "Room Number", "Type", "Occupancy", "Price", " ", " " }));
-        rSComboMetro1.setColorArrow(new java.awt.Color(27, 59, 95));
-        rSComboMetro1.setColorBorde(new java.awt.Color(39, 114, 160));
-        rSComboMetro1.setColorFondo(new java.awt.Color(39, 114, 160));
-        rSComboMetro1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rSComboMetro1ActionPerformed(evt);
+        txtsearch.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtsearchKeyReleased(evt);
             }
         });
-        jPanel2.add(rSComboMetro1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 100, 40));
+        jPanel2.add(txtsearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 270, 40));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 1160, 660));
 
@@ -276,17 +308,33 @@ public class staffRooms extends javax.swing.JInternalFrame {
         new staffReservationRoom().setVisible(true);
     }//GEN-LAST:event_jLabel4MouseClicked
 
-    private void rSComboMetro1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSComboMetro1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_rSComboMetro1ActionPerformed
-
-    private void txtsearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtsearchActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtsearchActionPerformed
-
     private void tblroomMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblroomMouseClicked
 
     }//GEN-LAST:event_tblroomMouseClicked
+
+    private void txtsearchFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtsearchFocusGained
+
+        if(txtsearch.getText().equals("Search here...")){
+            txtsearch.setText("");
+
+        }
+    }//GEN-LAST:event_txtsearchFocusGained
+
+    private void txtsearchFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtsearchFocusLost
+        if(txtsearch.getText().equals("")){
+            txtsearch.setText("Search here...");
+
+        }
+    }//GEN-LAST:event_txtsearchFocusLost
+
+    private void txtsearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtsearchKeyReleased
+
+        DefaultTableModel obj =(DefaultTableModel) tblroom.getModel();
+        TableRowSorter<DefaultTableModel> obj1=new TableRowSorter<>(obj);
+        tblroom.setRowSorter(obj1);
+        obj1.setRowFilter(RowFilter.regexFilter(txtsearch.getText()));
+
+    }//GEN-LAST:event_txtsearchKeyReleased
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -297,8 +345,7 @@ public class staffRooms extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
-    private rojerusan.RSComboMetro rSComboMetro1;
     private rojerusan.RSTableMetro tblroom;
-    private javax.swing.JTextField txtsearch;
+    private textfield_suggestion.TextFieldSuggestion txtsearch;
     // End of variables declaration//GEN-END:variables
 }

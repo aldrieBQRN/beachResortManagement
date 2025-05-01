@@ -19,11 +19,14 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.HeadlessException;
 import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -41,11 +44,13 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
@@ -214,15 +219,73 @@ public void searchAvailableRooms() {
         if (!hasResults) {
             mainContainer.add(createNoResultsPanel(), BorderLayout.CENTER);
         } else {
-            // Wrap grid panel in scroll pane
-            JScrollPane scrollPane = new JScrollPane(gridPanel);
-            scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-            scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-            scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-            scrollPane.setBorder(BorderFactory.createEmptyBorder());
-            scrollPane.getViewport().setBackground(new Color(248, 248, 252));
-            
-            mainContainer.add(scrollPane, BorderLayout.CENTER);
+           // Wrap grid panel in scroll pane
+JScrollPane scrollPane = new JScrollPane(gridPanel);
+scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+scrollPane.setBorder(BorderFactory.createEmptyBorder());
+scrollPane.getViewport().setBackground(new Color(248, 248, 252));
+scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+
+// Minimalist, narrow scrollbar
+scrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
+    private final int SCROLLBAR_WIDTH = 6; // narrower width
+
+    @Override
+    protected void configureScrollBarColors() {
+        this.thumbColor = new Color(180, 180, 190);
+        this.trackColor = new Color(248, 248, 252);
+    }
+
+    @Override
+    protected JButton createDecreaseButton(int orientation) {
+        return createZeroButton();
+    }
+
+    @Override
+    protected JButton createIncreaseButton(int orientation) {
+        return createZeroButton();
+    }
+
+    private JButton createZeroButton() {
+        JButton button = new JButton();
+        button.setPreferredSize(new Dimension(0, 0));
+        button.setMinimumSize(new Dimension(0, 0));
+        button.setMaximumSize(new Dimension(0, 0));
+        return button;
+    }
+
+    @Override
+    protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
+        if (!scrollbar.isEnabled() || thumbBounds.width > thumbBounds.height) return;
+
+        Graphics2D g2 = (Graphics2D) g.create();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setPaint(new Color(150, 150, 160)); // subtle dark thumb
+        g2.fillRoundRect(thumbBounds.x, thumbBounds.y, SCROLLBAR_WIDTH, thumbBounds.height, 10, 10);
+        g2.dispose();
+    }
+
+    @Override
+    protected Dimension getMinimumThumbSize() {
+        return new Dimension(SCROLLBAR_WIDTH, 30);
+    }
+
+    @Override
+    protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
+        // Keep it clean
+    }
+
+    @Override
+    protected void setThumbBounds(int x, int y, int width, int height) {
+        super.setThumbBounds(x, y, SCROLLBAR_WIDTH, height);
+        scrollbar.repaint();
+    }
+});
+
+
+mainContainer.add(scrollPane, BorderLayout.CENTER);
+
         }
 
         // Update the main display
@@ -240,6 +303,7 @@ public void searchAvailableRooms() {
             JOptionPane.ERROR_MESSAGE);
     }
 }
+
 
 private JPanel createSearchSummaryHeader(Date checkIn, Date checkOut, int totalGuests) {
     JPanel headerPanel = new JPanel(new BorderLayout());
@@ -438,7 +502,14 @@ private void selectRoom(String roomNumber, String roomType, String description, 
         boolean wantsWaterActivities = (waterActivities == JOptionPane.YES_OPTION);
 
         // Open appropriate form based on user choice
-        if (wantsWaterActivities) {
+         if (wantsWaterActivities) {
+            // Add debug logging
+            System.out.println("Creating guestSelectBoat with:");
+            System.out.println("checkInDate: " + checkInDate);
+            System.out.println("checkOutDate: " + checkOutDate);
+            System.out.println("roomNumber: " + roomNumber);
+            System.out.println("userID: " + userID);
+            
             new guestSelectBoat(
                 checkInDate, 
                 checkOutDate, 
@@ -468,12 +539,14 @@ private void selectRoom(String roomNumber, String roomType, String description, 
         this.dispose();
         
     } catch (NullPointerException ex) {
-    JOptionPane.showMessageDialog(this, 
-        "<html>Null pointer exception occurred while processing booking.<br>" + ex.getMessage() + "</html>",
-        "Booking Error", 
-        JOptionPane.ERROR_MESSAGE);
-    ex.printStackTrace();
-} catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, 
+            "<html>Missing required information:<br>" +
+            "Please ensure all booking details are properly selected.</html>",
+            "Booking Error", 
+            JOptionPane.ERROR_MESSAGE);
+        ex.printStackTrace();
+    } catch (Exception ex) {
+        // Existing error han
     JOptionPane.showMessageDialog(this, 
         "<html>Unexpected error while processing booking:<br>" + ex.getMessage() + "</html>",
         "Booking Error", 

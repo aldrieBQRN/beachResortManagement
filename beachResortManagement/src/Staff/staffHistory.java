@@ -16,8 +16,10 @@ import Database.DatabaseConnection;
 import java.awt.Insets;
 import java.text.SimpleDateFormat;
 import javax.swing.JOptionPane;
+import javax.swing.RowFilter;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 /**
  *
@@ -97,12 +99,13 @@ public class staffHistory extends javax.swing.JInternalFrame {
         // Loop through the result and add to table
         while (rs.next()) {
             model.addRow(new Object[] {
+                 timestampFormat.format(rs.getTimestamp("created_at")),
                 rs.getString("reservation_number"),
                 rs.getString("guest_name"),
                 dateFormat.format(rs.getDate("check_in_date")),
                 dateFormat.format(rs.getDate("check_out_date")),
-                "₱" + String.format("%.2f", rs.getDouble("total_price")),
-                timestampFormat.format(rs.getTimestamp("created_at"))
+                "₱" + String.format("%.2f", rs.getDouble("total_price"))
+               
             });
         }
         
@@ -131,10 +134,9 @@ public class staffHistory extends javax.swing.JInternalFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        txtsearch = new javax.swing.JTextField();
-        rSComboMetro1 = new rojerusan.RSComboMetro();
         jScrollPane1 = new javax.swing.JScrollPane();
         completedTable = new rojerusan.RSTableMetro();
+        txtsearch = new textfield_suggestion.TextFieldSuggestion();
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
 
@@ -147,29 +149,6 @@ public class staffHistory extends javax.swing.JInternalFrame {
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
         jPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, new java.awt.Color(204, 204, 204)));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        txtsearch.setBackground(new java.awt.Color(255, 255, 255));
-        txtsearch.setForeground(new java.awt.Color(102, 102, 102));
-        txtsearch.setText("Seach here...");
-        txtsearch.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
-        txtsearch.setBounds(new java.awt.Rectangle(0, 5, 0, 0));
-        txtsearch.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtsearchActionPerformed(evt);
-            }
-        });
-        jPanel2.add(txtsearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 20, 270, 40));
-
-        rSComboMetro1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All", "Room Number", "Type", "Occupancy", "Price", " ", " " }));
-        rSComboMetro1.setColorArrow(new java.awt.Color(27, 59, 95));
-        rSComboMetro1.setColorBorde(new java.awt.Color(39, 114, 160));
-        rSComboMetro1.setColorFondo(new java.awt.Color(39, 114, 160));
-        rSComboMetro1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rSComboMetro1ActionPerformed(evt);
-            }
-        });
-        jPanel2.add(rSComboMetro1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 100, 40));
 
         completedTable.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
         completedTable.setForeground(new java.awt.Color(255, 255, 255));
@@ -223,6 +202,18 @@ public class staffHistory extends javax.swing.JInternalFrame {
 
         jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 1120, 570));
 
+        txtsearch.setForeground(new java.awt.Color(102, 102, 102));
+        txtsearch.setHorizontalAlignment(javax.swing.JTextField.LEFT);
+        txtsearch.setText("Search here..");
+        txtsearch.setSelectedTextColor(new java.awt.Color(102, 102, 102));
+        txtsearch.setSelectionColor(new java.awt.Color(102, 102, 102));
+        txtsearch.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtsearchKeyReleased(evt);
+            }
+        });
+        jPanel2.add(txtsearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 270, 40));
+
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 1160, 660));
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
@@ -242,17 +233,16 @@ public class staffHistory extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void rSComboMetro1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSComboMetro1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_rSComboMetro1ActionPerformed
-
-    private void txtsearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtsearchActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtsearchActionPerformed
-
     private void completedTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_completedTableMouseClicked
 
     }//GEN-LAST:event_completedTableMouseClicked
+
+    private void txtsearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtsearchKeyReleased
+        DefaultTableModel obj =(DefaultTableModel) completedTable.getModel();
+        TableRowSorter<DefaultTableModel> obj1=new TableRowSorter<>(obj);
+        completedTable.setRowSorter(obj1);
+        obj1.setRowFilter(RowFilter.regexFilter(txtsearch.getText()));
+    }//GEN-LAST:event_txtsearchKeyReleased
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -262,7 +252,6 @@ public class staffHistory extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private rojerusan.RSComboMetro rSComboMetro1;
-    private javax.swing.JTextField txtsearch;
+    private textfield_suggestion.TextFieldSuggestion txtsearch;
     // End of variables declaration//GEN-END:variables
 }

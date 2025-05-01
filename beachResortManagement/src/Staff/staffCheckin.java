@@ -34,11 +34,13 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.RowFilter;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableRowSorter;
 
 /**
  *
@@ -655,23 +657,17 @@ private void updateReservationStatus(String reservationNumber, String newStatus)
         jPanel4 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         checkInTable = new rojerusan.RSTableMetro();
-        txtdate = new textfield_suggestion.TextFieldSuggestion();
-        jLabel1 = new javax.swing.JLabel();
-        txtdate1 = new textfield_suggestion.TextFieldSuggestion();
+        txtsearch = new textfield_suggestion.TextFieldSuggestion();
         jPanel5 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         checkOutTable = new rojerusan.RSTableMetro();
-        txtdate2 = new textfield_suggestion.TextFieldSuggestion();
-        txtdate3 = new textfield_suggestion.TextFieldSuggestion();
-        jLabel2 = new javax.swing.JLabel();
+        txtsearch2 = new textfield_suggestion.TextFieldSuggestion();
 
         dateChooserCheckin.setForeground(new java.awt.Color(0, 112, 192));
         dateChooserCheckin.setDateFormat("MMMM dd, yyyy");
-        dateChooserCheckin.setTextRefernce(txtdate);
 
         dateChooserCheckin1.setForeground(new java.awt.Color(0, 112, 192));
         dateChooserCheckin1.setDateFormat("MMMM dd, yyyy");
-        dateChooserCheckin1.setTextRefernce(txtdate3);
 
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -740,28 +736,27 @@ private void updateReservationStatus(String reservationNumber, String newStatus)
         });
         jScrollPane1.setViewportView(checkInTable);
 
-        jPanel4.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 80, 1120, 550));
+        jPanel4.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 70, 1120, 560));
 
-        txtdate.setHorizontalAlignment(javax.swing.JTextField.LEFT);
-        txtdate.setSelectedTextColor(new java.awt.Color(0, 0, 0));
-        txtdate.setSelectionColor(new java.awt.Color(255, 255, 255));
-        txtdate.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtdateActionPerformed(evt);
+        txtsearch.setForeground(new java.awt.Color(102, 102, 102));
+        txtsearch.setHorizontalAlignment(javax.swing.JTextField.LEFT);
+        txtsearch.setText("Search here...");
+        txtsearch.setSelectedTextColor(new java.awt.Color(102, 102, 102));
+        txtsearch.setSelectionColor(new java.awt.Color(102, 102, 102));
+        txtsearch.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtsearchFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtsearchFocusLost(evt);
             }
         });
-        jPanel4.add(txtdate, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 20, 150, 40));
-
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/calendarIcon.png"))); // NOI18N
-        jPanel4.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 20, 40, 40));
-
-        txtdate1.setForeground(new java.awt.Color(102, 102, 102));
-        txtdate1.setHorizontalAlignment(javax.swing.JTextField.LEFT);
-        txtdate1.setText("Search here..");
-        txtdate1.setSelectedTextColor(new java.awt.Color(102, 102, 102));
-        txtdate1.setSelectionColor(new java.awt.Color(102, 102, 102));
-        jPanel4.add(txtdate1, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 20, 950, 40));
+        txtsearch.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtsearchKeyReleased(evt);
+            }
+        });
+        jPanel4.add(txtsearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 20, 270, 40));
 
         materialTabbed1.addTab("Check-in", jPanel4);
 
@@ -819,28 +814,27 @@ private void updateReservationStatus(String reservationNumber, String newStatus)
         });
         jScrollPane3.setViewportView(checkOutTable);
 
-        jPanel5.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 80, 1120, 550));
+        jPanel5.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 70, 1120, 560));
 
-        txtdate2.setForeground(new java.awt.Color(102, 102, 102));
-        txtdate2.setHorizontalAlignment(javax.swing.JTextField.LEFT);
-        txtdate2.setText("Search here..");
-        txtdate2.setSelectedTextColor(new java.awt.Color(102, 102, 102));
-        txtdate2.setSelectionColor(new java.awt.Color(102, 102, 102));
-        jPanel5.add(txtdate2, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 20, 950, 40));
-
-        txtdate3.setHorizontalAlignment(javax.swing.JTextField.LEFT);
-        txtdate3.setSelectedTextColor(new java.awt.Color(0, 0, 0));
-        txtdate3.setSelectionColor(new java.awt.Color(255, 255, 255));
-        txtdate3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtdate3ActionPerformed(evt);
+        txtsearch2.setForeground(new java.awt.Color(102, 102, 102));
+        txtsearch2.setHorizontalAlignment(javax.swing.JTextField.LEFT);
+        txtsearch2.setText("Search here...");
+        txtsearch2.setSelectedTextColor(new java.awt.Color(102, 102, 102));
+        txtsearch2.setSelectionColor(new java.awt.Color(102, 102, 102));
+        txtsearch2.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtsearch2FocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtsearch2FocusLost(evt);
             }
         });
-        jPanel5.add(txtdate3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 20, 150, 40));
-
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/calendarIcon.png"))); // NOI18N
-        jPanel5.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 20, 40, 40));
+        txtsearch2.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtsearch2KeyReleased(evt);
+            }
+        });
+        jPanel5.add(txtsearch2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 20, 270, 40));
 
         materialTabbed1.addTab("Check-out", jPanel5);
 
@@ -862,13 +856,49 @@ private void updateReservationStatus(String reservationNumber, String newStatus)
         // TODO add your handling code here:
     }//GEN-LAST:event_checkOutTableMouseClicked
 
-    private void txtdate3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtdate3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtdate3ActionPerformed
+    private void txtsearchFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtsearchFocusGained
 
-    private void txtdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtdateActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtdateActionPerformed
+        if(txtsearch.getText().equals("Search here...")){
+            txtsearch.setText("");
+
+        }
+    }//GEN-LAST:event_txtsearchFocusGained
+
+    private void txtsearchFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtsearchFocusLost
+        if(txtsearch.getText().equals("")){
+            txtsearch.setText("Search here...");
+
+        }
+    }//GEN-LAST:event_txtsearchFocusLost
+
+    private void txtsearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtsearchKeyReleased
+
+        DefaultTableModel obj =(DefaultTableModel) checkInTable.getModel();
+        TableRowSorter<DefaultTableModel> obj1=new TableRowSorter<>(obj);
+        checkInTable.setRowSorter(obj1);
+        obj1.setRowFilter(RowFilter.regexFilter(txtsearch.getText()));
+    }//GEN-LAST:event_txtsearchKeyReleased
+
+    private void txtsearch2FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtsearch2FocusGained
+          if(txtsearch2.getText().equals("Search here...")){
+            txtsearch2.setText("");
+
+        }
+    }//GEN-LAST:event_txtsearch2FocusGained
+
+    private void txtsearch2FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtsearch2FocusLost
+       if(txtsearch2.getText().equals("")){
+            txtsearch2.setText("Search here...");
+
+        }
+    }//GEN-LAST:event_txtsearch2FocusLost
+
+    private void txtsearch2KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtsearch2KeyReleased
+          DefaultTableModel obj =(DefaultTableModel) checkOutTable.getModel();
+        TableRowSorter<DefaultTableModel> obj1=new TableRowSorter<>(obj);
+        checkOutTable.setRowSorter(obj1);
+        obj1.setRowFilter(RowFilter.regexFilter(txtsearch2.getText()));
+    }//GEN-LAST:event_txtsearch2KeyReleased
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -876,8 +906,6 @@ private void updateReservationStatus(String reservationNumber, String newStatus)
     private rojerusan.RSTableMetro checkOutTable;
     private com.raven.datechooser.DateChooser dateChooserCheckin;
     private com.raven.datechooser.DateChooser dateChooserCheckin1;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
@@ -885,9 +913,7 @@ private void updateReservationStatus(String reservationNumber, String newStatus)
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
     private GUI.MaterialTabbed materialTabbed1;
-    private textfield_suggestion.TextFieldSuggestion txtdate;
-    private textfield_suggestion.TextFieldSuggestion txtdate1;
-    private textfield_suggestion.TextFieldSuggestion txtdate2;
-    private textfield_suggestion.TextFieldSuggestion txtdate3;
+    private textfield_suggestion.TextFieldSuggestion txtsearch;
+    private textfield_suggestion.TextFieldSuggestion txtsearch2;
     // End of variables declaration//GEN-END:variables
 }
