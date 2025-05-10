@@ -44,7 +44,7 @@ public class ResortDashboard extends JInternalFrame {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/beachresortmanagement", 
+                "jdbc:mysql://localhost:3307/beachresortmanagement", 
                 "root", "");
         } catch (Exception e) {
             e.printStackTrace();

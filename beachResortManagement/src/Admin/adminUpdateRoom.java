@@ -51,7 +51,7 @@ public class adminUpdateRoom extends javax.swing.JFrame {
     ResultSet rs; 
     
     public final void DatabaseConnection() {
-          String url = "jdbc:mysql://localhost:3306/beachResortManagement";
+          String url = "jdbc:mysql://localhost:3307/beachResortManagement";
         String user = "root"; // MySQL username
         String password = ""; // MySQL password
         
@@ -225,8 +225,7 @@ private void loadRoomImage(byte[] imageData) {
         jPanel2.add(timePickerButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 290, 260, -1));
 
         cmbRoomType.setEditable(false);
-        cmbRoomType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Single", "Double" }));
-        cmbRoomType.setSelectedIndex(-1);
+        cmbRoomType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Deluxe Room", "Family Suite", "Beachfront Villa", "Cabana", "Premium Suite" }));
         jPanel2.add(cmbRoomType, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 100, 240, -1));
 
         cmbRoomNumber.setEditable(false);

@@ -117,7 +117,7 @@ public class guestPaypalPayment extends javax.swing.JFrame {
     
     // Database connection method
     public final void DatabaseConnection() {
-        String url = "jdbc:mysql://localhost:3306/beachResortManagement";
+        String url = "jdbc:mysql://localhost:3307/beachResortManagement";
         String user = "root";
         String password = "";
         
@@ -531,13 +531,13 @@ private void handleDatabaseError(String message, SQLException e) {
         txtAmount = new javax.swing.JLabel();
         jLabel30 = new javax.swing.JLabel();
         panelRound1 = new GUI.PanelRound();
-        jLabel25 = new javax.swing.JLabel();
-        jLabel28 = new javax.swing.JLabel();
-        jLabel26 = new javax.swing.JLabel();
         panelRound3 = new GUI.PanelRound();
         jLabel8 = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
         jLabel20 = new javax.swing.JLabel();
+        jLabel25 = new javax.swing.JLabel();
+        jLabel31 = new javax.swing.JLabel();
+        jLabel26 = new javax.swing.JLabel();
         jPanel9 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -715,29 +715,6 @@ private void handleDatabaseError(String message, SQLException e) {
         panelRound1.setRoundBottomRight(50);
         panelRound1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel25.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
-        jLabel25.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel25.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/iconHome.png"))); // NOI18N
-        jLabel25.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel25MouseClicked(evt);
-            }
-        });
-        panelRound1.add(jLabel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(1180, 0, -1, 60));
-
-        jLabel28.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
-        jLabel28.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel28.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/icons8-book-25.png"))); // NOI18N
-        jLabel28.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel28MouseClicked(evt);
-            }
-        });
-        panelRound1.add(jLabel28, new org.netbeans.lib.awtextra.AbsoluteConstraints(1230, 0, -1, 60));
-
-        jLabel26.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/profile.png"))); // NOI18N
-        panelRound1.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(1270, 0, 30, 60));
-
         panelRound3.setBackground(new java.awt.Color(0, 153, 255));
         panelRound3.setRoundBottomLeft(20);
         panelRound3.setRoundBottomRight(20);
@@ -772,6 +749,36 @@ private void handleDatabaseError(String message, SQLException e) {
         jLabel20.setForeground(new java.awt.Color(255, 255, 255));
         jLabel20.setText("to Papaya Beach Resort");
         panelRound1.add(jLabel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 20, -1, 30));
+
+        jLabel25.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel25.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel25.setText("HOME");
+        jLabel25.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel25MouseClicked(evt);
+            }
+        });
+        panelRound1.add(jLabel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(1000, 0, -1, 60));
+
+        jLabel31.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel31.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel31.setText("RESERVATION");
+        jLabel31.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel31MouseClicked(evt);
+            }
+        });
+        panelRound1.add(jLabel31, new org.netbeans.lib.awtextra.AbsoluteConstraints(1080, 0, -1, 60));
+
+        jLabel26.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 14)); // NOI18N
+        jLabel26.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel26.setText("PROFILE");
+        jLabel26.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel26MouseClicked(evt);
+            }
+        });
+        panelRound1.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(1220, 0, 90, 60));
 
         jPanel1.add(panelRound1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 60));
 
@@ -817,14 +824,6 @@ if (isBoatAvailed) {
 
     }//GEN-LAST:event_jLabel1MouseClicked
 
-    private void jLabel25MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel25MouseClicked
-        new guestHome(userID).setVisible(true);
-    }//GEN-LAST:event_jLabel25MouseClicked
-
-    private void jLabel28MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel28MouseClicked
-        new guestReservation(userID).setVisible(true);
-    }//GEN-LAST:event_jLabel28MouseClicked
-
     private void jLabel8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel8MouseClicked
         this.dispose();
         new landingPage().setVisible(true);
@@ -833,6 +832,19 @@ if (isBoatAvailed) {
     private void panelRound3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelRound3MouseClicked
 
     }//GEN-LAST:event_panelRound3MouseClicked
+
+    private void jLabel25MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel25MouseClicked
+        new guestHome(userID).setVisible(true);
+    }//GEN-LAST:event_jLabel25MouseClicked
+
+    private void jLabel31MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel31MouseClicked
+        new guestReservation(userID).setVisible(true);
+    }//GEN-LAST:event_jLabel31MouseClicked
+
+    private void jLabel26MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel26MouseClicked
+        UserDetailsFetcher userDetailsFrame = new UserDetailsFetcher(userID);
+        userDetailsFrame.setVisible(true);
+    }//GEN-LAST:event_jLabel26MouseClicked
 
     /**
      * @param args the command line arguments
@@ -1041,9 +1053,9 @@ java.awt.EventQueue.invokeLater(() -> {
     private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
-    private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel30;
+    private javax.swing.JLabel jLabel31;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;

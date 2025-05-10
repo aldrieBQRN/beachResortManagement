@@ -251,12 +251,14 @@
               <Properties>
                 <Property name="editable" type="boolean" value="false"/>
                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                  <StringArray count="2">
-                    <StringItem index="0" value="Single"/>
-                    <StringItem index="1" value="Double"/>
+                  <StringArray count="5">
+                    <StringItem index="0" value="Deluxe Room"/>
+                    <StringItem index="1" value="Family Suite"/>
+                    <StringItem index="2" value="Beachfront Villa"/>
+                    <StringItem index="3" value="Cabana"/>
+                    <StringItem index="4" value="Premium Suite"/>
                   </StringArray>
                 </Property>
-                <Property name="selectedIndex" type="int" value="-1"/>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">

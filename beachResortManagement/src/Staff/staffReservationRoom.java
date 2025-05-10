@@ -36,7 +36,7 @@ public class staffReservationRoom extends javax.swing.JFrame {
     ResultSet rs; 
     
     public final void DatabaseConnection() {
-          String url = "jdbc:mysql://localhost:3306/beachResortManagement";
+          String url = "jdbc:mysql://localhost:3307/beachResortManagement";
         String user = "root"; // MySQL username
         String password = ""; // MySQL password
         

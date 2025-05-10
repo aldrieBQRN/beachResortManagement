@@ -80,7 +80,7 @@ public class guestHome extends javax.swing.JFrame {
     ResultSet rs; 
     
     public final void DatabaseConnection() {
-          String url = "jdbc:mysql://localhost:3306/beachResortManagement";
+          String url = "jdbc:mysql://localhost:3307/beachResortManagement";
         String user = "root"; // MySQL username
         String password = ""; // MySQL password
         
@@ -174,31 +174,27 @@ public class guestHome extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        lbl = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         childSpinner = new spinner.Spinner();
         jLabel11 = new javax.swing.JLabel();
-        jPanel8 = new javax.swing.JPanel();
-        jLabel12 = new javax.swing.JLabel();
-        lblNumberOfNights = new javax.swing.JLabel();
         txtCheckout = new textfield_suggestion.TextFieldSuggestion();
         jLabel5 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         txtCheckin = new textfield_suggestion.TextFieldSuggestion();
         adultSpinner = new spinner.Spinner();
+        panelRound4 = new GUI.PanelRound();
+        jLabel13 = new javax.swing.JLabel();
         panelRound1 = new GUI.PanelRound();
         jLabel17 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
+        panelRound2 = new GUI.PanelRound();
+        jLabel8 = new javax.swing.JLabel();
         jLabel25 = new javax.swing.JLabel();
         jLabel27 = new javax.swing.JLabel();
         jLabel26 = new javax.swing.JLabel();
-        panelRound2 = new GUI.PanelRound();
-        jLabel8 = new javax.swing.JLabel();
         panelRound3 = new GUI.PanelRound();
         jLabel14 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
         jPanel9 = new javax.swing.JPanel();
 
@@ -234,11 +230,6 @@ public class guestHome extends javax.swing.JFrame {
         jLabel4.setText("Check-out Date");
         jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 60, -1, -1));
 
-        lbl.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
-        lbl.setForeground(new java.awt.Color(102, 102, 102));
-        lbl.setText("Duration");
-        jPanel2.add(lbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 60, -1, -1));
-
         jLabel10.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(102, 102, 102));
         jLabel10.setText("Check-in Date");
@@ -253,32 +244,6 @@ public class guestHome extends javax.swing.JFrame {
         jLabel11.setForeground(new java.awt.Color(102, 102, 102));
         jLabel11.setText("Child");
         jPanel2.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 140, -1, -1));
-
-        jPanel8.setBackground(new java.awt.Color(39, 114, 160));
-        jPanel8.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jPanel8MouseClicked(evt);
-            }
-        });
-        jPanel8.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel12.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel12.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
-        jLabel12.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel12.setText("SEACH");
-        jLabel12.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel12MouseClicked(evt);
-            }
-        });
-        jPanel8.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(25, 0, 70, 40));
-
-        jPanel2.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 160, 130, 40));
-
-        lblNumberOfNights.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
-        lblNumberOfNights.setForeground(new java.awt.Color(0, 0, 0));
-        lblNumberOfNights.setText("0");
-        jPanel2.add(lblNumberOfNights, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 80, 90, 50));
 
         txtCheckout.setSelectedTextColor(new java.awt.Color(0, 0, 0));
         txtCheckout.setSelectionColor(new java.awt.Color(255, 255, 255));
@@ -313,6 +278,32 @@ public class guestHome extends javax.swing.JFrame {
         adultSpinner.setLabelText("");
         jPanel2.add(adultSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 160, 240, 40));
 
+        panelRound4.setBackground(new java.awt.Color(0, 153, 255));
+        panelRound4.setRoundBottomLeft(20);
+        panelRound4.setRoundBottomRight(20);
+        panelRound4.setRoundTopLeft(20);
+        panelRound4.setRoundTopRight(20);
+        panelRound4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                panelRound4MouseClicked(evt);
+            }
+        });
+        panelRound4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel13.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel13.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
+        jLabel13.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel13.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel13.setText("SEARCH");
+        jLabel13.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel13MouseClicked(evt);
+            }
+        });
+        panelRound4.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 0, 110, 40));
+
+        jPanel2.add(panelRound4, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 160, 140, 40));
+
         jPanel3.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 0, 740, 280));
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 460, 1440, 330));
@@ -331,34 +322,6 @@ public class guestHome extends javax.swing.JFrame {
         jLabel18.setForeground(new java.awt.Color(255, 255, 255));
         jLabel18.setText("to Papaya Beach Resort");
         panelRound1.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 20, -1, 30));
-
-        jLabel25.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
-        jLabel25.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel25.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/iconHome.png"))); // NOI18N
-        jLabel25.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel25MouseClicked(evt);
-            }
-        });
-        panelRound1.add(jLabel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(1180, 0, -1, 60));
-
-        jLabel27.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
-        jLabel27.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel27.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/icons8-book-25.png"))); // NOI18N
-        jLabel27.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel27MouseClicked(evt);
-            }
-        });
-        panelRound1.add(jLabel27, new org.netbeans.lib.awtextra.AbsoluteConstraints(1230, 0, -1, 60));
-
-        jLabel26.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/profile.png"))); // NOI18N
-        jLabel26.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel26MouseClicked(evt);
-            }
-        });
-        panelRound1.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(1270, 0, 30, 60));
 
         panelRound2.setBackground(new java.awt.Color(0, 153, 255));
         panelRound2.setRoundBottomLeft(20);
@@ -384,6 +347,36 @@ public class guestHome extends javax.swing.JFrame {
         panelRound2.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 70, 35));
 
         panelRound1.add(panelRound2, new org.netbeans.lib.awtextra.AbsoluteConstraints(1320, 12, 90, -1));
+
+        jLabel25.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel25.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel25.setText("HOME");
+        jLabel25.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel25MouseClicked(evt);
+            }
+        });
+        panelRound1.add(jLabel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(1000, 0, -1, 60));
+
+        jLabel27.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
+        jLabel27.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel27.setText("RESERVATION");
+        jLabel27.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel27MouseClicked(evt);
+            }
+        });
+        panelRound1.add(jLabel27, new org.netbeans.lib.awtextra.AbsoluteConstraints(1080, 0, -1, 60));
+
+        jLabel26.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 14)); // NOI18N
+        jLabel26.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel26.setText("PROFILE");
+        jLabel26.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel26MouseClicked(evt);
+            }
+        });
+        panelRound1.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(1220, 0, 90, 60));
 
         jPanel1.add(panelRound1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 60));
 
@@ -414,14 +407,6 @@ public class guestHome extends javax.swing.JFrame {
 
         jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 790, 1440, 40));
 
-        jLabel6.setFont(new java.awt.Font("Helvetica Neue", 1, 48)); // NOI18N
-        jLabel6.setText("<");
-        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 60, 70, 400));
-
-        jLabel1.setFont(new java.awt.Font("Helvetica Neue", 1, 48)); // NOI18N
-        jLabel1.setText(">");
-        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1300, 60, 70, 400));
-
         jLabel15.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/bg.jpg"))); // NOI18N
         jLabel15.setText("jLabel15");
         jPanel1.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -70, -1, 530));
@@ -440,55 +425,6 @@ public class guestHome extends javax.swing.JFrame {
         
     }//GEN-LAST:event_jLabel10MouseClicked
 
-    private void jPanel8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel8MouseClicked
-
-    }//GEN-LAST:event_jPanel8MouseClicked
-
-    private void jLabel12MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel12MouseClicked
-  try {
-          // 1. Get selected dates from JTextFields (e.g., "April 15, 2025")
-        String checkInStr = txtCheckin.getText().trim();
-        String checkOutStr = txtCheckout.getText().trim();
-
-        // 2. Define the correct date format that matches your text fields
-        SimpleDateFormat displayFormat = new SimpleDateFormat("MMMM dd, yyyy");
-        displayFormat.setLenient(false);
-        
-        // 3. Parse strings into Date objects using the correct format
-        Date checkInDate = displayFormat.parse(checkInStr);
-        Date checkOutDate = displayFormat.parse(checkOutStr);
-
-        // 4. Get number of guests
-        int adults = (Integer) adultSpinner.getValue();
-        int children = (Integer) childSpinner.getValue();
-        int totalGuests = adults + children;
-
-        // 5. Validate inputs
-        if (!checkOutDate.after(checkInDate)) {
-            JOptionPane.showMessageDialog(this, "Check-out date must be after check-in date");
-            return;
-        }
-
-        if (totalGuests <= 0) {
-            JOptionPane.showMessageDialog(this, "Please select at least one guest");
-            return;
-        }
-
-        // 6. Convert to SQL dates
-        java.sql.Date sqlCheckIn = new java.sql.Date(checkInDate.getTime());
-        java.sql.Date sqlCheckOut = new java.sql.Date(checkOutDate.getTime());
-
-        // 7. Search for available rooms
-        searchAvailableRooms(sqlCheckIn, sqlCheckOut, totalGuests, adults, children);
-
-    } catch (ParseException e) {
-        JOptionPane.showMessageDialog(this, "Invalid date format. Please use dd-MM-yyyy");
-    } catch (HeadlessException e) {
-        JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
-    }
-
-    }//GEN-LAST:event_jLabel12MouseClicked
-
     private void jLabel7MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel7MouseClicked
         dateChooserCheckin.showPopup();
     }//GEN-LAST:event_jLabel7MouseClicked
@@ -496,14 +432,6 @@ public class guestHome extends javax.swing.JFrame {
     private void jLabel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel5MouseClicked
         dateChooserCheckout.showPopup();
     }//GEN-LAST:event_jLabel5MouseClicked
-
-    private void jLabel25MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel25MouseClicked
-       
-    }//GEN-LAST:event_jLabel25MouseClicked
-
-    private void jLabel27MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel27MouseClicked
-        new guestReservation(userID).setVisible(true);
-    }//GEN-LAST:event_jLabel27MouseClicked
 
     private void jLabel8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel8MouseClicked
         this.dispose();
@@ -514,9 +442,65 @@ public class guestHome extends javax.swing.JFrame {
 
     }//GEN-LAST:event_panelRound2MouseClicked
 
+    private void panelRound4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelRound4MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_panelRound4MouseClicked
+
+    private void jLabel13MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel13MouseClicked
+        try {
+            // 1. Get selected dates from JTextFields (e.g., "April 15, 2025")
+            String checkInStr = txtCheckin.getText().trim();
+            String checkOutStr = txtCheckout.getText().trim();
+
+            // 2. Define the correct date format that matches your text fields
+            SimpleDateFormat displayFormat = new SimpleDateFormat("MMMM dd, yyyy");
+            displayFormat.setLenient(false);
+
+            // 3. Parse strings into Date objects using the correct format
+            Date checkInDate = displayFormat.parse(checkInStr);
+            Date checkOutDate = displayFormat.parse(checkOutStr);
+
+            // 4. Get number of guests
+            int adults = (Integer) adultSpinner.getValue();
+            int children = (Integer) childSpinner.getValue();
+            int totalGuests = adults + children;
+
+            // 5. Validate inputs
+            if (!checkOutDate.after(checkInDate)) {
+                JOptionPane.showMessageDialog(this, "Check-out date must be after check-in date");
+                return;
+            }
+
+            if (totalGuests <= 0) {
+                JOptionPane.showMessageDialog(this, "Please select at least one guest");
+                return;
+            }
+
+            // 6. Convert to SQL dates
+            java.sql.Date sqlCheckIn = new java.sql.Date(checkInDate.getTime());
+            java.sql.Date sqlCheckOut = new java.sql.Date(checkOutDate.getTime());
+
+            // 7. Search for available rooms
+            searchAvailableRooms(sqlCheckIn, sqlCheckOut, totalGuests, adults, children);
+
+        } catch (ParseException e) {
+            JOptionPane.showMessageDialog(this, "Invalid date format. Please use dd-MM-yyyy");
+        } catch (HeadlessException e) {
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+        }
+    }//GEN-LAST:event_jLabel13MouseClicked
+
+    private void jLabel25MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel25MouseClicked
+        new guestHome(userID).setVisible(true);
+    }//GEN-LAST:event_jLabel25MouseClicked
+
+    private void jLabel27MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel27MouseClicked
+        new guestReservation(userID).setVisible(true);
+    }//GEN-LAST:event_jLabel27MouseClicked
+
     private void jLabel26MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel26MouseClicked
         UserDetailsFetcher userDetailsFrame = new UserDetailsFetcher(userID);
-                userDetailsFrame.setVisible(true);
+        userDetailsFrame.setVisible(true);
     }//GEN-LAST:event_jLabel26MouseClicked
 
     /**
@@ -573,10 +557,9 @@ public class guestHome extends javax.swing.JFrame {
     private spinner.Spinner childSpinner;
     private com.raven.datechooser.DateChooser dateChooserCheckin;
     private com.raven.datechooser.DateChooser dateChooserCheckout;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel17;
@@ -587,20 +570,17 @@ public class guestHome extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
-    private javax.swing.JLabel lbl;
-    private javax.swing.JLabel lblNumberOfNights;
     private GUI.PanelRound panelRound1;
     private GUI.PanelRound panelRound2;
     private GUI.PanelRound panelRound3;
+    private GUI.PanelRound panelRound4;
     private textfield_suggestion.TextFieldSuggestion txtCheckin;
     private textfield_suggestion.TextFieldSuggestion txtCheckout;
     // End of variables declaration//GEN-END:variables

@@ -50,7 +50,7 @@ public class staffMainHome extends javax.swing.JInternalFrame {
     ResultSet rs; 
     
     public final void DatabaseConnection() {
-          String url = "jdbc:mysql://localhost:3306/beachResortManagement";
+          String url = "jdbc:mysql://localhost:3307/beachResortManagement";
         String user = "root"; // MySQL username
         String password = ""; // MySQL password
         
@@ -198,7 +198,7 @@ if (rs.next()) {
 
     try {
         Connection conn = DriverManager.getConnection(
-            "jdbc:mysql://localhost:3306/beachResortManagement", "root", ""
+            "jdbc:mysql://localhost:3307/beachResortManagement", "root", ""
         );
 
         String sql = """

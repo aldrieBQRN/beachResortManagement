@@ -100,7 +100,7 @@ public class guestSelectRoom extends javax.swing.JFrame {
     ResultSet rs; 
     
     public final void DatabaseConnection() {
-          String url = "jdbc:mysql://localhost:3306/beachResortManagement";
+          String url = "jdbc:mysql://localhost:3307/beachResortManagement";
         String user = "root"; // MySQL username
         String password = ""; // MySQL password
         
@@ -580,7 +580,6 @@ private void selectRoom(String roomNumber, String roomType, String description, 
         jLabel12 = new javax.swing.JLabel();
         childrenSpinner = new spinner.Spinner();
         jLabel14 = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
         adultsSpinner = new spinner.Spinner();
         txtCheckin = new textfield_suggestion.TextFieldSuggestion();
         jLabel7 = new javax.swing.JLabel();
@@ -588,7 +587,6 @@ private void selectRoom(String roomNumber, String roomType, String description, 
         jLabel5 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
-        txtCheckout1 = new textfield_suggestion.TextFieldSuggestion();
         jLabel15 = new javax.swing.JLabel();
         panelRound4 = new GUI.PanelRound();
         jLabel18 = new javax.swing.JLabel();
@@ -654,25 +652,20 @@ private void selectRoom(String roomNumber, String roomType, String description, 
         });
         panelRound3.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 0, 160, 40));
 
-        panelRound1.add(panelRound3, new org.netbeans.lib.awtextra.AbsoluteConstraints(1050, 30, 180, 40));
+        panelRound1.add(panelRound3, new org.netbeans.lib.awtextra.AbsoluteConstraints(930, 30, 180, 40));
 
         childrenSpinner.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
         childrenSpinner.setLabelText("");
-        panelRound1.add(childrenSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(860, 30, 170, 40));
+        panelRound1.add(childrenSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 30, 170, 40));
 
         jLabel14.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
         jLabel14.setForeground(new java.awt.Color(102, 102, 102));
         jLabel14.setText("Child");
-        panelRound1.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(870, 10, -1, -1));
-
-        jLabel13.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
-        jLabel13.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel13.setText("Duration");
-        panelRound1.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 10, -1, -1));
+        panelRound1.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 10, -1, -1));
 
         adultsSpinner.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
         adultsSpinner.setLabelText("");
-        panelRound1.add(adultsSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 30, 170, 40));
+        panelRound1.add(adultsSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 30, 170, 40));
 
         txtCheckin.setEditable(false);
         txtCheckin.setSelectedTextColor(new java.awt.Color(0, 0, 0));
@@ -714,22 +707,12 @@ private void selectRoom(String roomNumber, String roomType, String description, 
         jLabel10.setText("Check-in Date");
         panelRound1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, -1, -1));
 
-        txtCheckout1.setText("2 Nigths");
-        txtCheckout1.setSelectedTextColor(new java.awt.Color(0, 0, 0));
-        txtCheckout1.setSelectionColor(new java.awt.Color(255, 255, 255));
-        txtCheckout1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtCheckout1ActionPerformed(evt);
-            }
-        });
-        panelRound1.add(txtCheckout1, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 30, 110, 40));
-
         jLabel15.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
         jLabel15.setForeground(new java.awt.Color(102, 102, 102));
         jLabel15.setText("Adult");
-        panelRound1.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 10, -1, -1));
+        panelRound1.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 10, -1, -1));
 
-        jPanel2.add(panelRound1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 80, 1260, 85));
+        jPanel2.add(panelRound1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 80, 1140, 85));
 
         panelRound4.setBackground(new java.awt.Color(242, 242, 242));
         panelRound4.setRoundTopLeft(50);
@@ -749,16 +732,23 @@ private void selectRoom(String roomNumber, String roomType, String description, 
 
         jLabel25.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
         jLabel25.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel25.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/iconHome.png"))); // NOI18N
+        jLabel25.setText("HOME");
         jLabel25.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel25MouseClicked(evt);
             }
         });
-        panelRound5.add(jLabel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(1180, 0, -1, 60));
+        panelRound5.add(jLabel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(1000, 0, -1, 60));
 
-        jLabel26.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/profile.png"))); // NOI18N
-        panelRound5.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(1270, 0, 30, 60));
+        jLabel26.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 14)); // NOI18N
+        jLabel26.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel26.setText("PROFILE");
+        jLabel26.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel26MouseClicked(evt);
+            }
+        });
+        panelRound5.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(1220, 0, 90, 60));
 
         panelRound2.setBackground(new java.awt.Color(0, 153, 255));
         panelRound2.setRoundBottomLeft(20);
@@ -787,13 +777,13 @@ private void selectRoom(String roomNumber, String roomType, String description, 
 
         jLabel27.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
         jLabel27.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel27.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/icons8-book-25.png"))); // NOI18N
+        jLabel27.setText("RESERVATION");
         jLabel27.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel27MouseClicked(evt);
             }
         });
-        panelRound5.add(jLabel27, new org.netbeans.lib.awtextra.AbsoluteConstraints(1230, 0, -1, 60));
+        panelRound5.add(jLabel27, new org.netbeans.lib.awtextra.AbsoluteConstraints(1080, 0, -1, 60));
 
         jLabel17.setFont(new java.awt.Font("Tahoma", 1, 25)); // NOI18N
         jLabel17.setForeground(new java.awt.Color(255, 255, 255));
@@ -898,10 +888,6 @@ private void selectRoom(String roomNumber, String roomType, String description, 
         dateChooserCheckout.showPopup();
     }//GEN-LAST:event_jLabel5MouseClicked
 
-    private void txtCheckout1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCheckout1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtCheckout1ActionPerformed
-
     private void jLabel25MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel25MouseClicked
         new guestHome(userID).setVisible(true);
     }//GEN-LAST:event_jLabel25MouseClicked
@@ -918,6 +904,11 @@ private void selectRoom(String roomNumber, String roomType, String description, 
     private void jLabel27MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel27MouseClicked
         new guestReservation(userID).setVisible(true);
     }//GEN-LAST:event_jLabel27MouseClicked
+
+    private void jLabel26MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel26MouseClicked
+         UserDetailsFetcher userDetailsFrame = new UserDetailsFetcher(userID);
+                userDetailsFrame.setVisible(true);
+    }//GEN-LAST:event_jLabel26MouseClicked
 
     /**
      * @param args the command line arguments
@@ -1027,7 +1018,6 @@ private void selectRoom(String roomNumber, String roomType, String description, 
     private com.raven.datechooser.DateChooser dateChooserCheckout;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel17;
@@ -1049,7 +1039,6 @@ private void selectRoom(String roomNumber, String roomType, String description, 
     private GUI.PanelRound panelRound5;
     private textfield_suggestion.TextFieldSuggestion txtCheckin;
     private textfield_suggestion.TextFieldSuggestion txtCheckout;
-    private textfield_suggestion.TextFieldSuggestion txtCheckout1;
     private javax.swing.JPanel yourMainPanelOrFrame;
     // End of variables declaration//GEN-END:variables
 }

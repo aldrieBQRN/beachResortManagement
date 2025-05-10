@@ -3,174 +3,160 @@ package Guest;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.sql.*;
 
 public class UserDetailsFetcher extends JFrame {
     private JTextField nameField;
     private JTextField phoneField;
     private JTextField emailField;
-    private JComboBox<String> roleComboBox;
-    private JButton editButton;
-    private JButton saveButton;
-    private JButton cancelButton;
-    private boolean editMode = false;
+    private JPasswordField passwordField;
+    private JPanel updatePanel; // Panel that will act as a button
+    private JLabel updateLabel; // Label inside the panel
+
     private int userId;
 
     public UserDetailsFetcher(int userId) {
         this.userId = userId;
         setTitle("User Profile");
-        setSize(600, 450);
+        setSize(500, 450);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLayout(new BorderLayout());
+        setLayout(new BorderLayout(10, 10));
+        getContentPane().setBackground(new Color(245, 245, 245));
         getRootPane().setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Main panel with shadow effect
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(new Color(245, 247, 250));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
-        // Header panel
+        // Header Panel
         JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setOpaque(false);
+        headerPanel.setBackground(new Color(245, 245, 245));
         headerPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
-        
+
         JLabel titleLabel = new JLabel("User Profile", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        titleLabel.setForeground(new Color(44, 62, 80));
+        titleLabel.setForeground(new Color(39, 114, 160));
         headerPanel.add(titleLabel, BorderLayout.CENTER);
-        
-        JButton closeButton = new JButton("✕");
-        closeButton.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        closeButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        closeButton.setContentAreaFilled(false);
-        closeButton.setForeground(new Color(108, 117, 125));
-        closeButton.setFocusPainted(false);
-        closeButton.addActionListener(e -> dispose());
-        headerPanel.add(closeButton, BorderLayout.EAST);
 
-        // Profile content panel
-        JPanel contentPanel = new JPanel();
-        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
-        contentPanel.setBackground(Color.WHITE);
-        contentPanel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(230, 230, 230)),
-            BorderFactory.createEmptyBorder(30, 30, 30, 30)
+        add(headerPanel, BorderLayout.NORTH);
+
+        // Form Panel
+        JPanel formPanel = new JPanel();
+        formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
+        formPanel.setBackground(new Color(245, 245, 245));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
+
+        nameField = createTextField("Full Name:", formPanel);
+        phoneField = createTextField("Phone:", formPanel);
+        emailField = createTextField("Email:", formPanel);
+        passwordField = createPasswordField("Password:", formPanel);
+
+        // Create update panel that acts as a button
+        updatePanel = new JPanel();
+        updatePanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        updatePanel.setBackground(new Color(46, 204, 113));
+        updatePanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(39, 174, 96), 2),
+            BorderFactory.createEmptyBorder(10, 25, 10, 25)
         ));
-        contentPanel.setMaximumSize(new Dimension(500, 400));
+        updatePanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        updatePanel.setOpaque(true);
 
-        // Initialize fields
-        nameField = createStyledTextField();
-        phoneField = createStyledTextField();
-        emailField = createStyledTextField();
-        roleComboBox = new JComboBox<>(new String[]{"Guest", "Staff", "Admin"});
-        styleComboBox(roleComboBox);
+        updateLabel = new JLabel("Update Profile");
+        updateLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        updateLabel.setForeground(Color.WHITE);
+        updatePanel.add(updateLabel);
 
-        // Add form fields
-        contentPanel.add(createFormField("Full Name:", nameField));
-        contentPanel.add(Box.createRigidArea(new Dimension(0, 15)));
-        contentPanel.add(createFormField("Phone:", phoneField));
-        contentPanel.add(Box.createRigidArea(new Dimension(0, 15)));
-        contentPanel.add(createFormField("Email:", emailField));
-        contentPanel.add(Box.createRigidArea(new Dimension(0, 15)));
-        contentPanel.add(createFormField("Role:", roleComboBox));
+        // Add mouse listener to make the panel act like a button
+        updatePanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int confirm = JOptionPane.showConfirmDialog(UserDetailsFetcher.this, 
+                    "Are you sure you want to update your profile?", 
+                    "Confirm Update", JOptionPane.YES_NO_OPTION);
 
-        // Button panel
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
-        buttonPanel.setOpaque(false);
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
+                if (confirm == JOptionPane.YES_OPTION) {
+                    updatePanel.setBackground(new Color(39, 114, 160));
+                    updatePanel.setEnabled(false);
+                    updateUserDetails();
+                }
+            }
 
-        editButton = createActionButton("Edit", new Color(52, 152, 219));
-        editButton.addActionListener(e -> toggleEditMode(true));
-        buttonPanel.add(editButton);
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                updatePanel.setBackground(new Color(39, 174, 96));
+            }
 
-        saveButton = createActionButton("Save", new Color(46, 204, 113));
-        saveButton.addActionListener(e -> saveUserDetails());
-        saveButton.setVisible(false);
-        buttonPanel.add(saveButton);
+            @Override
+            public void mouseExited(MouseEvent e) {
+                updatePanel.setBackground(new Color(46, 204, 113));
+            }
+        });
 
-        cancelButton = createActionButton("Cancel", new Color(231, 76, 60));
-        cancelButton.addActionListener(e -> toggleEditMode(false));
-        cancelButton.setVisible(false);
-        buttonPanel.add(cancelButton);
+        // Button Panel
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.setBackground(new Color(245, 245, 245));
+        buttonPanel.add(updatePanel);
 
-        contentPanel.add(buttonPanel);
+        add(formPanel, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.SOUTH);
 
-        // Add components to main panel
-        mainPanel.add(headerPanel, BorderLayout.NORTH);
-        mainPanel.add(contentPanel, BorderLayout.CENTER);
-        add(mainPanel, BorderLayout.CENTER);
-
-        // Load user data
         loadUserDetails();
     }
 
-    private JPanel createFormField(String label, JComponent field) {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setOpaque(false);
-        panel.setBorder(new EmptyBorder(0, 0, 5, 0));
-        
-        JLabel fieldLabel = new JLabel(label);
-        fieldLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        fieldLabel.setForeground(new Color(108, 117, 125));
-        panel.add(fieldLabel, BorderLayout.NORTH);
-        
-        field.setEnabled(false);
-        panel.add(field, BorderLayout.CENTER);
-        
-        return panel;
-    }
+    private JTextField createTextField(String label, JPanel parent) {
+        JPanel fieldPanel = new JPanel(new BorderLayout(5, 5));
+        fieldPanel.setBackground(new Color(245, 245, 245));
+        fieldPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
 
-    private JTextField createStyledTextField() {
-        JTextField textField = new JTextField();
-        textField.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        textField.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(200, 200, 200)),
-            BorderFactory.createEmptyBorder(5, 0, 5, 0)
+        JLabel jLabel = new JLabel(label);
+        jLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        jLabel.setForeground(new Color(80, 80, 80));
+
+        JTextField field = new JTextField();
+        field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        field.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(200, 200, 200)),
+            BorderFactory.createEmptyBorder(5, 10, 5, 10)
         ));
-        textField.setBackground(Color.WHITE);
-        return textField;
+
+        fieldPanel.add(jLabel, BorderLayout.NORTH);
+        fieldPanel.add(field, BorderLayout.CENTER);
+        parent.add(fieldPanel);
+        parent.add(Box.createVerticalStrut(5));
+
+        return field;
     }
 
-    private void styleComboBox(JComboBox<String> comboBox) {
-        comboBox.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        comboBox.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(200, 200, 200)));
-        comboBox.setBackground(Color.WHITE);
-        comboBox.setEnabled(false);
-    }
+    private JPasswordField createPasswordField(String label, JPanel parent) {
+        JPanel fieldPanel = new JPanel(new BorderLayout(5, 5));
+        fieldPanel.setBackground(new Color(245, 245, 245));
+        fieldPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
 
-    private JButton createActionButton(String text, Color color) {
-        JButton button = new JButton(text);
-        button.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        button.setForeground(Color.WHITE);
-        button.setBackground(color);
-        button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        return button;
-    }
+        JLabel jLabel = new JLabel(label);
+        jLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        jLabel.setForeground(new Color(80, 80, 80));
 
-    private void toggleEditMode(boolean enable) {
-        editMode = enable;
-        nameField.setEnabled(enable);
-        phoneField.setEnabled(enable);
-        emailField.setEnabled(enable);
-        roleComboBox.setEnabled(enable);
-        
-        editButton.setVisible(!enable);
-        saveButton.setVisible(enable);
-        cancelButton.setVisible(enable);
+        JPasswordField field = new JPasswordField();
+        field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        field.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(200, 200, 200)),
+            BorderFactory.createEmptyBorder(5, 10, 5, 10)
+        ));
+
+        fieldPanel.add(jLabel, BorderLayout.NORTH);
+        fieldPanel.add(field, BorderLayout.CENTER);
+        parent.add(fieldPanel);
+        parent.add(Box.createVerticalStrut(5));
+
+        return field;
     }
 
     private void loadUserDetails() {
-        String url = "jdbc:mysql://localhost:3306/beachResortManagement";
+        String url = "jdbc:mysql://localhost:3307/beachResortManagement";
         String username = "root";
         String password = "";
 
         try (Connection connection = DriverManager.getConnection(url, username, password)) {
-            String sql = "SELECT full_name, phone, email, role FROM user_details WHERE user_id = ?";
+            String sql = "SELECT full_name, phone, email, password FROM user_details WHERE user_id = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, userId);
                 try (ResultSet rs = stmt.executeQuery()) {
@@ -178,7 +164,7 @@ public class UserDetailsFetcher extends JFrame {
                         nameField.setText(rs.getString("full_name"));
                         phoneField.setText(rs.getString("phone"));
                         emailField.setText(rs.getString("email"));
-                        roleComboBox.setSelectedItem(rs.getString("role"));
+                        passwordField.setText(rs.getString("password"));
                     } else {
                         JOptionPane.showMessageDialog(this, "User not found");
                     }
@@ -190,24 +176,23 @@ public class UserDetailsFetcher extends JFrame {
         }
     }
 
-    private void saveUserDetails() {
-        String url = "jdbc:mysql://localhost:3306/beachResortManagement";
+    private void updateUserDetails() {
+        String url = "jdbc:mysql://localhost:3307/beachResortManagement";
         String username = "root";
         String password = "";
 
         try (Connection connection = DriverManager.getConnection(url, username, password)) {
-            String sql = "UPDATE user_details SET full_name = ?, phone = ?, email = ?, role = ? WHERE user_id = ?";
+            String sql = "UPDATE user_details SET full_name = ?, phone = ?, email = ?, password = ? WHERE user_id = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setString(1, nameField.getText());
                 stmt.setString(2, phoneField.getText());
                 stmt.setString(3, emailField.getText());
-                stmt.setString(4, (String) roleComboBox.getSelectedItem());
+                stmt.setString(4, new String(passwordField.getPassword()));
                 stmt.setInt(5, userId);
-                
+
                 int rowsAffected = stmt.executeUpdate();
                 if (rowsAffected > 0) {
                     JOptionPane.showMessageDialog(this, "Profile updated successfully");
-                    toggleEditMode(false);
                 } else {
                     JOptionPane.showMessageDialog(this, "Failed to update profile");
                 }
@@ -215,6 +200,9 @@ public class UserDetailsFetcher extends JFrame {
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Database error: " + e.getMessage());
             e.printStackTrace();
+        } finally {
+            updatePanel.setBackground(new Color(46, 204, 113));
+            // Note: There's no setEnabled for JPanel, so we need to handle this differently if needed
         }
     }
 

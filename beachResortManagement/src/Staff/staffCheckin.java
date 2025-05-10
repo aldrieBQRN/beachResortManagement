@@ -67,7 +67,7 @@ public class staffCheckin extends javax.swing.JInternalFrame {
     ResultSet rs; 
     
     public final void DatabaseConnection() {
-          String url = "jdbc:mysql://localhost:3306/beachResortManagement";
+          String url = "jdbc:mysql://localhost:3307/beachResortManagement";
         String user = "root"; // MySQL username
         String password = ""; // MySQL password
         
@@ -447,30 +447,40 @@ private void handleButtonClick(int row, String action, JTable sourceTable) {
     }
 }
 
+
 private void processOnSitePayment(int reservationId, double balanceAmount) {
     try {
         DatabaseConnection();
-        
 
-        // Prompt user to enter the amount paid
+        // Prompt for amount paid
         String input = JOptionPane.showInputDialog(this,
-            "Remaining balance: ₱" + String.format("%.2f", balanceAmount) + "\nEnter amount paid:",
+            "Remaining balance: ₱" + String.format("%.2f", balanceAmount) + "\n\nEnter amount paid:",
             "Process On-Site Payment",
             JOptionPane.PLAIN_MESSAGE);
 
-        if (input == null) return; // User cancelled
-
-        double amountPaid;
-        try {
-            amountPaid = Double.parseDouble(input);
-        } catch (NumberFormatException e) {
+        // Check if canceled or blank
+        if (input == null || input.trim().isEmpty()) {
             JOptionPane.showMessageDialog(this,
-                "Invalid amount entered.",
+                "Input cannot be empty.",
                 "Input Error",
                 JOptionPane.ERROR_MESSAGE);
             return;
         }
 
+        input = input.trim();
+
+        // Validate using regex: only digits and optional decimal
+        if (!input.matches("\\d+(\\.\\d{1,2})?")) {
+            JOptionPane.showMessageDialog(this,
+                "Invalid amount entered. Please enter a valid number (e.g., 100 or 100.50).",
+                "Input Error",
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        double amountPaid = Double.parseDouble(input);
+
+        // Negative or insufficient
         if (amountPaid < balanceAmount) {
             JOptionPane.showMessageDialog(this,
                 "Amount paid is less than the remaining balance.\nPlease collect full payment.",
@@ -481,34 +491,33 @@ private void processOnSitePayment(int reservationId, double balanceAmount) {
 
         double change = amountPaid - balanceAmount;
 
-        // Check if a Balance payment record already exists
-        String checkQuery = "SELECT * FROM payment WHERE reservation_id = ? AND payment_type = 'Balance'";
+        // Check if 'Balance' payment already exists
+        String checkQuery = "SELECT payment_id FROM payment WHERE reservation_id = ? AND payment_type = 'Balance'";
         pst = con.prepareStatement(checkQuery);
         pst.setInt(1, reservationId);
         rs = pst.executeQuery();
 
         if (rs.next()) {
-            // Update existing balance payment
+            // Update existing
             String updateQuery = "UPDATE payment SET amount = ?, status = 'Paid' WHERE payment_id = ?";
-            PreparedStatement updateStmt = con.prepareStatement(updateQuery);
-            updateStmt.setDouble(1, balanceAmount);
-            updateStmt.setInt(2, rs.getInt("payment_id"));
-            updateStmt.executeUpdate();
-            updateStmt.close();
+            try (PreparedStatement updateStmt = con.prepareStatement(updateQuery)) {
+                updateStmt.setDouble(1, balanceAmount);
+                updateStmt.setInt(2, rs.getInt("payment_id"));
+                updateStmt.executeUpdate();
+            }
         } else {
-            // Create new balance payment
-            String insertQuery = "INSERT INTO payment " +
-                                 "(reservation_id, payment_type, payment_method, amount, status) " +
-                                 "VALUES (?, 'Balance', 'On Site', ?, 'Paid')";
-            PreparedStatement insertStmt = con.prepareStatement(insertQuery);
-            insertStmt.setInt(1, reservationId);
-            insertStmt.setDouble(2, balanceAmount);
-            insertStmt.executeUpdate();
-            insertStmt.close();
+            // Insert new
+            String insertQuery = "INSERT INTO payment (reservation_id, payment_type, payment_method, amount, status) VALUES (?, 'Balance', 'On Site', ?, 'Paid')";
+            try (PreparedStatement insertStmt = con.prepareStatement(insertQuery)) {
+                insertStmt.setInt(1, reservationId);
+                insertStmt.setDouble(2, balanceAmount);
+                insertStmt.executeUpdate();
+            }
         }
 
+        // Confirmation
         JOptionPane.showMessageDialog(this,
-            "Payment of ₱" + String.format("%.2f", balanceAmount) + " recorded.\n" +
+            "Payment of ₱" + String.format("%.2f", balanceAmount) + " recorded.\n\n" +
             "Amount received: ₱" + String.format("%.2f", amountPaid) + "\n" +
             "Change due: ₱" + String.format("%.2f", change),
             "Payment Successful",
@@ -525,6 +534,9 @@ private void processOnSitePayment(int reservationId, double balanceAmount) {
         try { if (con != null) con.close(); } catch (SQLException e) {}
     }
 }
+
+
+
 
 
 private void updateReservationStatus(String reservationNumber, String newStatus) {

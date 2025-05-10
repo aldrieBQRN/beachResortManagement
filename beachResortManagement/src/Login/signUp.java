@@ -35,7 +35,7 @@ public class signUp extends javax.swing.JFrame {
     ResultSet rs; 
     
     public final void DatabaseConnection() {
-          String url = "jdbc:mysql://localhost:3306/beachResortManagement";
+          String url = "jdbc:mysql://localhost:3307/beachResortManagement";
         String user = "root"; // MySQL username
         String password = ""; // MySQL password
         
@@ -159,7 +159,7 @@ private void clearFields() {
     textField4.setText("");
     textField2.setText("");
     passwordField1.setText("");
-    passwordField1.setText("");
+    passwordField3.setText("");
 }
 
     /**

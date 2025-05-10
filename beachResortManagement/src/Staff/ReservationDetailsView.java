@@ -35,7 +35,7 @@ public class ReservationDetailsView {
     }
 
     private void loadReservationDetails() {
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/beachResortManagement", "root", "");
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3307/beachResortManagement", "root", "");
              PreparedStatement stmt = conn.prepareStatement(
                      "SELECT rr.*, br.boat_id, br.boat_tour_date, br.boat_tour_start_time, br.boat_tour_end_time, br.tour_price " +
                              "FROM room_reservation rr " +

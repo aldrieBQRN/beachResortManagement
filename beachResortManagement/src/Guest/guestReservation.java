@@ -17,7 +17,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import static java.awt.SystemColor.scrollbar;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.lang.System.Logger;
@@ -34,12 +36,15 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -63,7 +68,7 @@ public class guestReservation extends javax.swing.JFrame {
     ResultSet rs; 
     
     public final void DatabaseConnection() {
-          String url = "jdbc:mysql://localhost:3306/beachResortManagement";
+          String url = "jdbc:mysql://localhost:3307/beachResortManagement";
         String user = "root"; // MySQL username
         String password = ""; // MySQL password
         
@@ -86,21 +91,29 @@ public class guestReservation extends javax.swing.JFrame {
             System.out.println("MySQL JDBC Driver not found: " + e.getMessage());
         }
     }
-    
 
 public final void showPendingRoomReservations() {
+    // First, clear the original panel
     pending.removeAll();
-    pending.setLayout(new BoxLayout(pending, BoxLayout.Y_AXIS));
+    pending.setLayout(new BorderLayout());
     pending.setBackground(new Color(240, 242, 245));
     
+    // Create a container panel for the scroll pane
+    JPanel containerPanel = new JPanel();
+    containerPanel.setLayout(new BoxLayout(containerPanel, BoxLayout.Y_AXIS));
+    containerPanel.setBackground(new Color(240, 242, 245));
     
-
+    // Create scroll pane with custom scrollbar
+    JScrollPane scrollPane = new JScrollPane(containerPanel);
+    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    scrollPane.setBorder(BorderFactory.createEmptyBorder());
+    scrollPane.getVerticalScrollBar().setUnitIncrement(16);
     
-    // If this panel is contained in another container, you'll need to add the scrollPane instead
-    // For example, if you previously added pendingReservationPanel directly to a parent container,
-    // you should now add scrollPane instead
+    // Create modern-looking scrollbar
+    scrollPane.getVerticalScrollBar().setUI(new ModernScrollBarUI());
     
-    try (Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/beachResortManagement", "root", "");
+    try (Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3307/beachResortManagement", "root", "");
          PreparedStatement pst = con.prepareStatement("SELECT r.reservation_number, r.check_in_date, rr.room_reservation_id, r.check_out_date, rr.room_number, rm.room_image " +
                                                       "FROM reservation r " +
                                                       "JOIN room_reservation rr ON r.reservation_number = rr.reservation_number " +
@@ -110,13 +123,16 @@ public final void showPendingRoomReservations() {
         pst.setInt(1, userId); // Use dynamic user ID
         ResultSet rs = pst.executeQuery();
 
+        boolean hasReservations = false;
+
         while (rs.next()) {
+            hasReservations = true;
             // Create a reservation card
             JPanel reservationCard = new JPanel(new BorderLayout());
             reservationCard.setBackground(Color.WHITE);
             reservationCard.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-            reservationCard.setPreferredSize(new Dimension(900, 220));
-            reservationCard.setMaximumSize(new Dimension(1000, 220));
+            reservationCard.setPreferredSize(new Dimension(640, 220));
+            reservationCard.setMaximumSize(new Dimension(680, 220));
             reservationCard.setAlignmentX(Component.CENTER_ALIGNMENT);
 
             // Left panel (Image + Details)
@@ -127,7 +143,7 @@ public final void showPendingRoomReservations() {
             // Image
             byte[] imgBytes = rs.getBytes("room_image");
             JLabel lblImage = new JLabel();
-            lblImage.setPreferredSize(new Dimension(250, 170));
+            lblImage.setPreferredSize(new Dimension(200, 170));
             lblImage.setHorizontalAlignment(JLabel.CENTER);
             lblImage.setVerticalAlignment(JLabel.CENTER);
 
@@ -178,11 +194,18 @@ public final void showPendingRoomReservations() {
             JPanel rightPanel = new JPanel();
             rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
             rightPanel.setOpaque(false);
+            rightPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0)); // Add some padding
 
             // View Panel
             JPanel viewPanel = createActionPanel("View", new Color(0, 123, 255));
+            viewPanel.setPreferredSize(new Dimension(120, 40));
+            viewPanel.setMaximumSize(new Dimension(120, 40));
+            viewPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+            
             JLabel lblView = (JLabel) viewPanel.getComponent(0);
             int roomReservationId = rs.getInt("room_reservation_id");
+            final String resNumber = rs.getString("reservation_number"); // Capture reservation number
+            
             lblView.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
@@ -192,13 +215,17 @@ public final void showPendingRoomReservations() {
 
             // Cancel Panel
             JPanel cancelPanel = createActionPanel("Cancel", new Color(220, 53, 69));
+            cancelPanel.setPreferredSize(new Dimension(120, 40));
+            cancelPanel.setMaximumSize(new Dimension(120, 40));
+            cancelPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+            
             JLabel lblCancel = (JLabel) cancelPanel.getComponent(0);
             lblCancel.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     try {
-                        JOptionPane.showMessageDialog(null, "Canceling reservation: " + rs.getString("reservation_number"));
-                    } catch (SQLException ex) {
+                         cancelReservation(roomReservationId);
+                    } catch (Exception ex) {
                         java.util.logging.Logger.getLogger(guestReservation.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
                     }
                 }
@@ -213,21 +240,35 @@ public final void showPendingRoomReservations() {
             reservationCard.add(leftPanel, BorderLayout.CENTER);
             reservationCard.add(rightPanel, BorderLayout.EAST);
 
-            pending.add(reservationCard);
-            pending.add(Box.createRigidArea(new Dimension(0, 20)));
+            containerPanel.add(reservationCard);
+            containerPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         }
 
+        if (!hasReservations) {
+            JPanel noReservationPanel = new JPanel(new GridBagLayout());
+            noReservationPanel.setBackground(new Color(240, 242, 245));
+            JLabel noReservationLabel = new JLabel("No pending reservations found");
+            noReservationLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+            noReservationLabel.setForeground(new Color(100, 100, 100));
+            noReservationPanel.add(noReservationLabel);
+            containerPanel.add(noReservationPanel);
+        }
+
+        // Add the scroll pane to the pending panel
+        pending.add(scrollPane, BorderLayout.CENTER);
+        
+        // Update UI
+        containerPanel.revalidate();
+        containerPanel.repaint();
         pending.revalidate();
         pending.repaint();
-     
       
     } catch (SQLException ex) {
         ex.printStackTrace();
+        JOptionPane.showMessageDialog(null, "Error loading pending reservations: " + ex.getMessage(), 
+                                    "Database Error", JOptionPane.ERROR_MESSAGE);
     }
 }
-
-
-
 
 // Helper method to create Action Panel
 private JPanel createActionPanel(String text, Color backgroundColor) {
@@ -247,34 +288,48 @@ private JPanel createActionPanel(String text, Color backgroundColor) {
     return panel;
 }
 
-
-    
-   public final void showCompleteRoomReservations() {
-    // Clear the existing content
+public final void showCompleteRoomReservations() {
+    // First, clear the original panel
     completeReservationPanel.removeAll();
-    completeReservationPanel.setLayout(new BoxLayout(completeReservationPanel, BoxLayout.Y_AXIS));
+    completeReservationPanel.setLayout(new BorderLayout());
     completeReservationPanel.setBackground(new Color(240, 242, 245));
+    
+    // Create a container panel for the scroll pane
+    JPanel containerPanel = new JPanel();
+    containerPanel.setLayout(new BoxLayout(containerPanel, BoxLayout.Y_AXIS));
+    containerPanel.setBackground(new Color(240, 242, 245));
 
-   
+    // Create scroll pane with custom scrollbar
+    JScrollPane scrollPane = new JScrollPane(containerPanel);
+    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    scrollPane.setBorder(BorderFactory.createEmptyBorder());
+    scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+    
+    // Create modern-looking scrollbar
+    scrollPane.getVerticalScrollBar().setUI(new ModernScrollBarUI());
 
-    try (Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/beachResortManagement", "root", "");
+    try (Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3307/beachResortManagement", "root", "");
          PreparedStatement pst = con.prepareStatement("SELECT r.reservation_number, r.check_in_date, rr.room_reservation_id, " +
                                                     "r.check_out_date, rr.room_number, rm.room_image, rm.room_type " +
                                                     "FROM reservation r " +
                                                     "JOIN room_reservation rr ON r.reservation_number = rr.reservation_number " +
                                                     "JOIN room rm ON rr.room_number = rm.room_number " +
-                                                    "WHERE r.user_id = ? AND r.status = 'Check-out'")) {
+                                                    "WHERE r.user_id = ? AND r.status != 'Pending'")) {
 
         pst.setInt(1, userId);
         ResultSet rs = pst.executeQuery();
 
+        boolean hasReservations = false;
+
         while (rs.next()) {
+            hasReservations = true;
             // Create a reservation card
             JPanel reservationCard = new JPanel(new BorderLayout());
             reservationCard.setBackground(Color.WHITE);
             reservationCard.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-            reservationCard.setPreferredSize(new Dimension(900, 220));
-            reservationCard.setMaximumSize(new Dimension(1000, 220));
+            reservationCard.setPreferredSize(new Dimension(640, 220));
+            reservationCard.setMaximumSize(new Dimension(680, 220));
             reservationCard.setAlignmentX(Component.CENTER_ALIGNMENT);
 
             // Left panel (Image + Details)
@@ -285,7 +340,7 @@ private JPanel createActionPanel(String text, Color backgroundColor) {
             // Image
             byte[] imgBytes = rs.getBytes("room_image");
             JLabel lblImage = new JLabel();
-            lblImage.setPreferredSize(new Dimension(250, 170));
+            lblImage.setPreferredSize(new Dimension(200, 170));
             lblImage.setHorizontalAlignment(JLabel.CENTER);
             lblImage.setVerticalAlignment(JLabel.CENTER);
 
@@ -342,9 +397,14 @@ private JPanel createActionPanel(String text, Color backgroundColor) {
             JPanel rightPanel = new JPanel();
             rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
             rightPanel.setOpaque(false);
+            rightPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0)); // Add some padding
 
             // View Panel
             JPanel viewPanel = createActionPanel("View Details", new Color(0, 123, 255));
+            viewPanel.setPreferredSize(new Dimension(120, 40));
+            viewPanel.setMaximumSize(new Dimension(120, 40));
+            viewPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+            
             JLabel lblView = (JLabel) viewPanel.getComponent(0);
             int roomReservationId = rs.getInt("room_reservation_id");
             lblView.addMouseListener(new MouseAdapter() {
@@ -354,38 +414,35 @@ private JPanel createActionPanel(String text, Color backgroundColor) {
                 }
             });
 
-            // Rate Panel
-            JPanel ratePanel = createActionPanel("Rate Stay", new Color(40, 167, 69));
-            JLabel lblRate = (JLabel) ratePanel.getComponent(0);
-            lblRate.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    try {
-                        String roomNumber = rs.getString("room_number");
-                        // Call your rating dialog here
-                        showRatingDialog(roomReservationId, roomNumber);
-                    } catch (SQLException ex) {
-                        java.util.logging.Logger.getLogger(guestReservation.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-                    }
-                }
-            });
-
             rightPanel.add(Box.createVerticalGlue());
             rightPanel.add(viewPanel);
-            rightPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-            rightPanel.add(ratePanel);
             rightPanel.add(Box.createVerticalGlue());
 
             reservationCard.add(leftPanel, BorderLayout.CENTER);
             reservationCard.add(rightPanel, BorderLayout.EAST);
 
-            completeReservationPanel.add(reservationCard);
-            completeReservationPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+            containerPanel.add(reservationCard);
+            containerPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         }
 
+        if (!hasReservations) {
+            JPanel noReservationPanel = new JPanel(new GridBagLayout());
+            noReservationPanel.setBackground(new Color(240, 242, 245));
+            JLabel noReservationLabel = new JLabel("No completed reservations found");
+            noReservationLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+            noReservationLabel.setForeground(new Color(100, 100, 100));
+            noReservationPanel.add(noReservationLabel);
+            containerPanel.add(noReservationPanel);
+        }
+
+        // Add the scroll pane to the completed reservations panel
+        completeReservationPanel.add(scrollPane, BorderLayout.CENTER);
+        
+        // Update UI
+        containerPanel.revalidate();
+        containerPanel.repaint();
         completeReservationPanel.revalidate();
         completeReservationPanel.repaint();
-       
 
     } catch (SQLException ex) {
         ex.printStackTrace();
@@ -394,82 +451,103 @@ private JPanel createActionPanel(String text, Color backgroundColor) {
     }
 }
 
-// Helper method for rating dialog
-private void showRatingDialog(int reservationId, String roomNumber) {
-    JDialog ratingDialog = new JDialog();
-    ratingDialog.setTitle("Rate Your Stay - Room " + roomNumber);
-    ratingDialog.setSize(400, 300);
-    ratingDialog.setLayout(new BorderLayout());
-    ratingDialog.setLocationRelativeTo(null);
-    ratingDialog.setModal(true);
+// Custom Modern ScrollBar UI class
+class ModernScrollBarUI extends BasicScrollBarUI {
+    private final int THUMB_SIZE = 8;
 
-    JPanel mainPanel = new JPanel();
-    mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-    mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+    @Override
+    protected JButton createDecreaseButton(int orientation) {
+        return createZeroButton();
+    }
 
-    JLabel titleLabel = new JLabel("How was your stay?");
-    titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
-    titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+    @Override
+    protected JButton createIncreaseButton(int orientation) {
+        return createZeroButton();
+    }
 
-    // Star rating component
-    JPanel starsPanel = new JPanel();
-    starsPanel.setLayout(new BoxLayout(starsPanel, BoxLayout.X_AXIS));
-    starsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-    
-    // Add your star rating implementation here
-    // This could be a custom component or using a library like JRating
+    private JButton createZeroButton() {
+        JButton button = new JButton();
+        button.setPreferredSize(new Dimension(0, 0));
+        button.setMinimumSize(new Dimension(0, 0));
+        button.setMaximumSize(new Dimension(0, 0));
+        return button;
+    }
 
-    // Comment area
-    JTextArea commentArea = new JTextArea(5, 30);
-    commentArea.setLineWrap(true);
-    commentArea.setWrapStyleWord(true);
-    commentArea.setBorder(BorderFactory.createCompoundBorder(
-        BorderFactory.createLineBorder(new Color(200, 200, 200)),
-        BorderFactory.createEmptyBorder(5, 5, 5, 5)
-    ));
+    @Override
+    protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
+        g.setColor(new Color(240, 240, 240));
+        g.fillRect(trackBounds.x, trackBounds.y, trackBounds.width, trackBounds.height);
+    }
 
-    // Submit button
-    JButton submitButton = new JButton("Submit Rating");
-    submitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-    submitButton.addActionListener(e -> {
-        // Save the rating to database
-        saveRating(reservationId, roomNumber, 5, commentArea.getText()); // Replace 5 with actual rating
-        ratingDialog.dispose();
-    });
+    @Override
+    protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
+        if (thumbBounds.isEmpty() || !scrollbar.isEnabled()) {
+            return;
+        }
 
-    mainPanel.add(titleLabel);
-    mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-    mainPanel.add(starsPanel);
-    mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-    mainPanel.add(new JScrollPane(commentArea));
-    mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-    mainPanel.add(submitButton);
-
-    ratingDialog.add(mainPanel, BorderLayout.CENTER);
-    ratingDialog.setVisible(true);
-}
-
-private void saveRating(int reservationId, String roomNumber, int rating, String comment) {
-    // Implement your database save logic here
-    try (Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/beachResortManagement", "root", "");
-         PreparedStatement pst = con.prepareStatement(
-             "INSERT INTO ratings (reservation_id, room_number, rating, comment, created_at) " +
-             "VALUES (?, ?, ?, ?, NOW())")) {
+        Graphics2D g2 = (Graphics2D) g.create();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         
-        pst.setInt(1, reservationId);
-        pst.setString(2, roomNumber);
-        pst.setInt(3, rating);
-        pst.setString(4, comment);
+        // Modern thumb color
+        Color thumbColor = scrollbar.getValueIsAdjusting() ? new Color(130, 130, 130) : new Color(180, 180, 180);
+        g2.setColor(thumbColor);
+
+        // Create rounded thumb
+        int width = thumbBounds.width;
+        int height = thumbBounds.height;
         
-        pst.executeUpdate();
-        JOptionPane.showMessageDialog(null, "Thank you for your feedback!", "Rating Submitted", JOptionPane.INFORMATION_MESSAGE);
-    } catch (SQLException ex) {
-        ex.printStackTrace();
-        JOptionPane.showMessageDialog(null, "Error saving rating: " + ex.getMessage(), 
-                                    "Database Error", JOptionPane.ERROR_MESSAGE);
+        if (scrollbar.getOrientation() == JScrollBar.VERTICAL) {
+            width = THUMB_SIZE;
+            thumbBounds.x = thumbBounds.x + (thumbBounds.width - width) / 2;
+        } else {
+            height = THUMB_SIZE;
+            thumbBounds.y = thumbBounds.y + (thumbBounds.height - height) / 2;
+        }
+        
+        g2.fillRoundRect(thumbBounds.x, thumbBounds.y, width, height, 5, 5);
+        g2.dispose();
+    }
+
+    @Override
+    protected void setThumbBounds(int x, int y, int width, int height) {
+        super.setThumbBounds(x, y, width, height);
+        scrollbar.repaint();
     }
 }
 
+private void cancelReservation(int roomReservationId) {
+    int confirm = JOptionPane.showConfirmDialog(null, 
+        "Are you sure you want to cancel this reservation?", 
+        "Cancel Reservation", 
+        JOptionPane.YES_NO_OPTION);
+
+    if (confirm == JOptionPane.YES_OPTION) {
+        try (Connection con = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3307/beachResortManagement", "root", "");
+             PreparedStatement pst = con.prepareStatement(
+                 "UPDATE reservation r " +
+                 "JOIN room_reservation rr ON r.reservation_number = rr.reservation_number " +
+                 "SET r.status = 'Cancelled' " +
+                 "WHERE rr.room_reservation_id = ?")) {
+
+            pst.setInt(1, roomReservationId);
+            int affected = pst.executeUpdate();
+
+            if (affected > 0) {
+                JOptionPane.showMessageDialog(null, "Reservation canceled successfully.");
+                showPendingRoomReservations(); // Refresh the panel
+            } else {
+                JOptionPane.showMessageDialog(null, "Failed to cancel reservation.", 
+                                              "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Database error: " + ex.getMessage(), 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -484,7 +562,6 @@ private void saveRating(int reservationId, String roomNumber, int rating, String
         jPanel2 = new javax.swing.JPanel();
         materialTabbed1 = new GUI.MaterialTabbed();
         pending = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
         completeReservationPanel = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
@@ -506,13 +583,11 @@ private void saveRating(int reservationId, String roomNumber, int rating, String
 
         pending.setBackground(new java.awt.Color(255, 255, 255));
         pending.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        pending.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 0, 30, 410));
-
         materialTabbed1.addTab("Pending", pending);
 
         completeReservationPanel.setBackground(new java.awt.Color(255, 255, 255));
         completeReservationPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        materialTabbed1.addTab("History", completeReservationPanel);
+        materialTabbed1.addTab("Reservation", completeReservationPanel);
 
         jPanel2.add(materialTabbed1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 20, 680, 450));
 
@@ -841,7 +916,6 @@ this.dispose();        // TODO add your handling code here:
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JScrollPane jScrollPane1;
     private GUI.MaterialTabbed materialTabbed1;
     private javax.swing.JPanel pending;
     // End of variables declaration//GEN-END:variables

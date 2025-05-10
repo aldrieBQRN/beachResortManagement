@@ -20,9 +20,10 @@ public class adminMainHome extends javax.swing.JFrame {
     /**
      * Creates new form custormerHOME
      */
-    public adminMainHome() {
+    public adminMainHome(String name) {
         initComponents();
         showHome();
+        txtname.setText(name);
     }
     
     public void showHome() {
@@ -52,7 +53,7 @@ public class adminMainHome extends javax.swing.JFrame {
         jPanel13 = new javax.swing.JPanel();
         jLabel27 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jLabel25 = new javax.swing.JLabel();
+        txtname = new javax.swing.JLabel();
         panelRound2 = new GUI.PanelRound();
         jLabel8 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
@@ -96,11 +97,11 @@ public class adminMainHome extends javax.swing.JFrame {
         jLabel2.setText("WELCOME,");
         jPanel2.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 220, 50));
 
-        jLabel25.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
-        jLabel25.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel25.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel25.setText("Default Name");
-        jPanel2.add(jLabel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 20, 220, 40));
+        txtname.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
+        txtname.setForeground(new java.awt.Color(255, 255, 255));
+        txtname.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        txtname.setText("Default Name");
+        jPanel2.add(txtname, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 20, 220, 40));
 
         panelRound2.setBackground(new java.awt.Color(0, 153, 255));
         panelRound2.setRoundBottomLeft(20);
@@ -134,12 +135,11 @@ public class adminMainHome extends javax.swing.JFrame {
         jPanel3.setPreferredSize(new java.awt.Dimension(170, 200));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel7.setBackground(new java.awt.Color(242, 242, 242));
-        jPanel7.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 10, 0, 0, new java.awt.Color(39, 114, 160)));
+        jPanel7.setBackground(new java.awt.Color(27, 59, 95));
         jPanel7.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("DASHBOARD");
         jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -244,10 +244,7 @@ public class adminMainHome extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void rooomLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_rooomLabelMouseClicked
-        panelRoom.setBackground(new Color(242,242,242));
-        panelRoom.setBorder(new MatteBorder(0, 10, 0, 0, new Color(39, 114, 160)));
-        rooomLabel.setForeground(Color.BLACK);
-        
+     
         adminRoom room = new adminRoom();
         pnlmain.removeAll(); // Remove existing components
         pnlmain.setLayout(new BorderLayout()); // Set the layout
@@ -342,14 +339,14 @@ showHome();
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
-new adminMainHome().setVisible(true);
+            String name = "";
+new adminMainHome(name).setVisible(true);
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel28;
@@ -370,5 +367,6 @@ new adminMainHome().setVisible(true);
     private GUI.PanelRound panelRound2;
     private javax.swing.JPanel pnlmain;
     private javax.swing.JLabel rooomLabel;
+    private javax.swing.JLabel txtname;
     // End of variables declaration//GEN-END:variables
 }

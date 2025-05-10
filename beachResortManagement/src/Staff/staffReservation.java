@@ -68,7 +68,7 @@ public final class staffReservation extends javax.swing.JInternalFrame {
     ResultSet rs; 
     
     public final void DatabaseConnection() {
-          String url = "jdbc:mysql://localhost:3306/beachResortManagement";
+          String url = "jdbc:mysql://localhost:3307/beachResortManagement";
         String user = "root"; // MySQL username
         String password = ""; // MySQL password
         
@@ -144,13 +144,13 @@ public final class staffReservation extends javax.swing.JInternalFrame {
             String formattedCreatedAt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(createdAt);
 
             reservationModel.addRow(new Object[]{
-                  formattedCreatedAt,
+                 
                 reservationNumber,
                 guestName,
                 formattedCheckInDate,
                 formattedCheckOutDate,
                 "₱" + String.format("%.2f", totalPrice),
-              
+               formattedCreatedAt,
                 reservationId // Store the reservation ID in the actions column
             });
         }

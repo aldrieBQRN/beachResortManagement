@@ -84,20 +84,21 @@ public class ReservationViewDetails {
     private void loadReservationDetails() {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
-                "SELECT rr.*, br.boat_id, br.boat_tour_date, br.boat_tour_start_time, " +
-                "br.boat_tour_end_time, br.tour_price, r.room_type, b.boat_name " +
-                "FROM room_reservation rr " +
-                "LEFT JOIN boat_reservation br ON rr.room_reservation_id = br.room_reservation_id " +
-                "LEFT JOIN room r ON rr.room_number = r.room_number " +
-                "LEFT JOIN boat b ON br.boat_id = b.boat_id " +
-                "WHERE rr.room_reservation_id = ?")) {
+                       "SELECT r.*,rs.status, br.boat_id, br.boat_tour_date, br.boat_tour_start_time, " +
+            "br.boat_tour_end_time, br.tour_price, rm.room_type, b.boat_name, rs.status " + // Added rs.status for the reservation status
+            "FROM room_reservation r " +
+            "LEFT JOIN boat_reservation br ON r.room_reservation_id = br.room_reservation_id " +
+            "LEFT JOIN room rm ON r.room_number = rm.room_number " +
+            "LEFT JOIN boat b ON br.boat_id = b.boat_id " +
+            "LEFT JOIN reservation rs ON r.reservation_number = rs.reservation_number " + // Added join with reservation table
+            "WHERE r.room_reservation_id = ?")) {
 
             stmt.setInt(1, roomReservationId);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
                 // Add the reservation header with status badge
-                String status = rs.getString("status");
+                String status = rs.getString("rs.status");
                 addReservationHeader(rs.getString("reservation_number"), status);
                 
                 // Improved layout with two columns in a row
@@ -427,7 +428,7 @@ public class ReservationViewDetails {
             buttonPanel.add(createCustomButton("Modify Reservation", WARNING_COLOR));
         }
         
-        buttonPanel.add(createCustomButton("Print Details", SECONDARY_COLOR));
+       
         
         JPanel closeButton = createCustomButton("Close", PRIMARY_COLOR);
         closeButton.addMouseListener(new MouseAdapter() {
@@ -513,7 +514,7 @@ public class ReservationViewDetails {
 }
 
 class DatabaseConnection {
-    private static final String URL = "jdbc:mysql://localhost:3306/beachResortManagement";
+    private static final String URL = "jdbc:mysql://localhost:3307/beachResortManagement";
     private static final String USER = "root";
     private static final String PASSWORD = "";
 
