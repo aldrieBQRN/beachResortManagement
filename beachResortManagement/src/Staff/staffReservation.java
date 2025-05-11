@@ -109,7 +109,7 @@ public final class staffReservation extends javax.swing.JInternalFrame {
         rs = pst.executeQuery();
 
         DefaultTableModel reservationModel = new DefaultTableModel(
-            new Object[]{"Created At","Reservation Number", "Guest Name", "Check-In Date", "Check-Out Date", "Total Price",  "Actions"}, 0
+            new Object[]{"Reservation Number", "Guest Name", "Check-In Date", "Check-Out Date", "Total Price","Created At",  "Actions"}, 0
         ) {
             @Override
             public boolean isCellEditable(int row, int column) {

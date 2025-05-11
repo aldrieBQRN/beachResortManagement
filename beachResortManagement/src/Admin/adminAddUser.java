@@ -12,6 +12,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
+import org.mindrot.jbcrypt.BCrypt;
 
 /**
  *
@@ -245,7 +246,7 @@ public class adminAddUser extends javax.swing.JFrame {
             String fullName = firstName + " " + lastName;
             
             // Hash password (use proper password hashing in production)
-            String hashedPassword = Integer.toString(password.hashCode());
+           String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
             
             PreparedStatement pst = null;
             

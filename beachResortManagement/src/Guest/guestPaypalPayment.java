@@ -15,6 +15,7 @@ import javax.swing.JOptionPane;
 
 
 
+
 /**
  *
  * @author yeojvaldez
@@ -354,8 +355,8 @@ private void handleDatabaseError(String message, SQLException e) {
         try {
             double totalPrice = calculateTotalPrice(true);
 
-            String query = "INSERT INTO reservation (reservation_number, guest_id, room_reservation_id, check_in_date, check_out_date, total_price, status, created_at) "
-                         + "VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
+            String query = "INSERT INTO reservation (reservation_number, guest_id, user_id, room_reservation_id, check_in_date, check_out_date, total_price, status, created_at) "
+                         + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
 
             PreparedStatement pst = con.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
             setMainReservationParameters(pst, guestId, roomReservationId, totalPrice);
@@ -373,28 +374,35 @@ private void handleDatabaseError(String message, SQLException e) {
         }
     }
     
-    private void insertMainReservationWithoutBoat(int guestId, int roomReservationId, String referenceNumber) {
-        try {
-            double totalPrice = calculateTotalPrice(false);
+   private void insertMainReservationWithoutBoat(int guestId, int roomReservationId, String referenceNumber) {
+    try {
+        double totalPrice = calculateTotalPrice(false);
 
-            String query = "INSERT INTO reservation (reservation_number, guest_id, room_reservation_id, check_in_date, check_out_date, total_price, status, created_at) "
-                         + "VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
+        String query = "INSERT INTO reservation (reservation_number, guest_id, user_id, room_reservation_id, check_in_date, check_out_date, total_price, status, created_at) "
+                     + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
 
-            PreparedStatement pst = con.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
-            setMainReservationParameters(pst, guestId, roomReservationId, totalPrice);
+        PreparedStatement pst = con.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+        pst.setString(1, reservationNumber);
+        pst.setInt(2, guestId);
+        pst.setInt(3, userID);  // Added this missing parameter
+        pst.setInt(4, roomReservationId);
+        pst.setDate(5, new java.sql.Date(checkInDate.getTime()));
+        pst.setDate(6, new java.sql.Date(checkOutDate.getTime()));
+        pst.setDouble(7, totalPrice);
+        pst.setString(8, "Pending");
 
-            int inserted = pst.executeUpdate();
-            if (inserted > 0) {
-                ResultSet keys = pst.getGeneratedKeys();
-                if (keys.next()) {
-                    int reservationId = keys.getInt(1);
-                    insertPayment(reservationId, totalPrice, referenceNumber);
-                }
+        int inserted = pst.executeUpdate();
+        if (inserted > 0) {
+            ResultSet keys = pst.getGeneratedKeys();
+            if (keys.next()) {
+                int reservationId = keys.getInt(1);
+                insertPayment(reservationId, totalPrice, referenceNumber);
             }
-        } catch (SQLException e) {
-            handleDatabaseError("Error inserting main reservation (no boat)", e);
         }
+    } catch (SQLException e) {
+        handleDatabaseError("Error inserting main reservation (no boat)", e);
     }
+}
     
     private void insertPayment(int reservationId, double totalAmount, String referenceNumber) {
         try {
@@ -417,18 +425,17 @@ private void handleDatabaseError(String message, SQLException e) {
     }
     
     // Helper methods
-    private double calculateTotalPrice(boolean includeBoat) {
-        long numberOfNights = TimeUnit.MILLISECONDS.toDays(checkOutDate.getTime() - checkInDate.getTime());
-        double total = roomPrice * numberOfNights
-                     + (100.0 + 20.0) * (numAdults + numChildren);
-        
-        if (includeBoat) {
-            total += boatPrice;
-        }
-        
-        return total;
+  private double calculateTotalPrice(boolean includeBoat) {
+    long numberOfNights = TimeUnit.MILLISECONDS.toDays(checkOutDate.getTime() - checkInDate.getTime());
+    double total = roomPrice * numberOfNights
+                 + (100.0 + 20.0) * (numAdults + numChildren);
+    
+    if (includeBoat && boatName != null && !boatName.isEmpty()) {
+        total += boatPrice;
     }
     
+    return total;
+}
     private void setRoomReservationParameters(PreparedStatement stmt, int guestId, 
                                            int totalGuests, double totalRoomPrice,
                                            double entranceFee, double ecologicalFee) throws SQLException {
@@ -464,11 +471,12 @@ private void handleDatabaseError(String message, SQLException e) {
                                            int roomReservationId, double totalPrice) throws SQLException {
         stmt.setString(1, reservationNumber);
         stmt.setInt(2, guestId);
-        stmt.setInt(3, roomReservationId);
-        stmt.setDate(4, new java.sql.Date(checkInDate.getTime()));
-        stmt.setDate(5, new java.sql.Date(checkOutDate.getTime()));
-        stmt.setDouble(6, totalPrice);
-        stmt.setString(7, "Pending");
+        stmt.setInt(3, userID);
+        stmt.setInt(4, roomReservationId);
+        stmt.setDate(5, new java.sql.Date(checkInDate.getTime()));
+        stmt.setDate(6, new java.sql.Date(checkOutDate.getTime()));
+        stmt.setDouble(7, totalPrice);
+        stmt.setString(8, "Pending");
     }
     
     private void handlePaymentResult(boolean success) {
@@ -504,7 +512,6 @@ private void handleDatabaseError(String message, SQLException e) {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jPanel4 = new javax.swing.JPanel();
         jPanel15 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel18 = new javax.swing.JLabel();
@@ -538,6 +545,8 @@ private void handleDatabaseError(String message, SQLException e) {
         jLabel25 = new javax.swing.JLabel();
         jLabel31 = new javax.swing.JLabel();
         jLabel26 = new javax.swing.JLabel();
+        jPanel4 = new javax.swing.JPanel();
+        jLabel9 = new javax.swing.JLabel();
         jPanel9 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -546,21 +555,6 @@ private void handleDatabaseError(String message, SQLException e) {
 
         jPanel1.setBackground(new java.awt.Color(242, 242, 242));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jPanel4.setBackground(new java.awt.Color(39, 114, 160));
-
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1440, Short.MAX_VALUE)
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 40, Short.MAX_VALUE)
-        );
-
-        jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 790, 1440, 40));
 
         jPanel15.setBackground(new java.awt.Color(242, 242, 242));
         jPanel15.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -581,7 +575,7 @@ private void handleDatabaseError(String message, SQLException e) {
         jPanel2.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 140, 190, -1));
 
         txtReferenceNumber.setForeground(new java.awt.Color(102, 102, 102));
-        txtReferenceNumber.setText("Enter PayPal Reference No.");
+        txtReferenceNumber.setText("Enter Gcash Reference No.");
         txtReferenceNumber.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
         txtReferenceNumber.setSelectedTextColor(new java.awt.Color(102, 102, 102));
         txtReferenceNumber.setSelectionColor(new java.awt.Color(255, 255, 255));
@@ -676,7 +670,7 @@ private void handleDatabaseError(String message, SQLException e) {
         jLabel23.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
         jLabel23.setForeground(new java.awt.Color(0, 0, 102));
         jLabel23.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel23.setText("Sunlit Shore Resort");
+        jLabel23.setText("Papaya Beach Resort");
         jPanel3.add(jLabel23, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 60, 190, -1));
 
         jLabel24.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
@@ -778,9 +772,19 @@ private void handleDatabaseError(String message, SQLException e) {
                 jLabel26MouseClicked(evt);
             }
         });
-        panelRound1.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(1220, 0, 90, 60));
+        panelRound1.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(1220, 0, 60, 60));
 
         jPanel1.add(panelRound1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 60));
+
+        jPanel4.setBackground(new java.awt.Color(39, 114, 160));
+        jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel9.setText("© 2025 Papaya Beach Resort. All rights reserved.");
+        jLabel9.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jPanel4.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 13, -1, -1));
+
+        jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 790, 1440, 40));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 830));
 
@@ -842,8 +846,8 @@ if (isBoatAvailed) {
     }//GEN-LAST:event_jLabel31MouseClicked
 
     private void jLabel26MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel26MouseClicked
-        UserDetailsFetcher userDetailsFrame = new UserDetailsFetcher(userID);
-        userDetailsFrame.setVisible(true);
+        guestProfile user = new guestProfile(userID);
+        user.setVisible(true);
     }//GEN-LAST:event_jLabel26MouseClicked
 
     /**
@@ -871,6 +875,134 @@ if (isBoatAvailed) {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(guestPaypalPayment.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
@@ -1059,6 +1191,7 @@ java.awt.EventQueue.invokeLater(() -> {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;

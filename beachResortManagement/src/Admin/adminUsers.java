@@ -103,10 +103,10 @@ public class adminUsers extends javax.swing.JInternalFrame {
                 String phone = rs.getString("phone");
          
                 String email = rs.getString("email");
-                String password = rs.getString("password");
+              
 
                 // Add data to the table model
-                userModel.addRow(new Object[]{ userId, role, fullName, phone, email, password });
+                userModel.addRow(new Object[]{ userId, role, fullName, phone, email });
             }
         } catch (SQLException e) {
             System.out.println("Error executing query: " + e.getMessage());
@@ -162,23 +162,23 @@ public class adminUsers extends javax.swing.JInternalFrame {
         tblUserDetails.setForeground(new java.awt.Color(255, 255, 255));
         tblUserDetails.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "#", "Role", "Full Name", "Phone", "Email", "Password"
+                "#", "Role", "Full Name", "Phone", "Email"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -214,7 +214,6 @@ public class adminUsers extends javax.swing.JInternalFrame {
             tblUserDetails.getColumnModel().getColumn(2).setResizable(false);
             tblUserDetails.getColumnModel().getColumn(3).setResizable(false);
             tblUserDetails.getColumnModel().getColumn(4).setResizable(false);
-            tblUserDetails.getColumnModel().getColumn(5).setResizable(false);
         }
 
         jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 1120, 570));

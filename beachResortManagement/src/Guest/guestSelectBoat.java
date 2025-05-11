@@ -204,8 +204,8 @@ class ButtonEditor extends DefaultCellEditor {
 // Method to handle boat selection
 private void selectBoat(int row) {
     // Get selected boat details from the table
-    String boatName = (String) tblBoatDetails.getValueAt(row, 0); // Boat name is in column 0
-    String boatPriceString = (String) tblBoatDetails.getValueAt(row, 2); // Boat price is in column 3
+    String boatName = (String) tblBoatDetails.getValueAt(row, 1); // Boat name is in column 0
+    String boatPriceString = (String) tblBoatDetails.getValueAt(row, 3); // Boat price is in column 3
     boatPriceString = boatPriceString.replaceAll("[^0-9.]", "");
     double boatPrice = 0.0;
     if (boatPriceString.isEmpty()) {
@@ -321,6 +321,7 @@ private void selectBoat(int row) {
         jLabel27 = new javax.swing.JLabel();
         jLabel26 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
 
         timePicker.setDisplayText(txtTime);
 
@@ -374,6 +375,7 @@ private void selectBoat(int row) {
 
         panelRound5.add(panelRound3, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 30, 130, 40));
 
+        txtTime.setEditable(false);
         txtTime.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 txtTimeMouseClicked(evt);
@@ -412,11 +414,11 @@ private void selectBoat(int row) {
 
             },
             new String [] {
-                "Boat Name", "Description", "Price", "Action"
+                "Boat Number", "Boat Name", "Description", "Price", "Action"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, true
+                true, false, false, false, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -516,22 +518,17 @@ private void selectBoat(int row) {
                 jLabel26MouseClicked(evt);
             }
         });
-        panelRound1.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(1220, 0, 90, 60));
+        panelRound1.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(1220, 0, 60, 60));
 
         jPanel1.add(panelRound1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 160));
 
         jPanel4.setBackground(new java.awt.Color(39, 114, 160));
+        jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1440, Short.MAX_VALUE)
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 40, Short.MAX_VALUE)
-        );
+        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel6.setText("© 2025 Papaya Beach Resort. All rights reserved.");
+        jLabel6.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jPanel4.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 13, -1, -1));
 
         jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 790, 1440, 40));
 
@@ -556,135 +553,130 @@ private void selectBoat(int row) {
     }//GEN-LAST:event_panelRound3MouseClicked
 
     private void jLabel12MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel12MouseClicked
-        try {
-            // Get selected date and time
-            String selectedDateString = (String) dateComboBox.getSelectedItem();
-            if (selectedDateString == null || selectedDateString.equals("Select a date")) {
-                JOptionPane.showMessageDialog(this, "Please select a valid date.");
-                return;
-            }
-
-            // Parse selected date
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy (EEE)", Locale.ENGLISH);
-            LocalDate selectedDate = LocalDate.parse(selectedDateString, formatter);
-            java.sql.Date sqlDate = java.sql.Date.valueOf(selectedDate);
-
-            // Debug: Print selected date
-
-            // Get selected time and convert to 24-hour format
-           // Get time from text field, expected format: "hh:mm a" or "HH:mm"
-String timeInput = txtTime.getText().trim();
-
-LocalTime localStartTime;
-try {
-    // Try parsing with AM/PM format first
-    DateTimeFormatter amPmFormatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.ENGLISH);
-    localStartTime = LocalTime.parse(timeInput.toUpperCase(), amPmFormatter);
-} catch (DateTimeParseException e1) {
-    try {
-        // Fallback to 24-hour format
-        DateTimeFormatter twentyFourHrFormatter = DateTimeFormatter.ofPattern("HH:mm");
-        localStartTime = LocalTime.parse(timeInput, twentyFourHrFormatter);
-    } catch (DateTimeParseException e2) {
-        JOptionPane.showMessageDialog(this, "Invalid time format. Please use hh:mm AM/PM or HH:mm (24hr).");
+      try {
+    // Get selected date from combo box
+    String selectedDateString = (String) dateComboBox.getSelectedItem();
+    if (selectedDateString == null || selectedDateString.equals("Select a date")) {
+        JOptionPane.showMessageDialog(this, "Please select a valid date.");
         return;
     }
+
+    // Parse selected date
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy (EEE)", Locale.ENGLISH);
+    LocalDate selectedDate = LocalDate.parse(selectedDateString, formatter);
+    java.sql.Date sqlDate = java.sql.Date.valueOf(selectedDate);
+
+    // Get selected time from text field
+    String timeInput = txtTime.getText().trim();
+    LocalTime localStartTime;
+
+    try {
+        // Try AM/PM format first
+        DateTimeFormatter amPmFormatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.ENGLISH);
+        localStartTime = LocalTime.parse(timeInput.toUpperCase(), amPmFormatter);
+    } catch (DateTimeParseException e1) {
+        try {
+            // Try 24-hour format
+            DateTimeFormatter twentyFourHrFormatter = DateTimeFormatter.ofPattern("HH:mm");
+            localStartTime = LocalTime.parse(timeInput, twentyFourHrFormatter);
+        } catch (DateTimeParseException e2) {
+            JOptionPane.showMessageDialog(this, "Invalid time format. Please use hh:mm AM/PM or HH:mm (24hr).");
+            return;
+        }
+    }
+
+    // Validate time range: 7:00 AM to 2:00 PM only
+    LocalTime minTime = LocalTime.of(7, 0);
+    LocalTime maxTime = LocalTime.of(14, 0);
+    if (localStartTime.isBefore(minTime) || localStartTime.isAfter(maxTime)) {
+        JOptionPane.showMessageDialog(this, "Please select a time between 7:00 AM and 2:00 PM.");
+        return;
+    }
+
+    // Convert to SQL time
+    java.sql.Time sqlStartTime = java.sql.Time.valueOf(localStartTime);
+    java.sql.Time sqlEndTime = java.sql.Time.valueOf(localStartTime.plusHours(3));
+
+    int guestTotal = this.adults + this.children;
+
+    // Query for available boats
+    String boatQuery = "SELECT  b.boat_number, b.boat_name, b.description, b.tour_price\n" +
+        "FROM boat b\n" +
+        "WHERE b.capacity >= ?\n" +
+        "AND b.boat_id NOT IN (\n" +
+        "    SELECT br.boat_id\n" +
+        "    FROM boat_reservation br\n" +
+        "    WHERE br.status = 'Reserved'\n" +
+        "    AND br.boat_tour_date = ?\n" +
+        "    AND (? < br.boat_tour_end_time AND ? > br.boat_tour_start_time)\n" +
+        ")\n" +
+        "ORDER BY b.tour_price ASC;";
+
+    pst = con.prepareStatement(boatQuery);
+    pst.setInt(1, guestTotal);
+    pst.setDate(2, sqlDate);
+    pst.setTime(3, sqlStartTime);
+    pst.setTime(4, sqlEndTime);
+
+    rs = pst.executeQuery();
+
+    // Setup table model
+    DefaultTableModel boatModel = new DefaultTableModel(
+        new Object[]{"Boat Number","Boat Name", "Description", "Price/Ride", "Action"},
+        0
+    ) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return column == 4;
+        }
+
+        @Override
+        public Class<?> getColumnClass(int columnIndex) {
+            return columnIndex == 4 ? JButton.class : super.getColumnClass(columnIndex);
+        }
+    };
+
+    tblBoatDetails.setModel(boatModel);
+    tblBoatDetails.getColumnModel().getColumn(4).setCellRenderer(new ButtonRenderer());
+    tblBoatDetails.getColumnModel().getColumn(4).setCellEditor(new ButtonEditor(new JCheckBox()));
+
+    boolean foundBoats = false;
+
+    while (rs.next()) {
+        foundBoats = true;
+        String boatNumber = rs.getString("boat_number");
+        String boatName = rs.getString("boat_name");
+        String description = rs.getString("description");
+        double rate = rs.getDouble("tour_price");
+
+        boatModel.addRow(new Object[]{
+            boatNumber,
+            boatName,
+            description,
+            "₱" + String.format("%.2f", rate),
+            "Select"
+        });
+    }
+
+    if (!foundBoats) {
+        JOptionPane.showMessageDialog(this, "No available boats found for the selected date and time.");
+    }
+
+    // Debug info (optional)
+    System.out.println("Selected Date: " + sqlDate);
+    System.out.println("Start Time: " + sqlStartTime);
+    System.out.println("End Time: " + sqlEndTime);
+
+} catch (SQLException ex) {
+    ex.printStackTrace();
+    JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage());
+} catch (DateTimeParseException ex) {
+    JOptionPane.showMessageDialog(this, "Invalid date format: " + ex.getMessage());
+} catch (Exception ex) {
+    ex.printStackTrace();
+    JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
 }
 
-java.sql.Time sqlStartTime = java.sql.Time.valueOf(localStartTime);
-
-// Add 3 hours
-java.sql.Time sqlEndTime = java.sql.Time.valueOf(localStartTime.plusHours(3));
-
-            
-
-            // Add 3 hours to the start time to calculate the end time
-          
-
-            int guestTotal = this.adults + this.children;
-
-            // Query for available boats with the updated condition for reservation overlap
-            String boatQuery = "SELECT b.boat_name, b.description, b.tour_price\n" +
-"FROM boat b\n" +
-"WHERE b.capacity >= ?\n" +
-"AND b.boat_id NOT IN (\n" +
-"    SELECT br.boat_id\n" +
-"    FROM boat_reservation br\n" +
-"    WHERE br.status = 'Reserved'\n" +
-"    AND br.boat_tour_date = ?\n" +
-"    AND (? < br.boat_tour_end_time AND ? > br.boat_tour_start_time)\n" +
-")\n" +
-"ORDER BY b.tour_price ASC;";
-
-            pst = con.prepareStatement(boatQuery);
-            pst.setInt(1, guestTotal);     // Capacity check (number of guests)
-            pst.setDate(2, sqlDate);       // Selected date for reservation
-            pst.setTime(3, sqlStartTime);  // Start time for reservation
-            pst.setTime(4, sqlEndTime);    // End time for reservation
-
-            rs = pst.executeQuery();
-
-            // Create table model for boats
-            DefaultTableModel boatModel = new DefaultTableModel(
-                new Object[]{"Boat Name", "Description", "Price/Ride", "Action"},
-                0
-            ) {
-                @Override
-                public boolean isCellEditable(int row, int column) {
-                    return column == 3;  // Only the 'Select' button column is editable
-                }
-
-                @Override
-                public Class<?> getColumnClass(int columnIndex) {
-                    if (columnIndex == 3) {
-                        return JButton.class;  // Select column to be a button
-                    }
-                    return super.getColumnClass(columnIndex);
-                }
-            };
-
-            tblBoatDetails.setModel(boatModel); // Set the model to the table
-            tblBoatDetails.getColumnModel().getColumn(3).setCellRenderer(new ButtonRenderer());
-            tblBoatDetails.getColumnModel().getColumn(3).setCellEditor(new ButtonEditor(new JCheckBox()));
-
-            boolean foundBoats = false;
-
-            // Process result set and populate the table with available boats
-            while (rs.next()) {
-                foundBoats = true;
-                String boatName = rs.getString("boat_name");
-                String description = rs.getString("description");
-                double rate = rs.getDouble("tour_price");
-
-                System.out.println("Boat Name: " + boatName + " | Description: " + description + " | ₱" + rate);
-
-                boatModel.addRow(new Object[]{
-                    boatName,
-                    description,
-                    "₱" + String.format("%.2f", rate),
-                    "Select"
-                });
-            }
-
-            // Debug: Print start and end times
-            System.out.println("Start Time: " + sqlStartTime);
-            System.out.println("End Time: " + sqlEndTime);
-            System.out.println("Selected Date: " + sqlDate);
-
-            // If no available boats found, show message to the user
-            if (!foundBoats) {
-                JOptionPane.showMessageDialog(this, "No available boats found for the selected date and time.");
-            }
-
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage());
-        } catch (DateTimeParseException ex) {
-            JOptionPane.showMessageDialog(this, "Invalid date format: " + ex.getMessage());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
-        }
     }//GEN-LAST:event_jLabel12MouseClicked
 
     private void txtTimeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTimeActionPerformed
@@ -717,8 +709,8 @@ java.sql.Time sqlEndTime = java.sql.Time.valueOf(localStartTime.plusHours(3));
     }//GEN-LAST:event_jLabel27MouseClicked
 
     private void jLabel26MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel26MouseClicked
-        UserDetailsFetcher userDetailsFrame = new UserDetailsFetcher(userID);
-        userDetailsFrame.setVisible(true);
+        guestProfile user = new guestProfile(userID);
+        user.setVisible(true);
     }//GEN-LAST:event_jLabel26MouseClicked
 
     /**
@@ -765,6 +757,7 @@ java.sql.Time sqlEndTime = java.sql.Time.valueOf(localStartTime.plusHours(3));
     private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel4;

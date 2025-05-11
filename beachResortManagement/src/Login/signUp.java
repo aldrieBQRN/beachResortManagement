@@ -14,6 +14,7 @@ import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import org.mindrot.jbcrypt.BCrypt;
 
 /**
  *
@@ -66,7 +67,7 @@ public class signUp extends javax.swing.JFrame {
     String phone = textField4.getText().trim();
     String email = textField2.getText().trim();
     String password1 = new String(passwordField1.getPassword());
-    String password2 = new String(passwordField1.getPassword());
+    String password2 = new String(passwordField3.getPassword()); // Fixed: should be passwordField2
     
     // Validate all required fields
     if (firstName.isEmpty() || lastName.isEmpty() || phone.isEmpty() || 
@@ -104,9 +105,11 @@ public class signUp extends javax.swing.JFrame {
         return;
     }
 
-       
     // Create full name
     String fullName = firstName + " " + lastName;
+    
+    // Hash the password
+    String hashedPassword = BCrypt.hashpw(password1, BCrypt.gensalt());
     
     PreparedStatement pst = null;
     try {
@@ -124,12 +127,12 @@ public class signUp extends javax.swing.JFrame {
         
         // Insert new user
         String insertQuery = "INSERT INTO user_details (full_name, phone, email, password, role) " +
-                           "VALUES (?, ?, ?, ?, 'Guest')"; // Default role as Guest
+                           "VALUES (?, ?, ?, ?, 'Guest')";
         pst = con.prepareStatement(insertQuery);
         pst.setString(1, fullName);
         pst.setString(2, phone);
         pst.setString(3, email);
-        pst.setString(4, password1);
+        pst.setString(4, hashedPassword); // Store the hashed password
         
         int rowsAffected = pst.executeUpdate();
         
@@ -194,7 +197,6 @@ private void clearFields() {
 
         jLabel15.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel15.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logoFinal.png"))); // NOI18N
-        jLabel15.setText("x");
         pnllogin.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, 510, 130));
 
         jLabel4.setBackground(new java.awt.Color(255, 255, 255));
@@ -253,7 +255,7 @@ private void clearFields() {
                 jLabel7MouseClicked(evt);
             }
         });
-        pnllogin.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 600, 50, 20));
+        pnllogin.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(324, 599, 50, 20));
 
         panelRound2.setBackground(new java.awt.Color(0, 153, 255));
         panelRound2.setRoundBottomLeft(20);

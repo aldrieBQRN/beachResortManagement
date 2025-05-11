@@ -199,7 +199,7 @@ public class staffRooms extends javax.swing.JInternalFrame {
                 {null, null, null, null, null, null}
             },
             new String [] {
-                "Room Number", "Room Image", "Type", "Description", "Max Occupancy", "Price/Day"
+                "Room Number", "Room Image", "Type", "Description", "Max Occupancy", "Price/Night"
             }
         ) {
             boolean[] canEdit = new boolean [] {

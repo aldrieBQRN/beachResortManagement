@@ -38,8 +38,9 @@ public class staffMainHome extends javax.swing.JInternalFrame {
         removeBackground();
         DatabaseConnection();
         shwoDetails();
-        displayUpcomingReservations();
         displayCurrentDateTime();
+        displayUpcomingReservations();
+       
    
         
  
@@ -511,6 +512,7 @@ if (rs.next()) {
         txtDateTime.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 14)); // NOI18N
         txtDateTime.setForeground(new java.awt.Color(0, 0, 0));
         txtDateTime.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        txtDateTime.setText("Date and Time");
         pnlUpcomming.add(txtDateTime, new org.netbeans.lib.awtextra.AbsoluteConstraints(840, 20, 270, 30));
 
         jLabel24.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 14)); // NOI18N

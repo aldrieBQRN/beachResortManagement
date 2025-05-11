@@ -100,7 +100,7 @@
                         <Column editable="false" title="Type" type="java.lang.Object"/>
                         <Column editable="false" title="Description" type="java.lang.Object"/>
                         <Column editable="false" title="Max Occupancy" type="java.lang.Object"/>
-                        <Column editable="false" title="Price/Day" type="java.lang.Object"/>
+                        <Column editable="false" title="Price/Night" type="java.lang.Object"/>
                       </Table>
                     </Property>
                     <Property name="colorBackgoundHead" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">

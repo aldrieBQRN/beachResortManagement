@@ -4,19 +4,24 @@
  */
 package Login;
 
+import Admin.ResortDashboard;
 import Admin.adminMainHome;
 
 import Guest.guestHome;
 import Staff.staffHome;
 
 import Staff.staffMainHome;
-
+import java.awt.BorderLayout;
+import java.sql.*;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
@@ -24,6 +29,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
+import org.mindrot.jbcrypt.BCrypt;
 
 
 /**
@@ -37,73 +43,51 @@ public class landingPage extends javax.swing.JFrame {
      */
     public landingPage() {
         initComponents();
- DatabaseConnection();
-          txterror.setText("");
+        showHome();
+       
       
        
         
     }
     
+      public void showHome() {
+         Home frame = new Home();
+        mainPanel.removeAll(); // Remove existing components
+        mainPanel.setLayout(new BorderLayout()); // Set the layout
+        mainPanel.add(frame, BorderLayout.CENTER); // Add new component
+        mainPanel.revalidate(); // Revalidate to reflect changes
+        mainPanel.repaint(); // Repaint the panel to show updates
+        frame.setVisible(true);
+      }
+      
+     public void showAbout() {
+         About frame = new About();
+        mainPanel.removeAll(); // Remove existing components
+        mainPanel.setLayout(new BorderLayout()); // Set the layout
+        mainPanel.add(frame, BorderLayout.CENTER); // Add new component
+        mainPanel.revalidate(); // Revalidate to reflect changes
+        mainPanel.repaint(); // Repaint the panel to show updates
+        frame.setVisible(true);   
+    }
+    
+       public void showContact() {
+         Contact frame = new Contact();
+        mainPanel.removeAll(); // Remove existing components
+        mainPanel.setLayout(new BorderLayout()); // Set the layout
+        mainPanel.add(frame, BorderLayout.CENTER); // Add new component
+        mainPanel.revalidate(); // Revalidate to reflect changes
+        mainPanel.repaint(); // Repaint the panel to show updates
+        frame.setVisible(true);   
+    }
+    
+        
+        
+    
+    
    
      
   
     
-    java.sql.Connection con; 
-    PreparedStatement pst;
-    ResultSet rs; 
-    
-    public final void DatabaseConnection() {
-          String url = "jdbc:mysql://localhost:3307/beachResortManagement";
-        String user = "root"; // MySQL username
-        String password = ""; // MySQL password
-        
-        // Establishing the connection
-        try {
-            // Load MySQL JDBC driver (optional in newer versions of JDBC)
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            
-            // Create the connection
-            con = DriverManager.getConnection(url, user, password);
-            
-            System.out.println("Connected to the database successfully!");
-
-            // Perform database operations here...
-
-      
-        } catch (SQLException e) {
-            System.out.println("Error connecting to the database: " + e.getMessage());
-        } catch (ClassNotFoundException e) {
-            System.out.println("MySQL JDBC Driver not found: " + e.getMessage());
-        }
-    }
-    
-    private void setFrameDarkness(float darkness) {
-    // darkness should be between 0 (black) and 1 (original brightness)
-    if (getContentPane() instanceof JPanel) {
-        JPanel panel = (JPanel) getContentPane();
-        Color original = panel.getBackground();
-        
-        // Calculate darker color
-        int r = (int)(original.getRed() * darkness);
-        int g = (int)(original.getGreen() * darkness);
-        int b = (int)(original.getBlue() * darkness);
-        
-        panel.setBackground(new Color(r, g, b));
-        panel.repaint();
-    }
-}
-    
-   public void showSignUp() {
-    signUp su = new signUp();  // Create a new instance of the signUp JPanel
-
-    // Add the signUp JPanel to pnllogin using CardLayout
-    pnllogin.add(su, "SignUp");  // 'SignUp' is the identifier for the CardLayout
-    
-    // Switch to the SignUp card
-    java.awt.CardLayout layout = (java.awt.CardLayout) pnllogin.getLayout();
-    layout.show(pnllogin, "SignUp");
-}
-
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -116,24 +100,15 @@ public class landingPage extends javax.swing.JFrame {
 
         jComboBox1 = new javax.swing.JComboBox<>();
         jPanel4 = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
         panelRound1 = new GUI.PanelRound();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
         pnlmain = new javax.swing.JPanel();
-        pnllogin = new javax.swing.JPanel();
-        jLabel15 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        txterror = new javax.swing.JLabel();
-        jLabel14 = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
-        panelRound2 = new GUI.PanelRound();
-        jLabel8 = new javax.swing.JLabel();
-        txtemail = new textfield.TextField();
-        txtpass = new textfield.PasswordField();
-        jPanel1 = new javax.swing.JPanel();
-        pnlgraphics = new javax.swing.JPanel();
-        jLabel7 = new javax.swing.JLabel();
+        mainPanel = new javax.swing.JPanel();
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
@@ -142,17 +117,12 @@ public class landingPage extends javax.swing.JFrame {
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel4.setBackground(new java.awt.Color(39, 114, 160));
+        jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1440, Short.MAX_VALUE)
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 40, Short.MAX_VALUE)
-        );
+        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel5.setText("© 2025 Papaya Beach Resort. All rights reserved.");
+        jLabel5.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jPanel4.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 13, -1, -1));
 
         getContentPane().add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 790, 1440, 40));
 
@@ -161,144 +131,56 @@ public class landingPage extends javax.swing.JFrame {
         panelRound1.setRoundBottomRight(50);
         panelRound1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel17.setFont(new java.awt.Font("Tahoma", 1, 30)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 13)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("ABOUT");
+        jLabel1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel1MouseClicked(evt);
+            }
+        });
+        panelRound1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1220, 10, -1, 40));
+
+        jLabel3.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 13)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel3.setText("HOME");
+        jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel3MouseClicked(evt);
+            }
+        });
+        panelRound1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(1150, 10, -1, 40));
+
+        jLabel4.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 13)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel4.setText("CONTACT");
+        jLabel4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel4MouseClicked(evt);
+            }
+        });
+        panelRound1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(1290, 10, -1, 40));
+
+        jLabel17.setFont(new java.awt.Font("Tahoma", 1, 25)); // NOI18N
         jLabel17.setForeground(new java.awt.Color(255, 255, 255));
         jLabel17.setText("Welcome,");
-        panelRound1.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 0, 180, 60));
+        panelRound1.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 0, 180, 60));
 
-        jLabel18.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
+        jLabel18.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 14)); // NOI18N
         jLabel18.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel18.setText("enjoy and have fun!");
-        panelRound1.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 20, -1, 30));
+        jLabel18.setText("have fun and enjoy!");
+        panelRound1.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 20, -1, 30));
 
         getContentPane().add(panelRound1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 60));
 
         pnlmain.setBackground(new java.awt.Color(255, 255, 255));
         pnlmain.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        pnllogin.setBackground(new java.awt.Color(255, 255, 255));
-        pnllogin.setForeground(new java.awt.Color(51, 51, 51));
-        pnllogin.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        mainPanel.setBackground(new java.awt.Color(255, 255, 255));
+        mainPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        pnlmain.add(mainPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 60, 1440, 730));
 
-        jLabel15.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel15.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logoFinal.png"))); // NOI18N
-        pnllogin.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, 510, -1));
-
-        jLabel6.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel6.setText("Papaya Beach Resort");
-        jLabel6.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 5, 0, new java.awt.Color(27, 59, 95)));
-        pnllogin.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 190, 390, 60));
-
-        jLabel4.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel4.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 24)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel4.setText("Login your Account");
-        pnllogin.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 300, 390, -1));
-
-        txterror.setBackground(new java.awt.Color(255, 0, 51));
-        txterror.setFont(new java.awt.Font("Helvetica Neue", 2, 10)); // NOI18N
-        txterror.setForeground(new java.awt.Color(255, 0, 51));
-        txterror.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        txterror.setText("(error message)");
-        pnllogin.add(txterror, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 470, 330, 30));
-
-        jLabel14.setFont(new java.awt.Font("Arial Unicode MS", 0, 13)); // NOI18N
-        jLabel14.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel14.setText("Don't have an account?");
-        pnllogin.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 580, 140, -1));
-
-        jLabel13.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 13)); // NOI18N
-        jLabel13.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel13.setText("Register");
-        jLabel13.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel13MouseClicked(evt);
-            }
-        });
-        pnllogin.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 580, 60, -1));
-
-        panelRound2.setBackground(new java.awt.Color(0, 153, 255));
-        panelRound2.setRoundBottomLeft(20);
-        panelRound2.setRoundBottomRight(20);
-        panelRound2.setRoundTopLeft(20);
-        panelRound2.setRoundTopRight(20);
-        panelRound2.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                panelRound2MouseClicked(evt);
-            }
-        });
-        panelRound2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel8.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
-        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel8.setText("Login");
-        jLabel8.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel8MouseClicked(evt);
-            }
-        });
-        panelRound2.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 70, 35));
-
-        pnllogin.add(panelRound2, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 500, 90, 35));
-
-        txtemail.setBackground(new java.awt.Color(255, 255, 255));
-        txtemail.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
-        txtemail.setLabelText("Email");
-        txtemail.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                txtemailKeyReleased(evt);
-            }
-        });
-        pnllogin.add(txtemail, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 370, 330, 45));
-
-        txtpass.setBackground(new java.awt.Color(255, 255, 255));
-        txtpass.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
-        txtpass.setLabelText("Password");
-        txtpass.setShowAndHide(true);
-        txtpass.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtpassActionPerformed(evt);
-            }
-        });
-        txtpass.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                txtpassKeyReleased(evt);
-            }
-        });
-        pnllogin.add(txtpass, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 430, 330, 45));
-
-        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel1.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, new java.awt.Color(204, 204, 204)));
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 330, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 9, Short.MAX_VALUE)
-        );
-
-        pnllogin.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 560, 330, 10));
-
-        pnlmain.add(pnllogin, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 60, 550, 730));
-
-        pnlgraphics.setBackground(new java.awt.Color(255, 255, 255));
-        pnlgraphics.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/background copy.png"))); // NOI18N
-        jLabel7.setText("jLabel7");
-        pnlgraphics.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(-60, 90, -1, -1));
-
-        pnlmain.add(pnlgraphics, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 0, 860, 790));
-
-        getContentPane().add(pnlmain, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 790));
+        getContentPane().add(pnlmain, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 830));
 
         pack();
         setLocationRelativeTo(null);
@@ -310,118 +192,18 @@ public class landingPage extends javax.swing.JFrame {
 
     }//GEN-LAST:event_jLabel10MouseClicked
 
-    private void jLabel13MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel13MouseClicked
-            signUp signUpFrame = new signUp();
-    signUpFrame.setVisible(true);  // Show the signUp window
-    
-    // Assuming addBoatWindow is already initialized elsewhere in your code
-    // Add a window listener to the signUpFrame to detect when it's closed
-    signUpFrame.addWindowListener(new java.awt.event.WindowAdapter() {
-        @Override
-        public void windowClosed(java.awt.event.WindowEvent e) {
-            // When the signUp window is closed, call DatabaseConnection
-            // It's important to ensure the database connection is established here
-            DatabaseConnection();
-        }
-    });
-    }//GEN-LAST:event_jLabel13MouseClicked
+    private void jLabel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseClicked
+        showAbout();
+    }//GEN-LAST:event_jLabel1MouseClicked
 
-    private void jLabel8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel8MouseClicked
-        try {
-            // Get input values
-            String email = txtemail.getText().trim();
-            String password = new String(txtpass.getPassword()).trim();
+    private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
 
-            if (email.isEmpty() && password.isEmpty()) {
-                txterror.setText("Email and password cannot be empty!");
-               
-                return;
-            }
+       showHome();
+    }//GEN-LAST:event_jLabel3MouseClicked
 
-            // Validate input fields
-            if (email.isEmpty()) {
-                txterror.setText("Email cannot be empty!");
-              
-                return;
-            }
-
-            if (password.isEmpty()) {
-                txterror.setText("Password cannot be empty!");
-               
-                return;
-            }
-
-            // First, check if the email exists
-            String emailCheckQuery = "SELECT COUNT(*) FROM user_details WHERE email = ?";
-            try (PreparedStatement emailCheckPst = con.prepareStatement(emailCheckQuery)) {
-                emailCheckPst.setString(1, email);
-                try (ResultSet emailCheckRs = emailCheckPst.executeQuery()) {
-                    if (emailCheckRs.next() && emailCheckRs.getInt(1) == 0) {
-                        txterror.setText("Email not found!");
-                     
-                        return;
-                    }
-                }
-            }
-
-            // Now, check for correct email-password combination
-            String query = "SELECT full_name, role, user_id FROM user_details WHERE email = ? AND password = ? LIMIT 1";
-            try (PreparedStatement pst = con.prepareStatement(query)) {
-                pst.setString(1, email);
-                pst.setString(2, password);
-
-                try (ResultSet rs = pst.executeQuery()) {
-                    if (rs.next()) {
-                        String userName = rs.getString("full_name");
-                        String role = rs.getString("role");
-                        int userID = rs.getInt("user_id");
-
-                        JOptionPane.showMessageDialog(this, "Login Successful.");
-
-                        // Open the appropriate home page based on the role
-                        switch (role) {
-                            case "Admin":
-                            new adminMainHome(userName).setVisible(true);
-                            break;
-                            case "Staff":
-                            new staffHome(userName).setVisible(true);
-                            break;
-                            case "Guest":
-                            new guestHome(userID).setVisible(true);
-                            break;
-                            default:
-                            JOptionPane.showMessageDialog(this, "Unknown role: " + role, "Error", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-
-                        this.dispose(); // Close the login window
-                    } else {
-                        txterror.setText("Incorrect password!");
-                       
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-
-            JOptionPane.showMessageDialog(this, "An error occurred during login. Please try again.", "Database Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }//GEN-LAST:event_jLabel8MouseClicked
-
-    private void panelRound2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelRound2MouseClicked
-
-    }//GEN-LAST:event_panelRound2MouseClicked
-
-    private void txtpassActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtpassActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtpassActionPerformed
-
-    private void txtemailKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtemailKeyReleased
-       txterror.setText("");
-    }//GEN-LAST:event_txtemailKeyReleased
-
-    private void txtpassKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtpassKeyReleased
-       txterror.setText("");
-    }//GEN-LAST:event_txtpassKeyReleased
+    private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
+        showContact();
+    }//GEN-LAST:event_jLabel4MouseClicked
 
     /**
      * @param args the command line arguments
@@ -461,24 +243,15 @@ public class landingPage extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel mainPanel;
     private GUI.PanelRound panelRound1;
-    private GUI.PanelRound panelRound2;
-    private javax.swing.JPanel pnlgraphics;
-    private javax.swing.JPanel pnllogin;
     private javax.swing.JPanel pnlmain;
-    private textfield.TextField txtemail;
-    private javax.swing.JLabel txterror;
-    private textfield.PasswordField txtpass;
     // End of variables declaration//GEN-END:variables
 }

@@ -592,12 +592,13 @@ private void selectRoom(String roomNumber, String roomType, String description, 
         jLabel18 = new javax.swing.JLabel();
         panelRound5 = new GUI.PanelRound();
         jLabel25 = new javax.swing.JLabel();
-        jLabel26 = new javax.swing.JLabel();
         panelRound2 = new GUI.PanelRound();
         jLabel8 = new javax.swing.JLabel();
         jLabel27 = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
+        jLabel26 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
 
         dateChooserCheckin.setForeground(new java.awt.Color(0, 112, 192));
         dateChooserCheckin.setDateFormat("MMMM dd, yyyy");
@@ -740,16 +741,6 @@ private void selectRoom(String roomNumber, String roomType, String description, 
         });
         panelRound5.add(jLabel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(1000, 0, -1, 60));
 
-        jLabel26.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 14)); // NOI18N
-        jLabel26.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel26.setText("PROFILE");
-        jLabel26.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel26MouseClicked(evt);
-            }
-        });
-        panelRound5.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(1220, 0, 90, 60));
-
         panelRound2.setBackground(new java.awt.Color(0, 153, 255));
         panelRound2.setRoundBottomLeft(20);
         panelRound2.setRoundBottomRight(20);
@@ -790,22 +781,27 @@ private void selectRoom(String roomNumber, String roomType, String description, 
         jLabel17.setText("Welcome,");
         panelRound5.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 0, 180, 60));
 
+        jLabel26.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 14)); // NOI18N
+        jLabel26.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel26.setText("PROFILE");
+        jLabel26.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel26MouseClicked(evt);
+            }
+        });
+        panelRound5.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(1220, 0, 60, 60));
+
         jPanel2.add(panelRound5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 60));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 200));
 
         jPanel4.setBackground(new java.awt.Color(39, 114, 160));
+        jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1440, Short.MAX_VALUE)
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 40, Short.MAX_VALUE)
-        );
+        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel6.setText("© 2025 Papaya Beach Resort. All rights reserved.");
+        jLabel6.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jPanel4.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 13, -1, -1));
 
         jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 790, 1440, 40));
 
@@ -906,8 +902,8 @@ private void selectRoom(String roomNumber, String roomType, String description, 
     }//GEN-LAST:event_jLabel27MouseClicked
 
     private void jLabel26MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel26MouseClicked
-         UserDetailsFetcher userDetailsFrame = new UserDetailsFetcher(userID);
-                userDetailsFrame.setVisible(true);
+        guestProfile user = new guestProfile(userID);
+        user.setVisible(true);
     }//GEN-LAST:event_jLabel26MouseClicked
 
     /**
@@ -1027,6 +1023,7 @@ private void selectRoom(String roomNumber, String roomType, String description, 
     private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;

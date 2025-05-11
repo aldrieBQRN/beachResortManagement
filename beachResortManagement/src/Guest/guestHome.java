@@ -195,6 +195,7 @@ public class guestHome extends javax.swing.JFrame {
         panelRound3 = new GUI.PanelRound();
         jLabel14 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
         jPanel9 = new javax.swing.JPanel();
 
@@ -376,7 +377,7 @@ public class guestHome extends javax.swing.JFrame {
                 jLabel26MouseClicked(evt);
             }
         });
-        panelRound1.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(1220, 0, 90, 60));
+        panelRound1.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(1220, 0, 60, 60));
 
         jPanel1.add(panelRound1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 60));
 
@@ -393,17 +394,12 @@ public class guestHome extends javax.swing.JFrame {
         jPanel1.add(panelRound3, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 410, 740, 50));
 
         jPanel4.setBackground(new java.awt.Color(39, 114, 160));
+        jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1440, Short.MAX_VALUE)
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 40, Short.MAX_VALUE)
-        );
+        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel6.setText("© 2025 Papaya Beach Resort. All rights reserved.");
+        jLabel6.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jPanel4.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 13, -1, -1));
 
         jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 790, 1440, 40));
 
@@ -448,46 +444,61 @@ public class guestHome extends javax.swing.JFrame {
 
     private void jLabel13MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel13MouseClicked
         try {
-            // 1. Get selected dates from JTextFields (e.g., "April 15, 2025")
-            String checkInStr = txtCheckin.getText().trim();
-            String checkOutStr = txtCheckout.getText().trim();
+    // 1. Get selected dates from JTextFields (e.g., "April 15, 2025")
+    String checkInStr = txtCheckin.getText().trim();
+    String checkOutStr = txtCheckout.getText().trim();
 
-            // 2. Define the correct date format that matches your text fields
-            SimpleDateFormat displayFormat = new SimpleDateFormat("MMMM dd, yyyy");
-            displayFormat.setLenient(false);
+    // 2. Define the correct date format that matches your text fields
+    SimpleDateFormat displayFormat = new SimpleDateFormat("MMMM dd, yyyy");
+    displayFormat.setLenient(false);
 
-            // 3. Parse strings into Date objects using the correct format
-            Date checkInDate = displayFormat.parse(checkInStr);
-            Date checkOutDate = displayFormat.parse(checkOutStr);
+    // 3. Parse strings into Date objects using the correct format
+    Date checkInDate = displayFormat.parse(checkInStr);
+    Date checkOutDate = displayFormat.parse(checkOutStr);
 
-            // 4. Get number of guests
-            int adults = (Integer) adultSpinner.getValue();
-            int children = (Integer) childSpinner.getValue();
-            int totalGuests = adults + children;
+    // 4. Get today's date (normalized to ignore time)
+    Date today = new Date();
+    today = displayFormat.parse(displayFormat.format(today));
 
-            // 5. Validate inputs
-            if (!checkOutDate.after(checkInDate)) {
-                JOptionPane.showMessageDialog(this, "Check-out date must be after check-in date");
-                return;
-            }
+    // 5. Validate dates
+    if (!checkInDate.after(today)) {
+        JOptionPane.showMessageDialog(this, "Check-in date must be after today's date");
+        return;
+    }
 
-            if (totalGuests <= 0) {
-                JOptionPane.showMessageDialog(this, "Please select at least one guest");
-                return;
-            }
+    if (!checkOutDate.after(today)) {
+        JOptionPane.showMessageDialog(this, "Check-out date must be after today's date");
+        return;
+    }
 
-            // 6. Convert to SQL dates
-            java.sql.Date sqlCheckIn = new java.sql.Date(checkInDate.getTime());
-            java.sql.Date sqlCheckOut = new java.sql.Date(checkOutDate.getTime());
+    if (!checkOutDate.after(checkInDate)) {
+        JOptionPane.showMessageDialog(this, "Check-out date must be after check-in date");
+        return;
+    }
 
-            // 7. Search for available rooms
-            searchAvailableRooms(sqlCheckIn, sqlCheckOut, totalGuests, adults, children);
+    // 6. Get number of guests
+    int adults = (Integer) adultSpinner.getValue();
+    int children = (Integer) childSpinner.getValue();
+    int totalGuests = adults + children;
 
-        } catch (ParseException e) {
-            JOptionPane.showMessageDialog(this, "Invalid date format. Please use dd-MM-yyyy");
-        } catch (HeadlessException e) {
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
-        }
+    if (totalGuests <= 0) {
+        JOptionPane.showMessageDialog(this, "Please select at least one guest");
+        return;
+    }
+
+    // 7. Convert to SQL dates
+    java.sql.Date sqlCheckIn = new java.sql.Date(checkInDate.getTime());
+    java.sql.Date sqlCheckOut = new java.sql.Date(checkOutDate.getTime());
+
+    // 8. Search for available rooms
+    searchAvailableRooms(sqlCheckIn, sqlCheckOut, totalGuests, adults, children);
+
+} catch (ParseException e) {
+    JOptionPane.showMessageDialog(this, "Invalid date format. Please use 'MMMM dd, yyyy'");
+} catch (HeadlessException e) {
+    JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+}
+
     }//GEN-LAST:event_jLabel13MouseClicked
 
     private void jLabel25MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel25MouseClicked
@@ -499,8 +510,8 @@ public class guestHome extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel27MouseClicked
 
     private void jLabel26MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel26MouseClicked
-        UserDetailsFetcher userDetailsFrame = new UserDetailsFetcher(userID);
-        userDetailsFrame.setVisible(true);
+        guestProfile user = new guestProfile(userID);
+        user.setVisible(true);
     }//GEN-LAST:event_jLabel26MouseClicked
 
     /**
@@ -570,6 +581,7 @@ public class guestHome extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;

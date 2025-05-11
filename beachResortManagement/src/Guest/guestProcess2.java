@@ -117,6 +117,8 @@ public class guestProcess2 extends javax.swing.JFrame {
         lblDownPayment.setText(formattedDownPayment);
         lblDownPayment2.setText(formattedDownPayment);
         
+        checkGuestDetails();
+        
           try {
             // Prepare the SQL query to fetch all room details including image
             String sql = "SELECT room_type, description, room_price, max_occupancy, room_image FROM room WHERE room_number = ?";
@@ -222,6 +224,39 @@ public class guestProcess2 extends javax.swing.JFrame {
     return reservationNumber;
 }
 
+   
+   
+       public final void checkGuestDetails() {
+  
+    
+    try {
+       
+        String sql = "SELECT * FROM guest WHERE user_id = ?";
+        pst = con.prepareStatement(sql);
+        pst.setInt(1, userID);
+        rs = pst.executeQuery();
+        
+        if (rs.next()) {
+            // Guest exists, populate the fields
+            String fullName = rs.getString("guest_name");
+            String email = rs.getString("email");
+            String contact = rs.getString("contact");
+            String address = rs.getString("address");
+            
+            // Split name into first and last name if possible
+            String[] names = fullName.split(" ", 2);
+            if (names.length > 0) txtFName.setText(names[0]);
+            if (names.length > 1) txtLName.setText(names[1]);
+            
+            txtEmail.setText(email);
+            txtContact.setText(contact);
+            txtAddress.setText(address);
+           
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    } 
+}
 
     // Get the current date in the format YYYYMMDD
     private String getCurrentDateString() {
@@ -263,7 +298,6 @@ public class guestProcess2 extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jPanel4 = new javax.swing.JPanel();
         jPanel11 = new javax.swing.JPanel();
         jPanel14 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
@@ -324,6 +358,8 @@ public class guestProcess2 extends javax.swing.JFrame {
         jLabel25 = new javax.swing.JLabel();
         jLabel27 = new javax.swing.JLabel();
         jLabel26 = new javax.swing.JLabel();
+        jPanel4 = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
         jPanel9 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -332,21 +368,6 @@ public class guestProcess2 extends javax.swing.JFrame {
 
         jPanel1.setBackground(new java.awt.Color(242, 242, 242));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jPanel4.setBackground(new java.awt.Color(39, 114, 160));
-
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1440, Short.MAX_VALUE)
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 40, Short.MAX_VALUE)
-        );
-
-        jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 790, 1440, 40));
 
         jPanel11.setBackground(new java.awt.Color(242, 242, 242));
         jPanel11.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -750,9 +771,19 @@ public class guestProcess2 extends javax.swing.JFrame {
                 jLabel26MouseClicked(evt);
             }
         });
-        panelRound1.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(1220, 0, 90, 60));
+        panelRound1.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(1220, 0, 60, 60));
 
         jPanel1.add(panelRound1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 60));
+
+        jPanel4.setBackground(new java.awt.Color(39, 114, 160));
+        jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel6.setText("© 2025 Papaya Beach Resort. All rights reserved.");
+        jLabel6.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jPanel4.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 13, -1, -1));
+
+        jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 790, 1440, 40));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 830));
 
@@ -931,8 +962,8 @@ if ("GCash".equalsIgnoreCase(paymentMethod)) {
     }//GEN-LAST:event_jLabel27MouseClicked
 
     private void jLabel26MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel26MouseClicked
-        UserDetailsFetcher userDetailsFrame = new UserDetailsFetcher(userID);
-        userDetailsFrame.setVisible(true);
+        guestProfile user = new guestProfile(userID);
+        user.setVisible(true);
     }//GEN-LAST:event_jLabel26MouseClicked
 
     /**
@@ -1068,6 +1099,7 @@ if ("GCash".equalsIgnoreCase(paymentMethod)) {
     private javax.swing.JLabel jLabel47;
     private javax.swing.JLabel jLabel48;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel11;

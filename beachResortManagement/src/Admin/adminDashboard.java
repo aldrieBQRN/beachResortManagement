@@ -4,45 +4,12 @@
  */
 package Admin;
 
-import Staff.*;
-import PieChart.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
-import Database.DatabaseConnection; 
-import PieChart.MinimalPieChart;
-import java.awt.BorderLayout;
-
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Insets;
-import java.text.SimpleDateFormat;
-import javax.swing.BorderFactory;
-import javax.swing.JOptionPane;
-import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableModel;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.category.DefaultCategoryDataset;
-
-
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.category.DefaultCategoryDataset;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.dnd.*;
 
 /**
  *
