@@ -1,2 +1,0 @@
-Guest.DatabaseConnection
-Guest.ReservationViewDetails

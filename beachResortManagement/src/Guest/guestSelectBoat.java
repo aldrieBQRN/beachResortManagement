@@ -5,33 +5,43 @@
 package Guest;
 
 import Login.landingPage;
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
-import javax.swing.DefaultCellEditor;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
-import raven.datetime.component.time.TimeEvent;
-import raven.datetime.component.time.TimeSelectionListener;
+import javax.swing.*;
+import javax.swing.plaf.basic.BasicScrollBarUI;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Locale;
+
 
 
 
@@ -83,8 +93,8 @@ public class guestSelectBoat extends javax.swing.JFrame {
   
 
 
-    
-    java.sql.Connection con; 
+      
+        java.sql.Connection con; 
     PreparedStatement pst;
     ResultSet rs; 
     
@@ -171,50 +181,305 @@ public class guestSelectBoat extends javax.swing.JFrame {
 }
 
 // Button Editor Class
-class ButtonEditor extends DefaultCellEditor {
-    private String label;
-    private JButton button;
-    private int clickedRow;
 
-    public ButtonEditor(JCheckBox checkBox) {
-        super(checkBox);
-        button = new JButton();
-        button.setOpaque(true);
-        button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                fireEditingStopped();
-                selectBoat(clickedRow);
+
+// Method to handle boat selection
+public void SearchBoat() {
+    try {
+        // Get selected date from combo box
+        String selectedDateString = (String) dateComboBox.getSelectedItem();
+        if (selectedDateString == null || selectedDateString.equals("Select a date")) {
+            JOptionPane.showMessageDialog(this, "Please select a valid date.");
+            return;
+        }
+
+        // Parse selected date
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy (EEE)", Locale.ENGLISH);
+        LocalDate selectedDate = LocalDate.parse(selectedDateString, formatter);
+        java.sql.Date sqlDate = java.sql.Date.valueOf(selectedDate);
+
+        // Get selected time from text field
+        String timeInput = txtTime.getText().trim();
+        LocalTime localStartTime;
+
+        try {
+            // Try AM/PM format first
+            DateTimeFormatter amPmFormatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.ENGLISH);
+            localStartTime = LocalTime.parse(timeInput.toUpperCase(), amPmFormatter);
+        } catch (DateTimeParseException e1) {
+            try {
+                // Try 24-hour format
+                DateTimeFormatter twentyFourHrFormatter = DateTimeFormatter.ofPattern("HH:mm");
+                localStartTime = LocalTime.parse(timeInput, twentyFourHrFormatter);
+            } catch (DateTimeParseException e2) {
+                JOptionPane.showMessageDialog(this, "Invalid time format. Please use hh:mm AM/PM or HH:mm (24hr).");
+                return;
+            }
+        }
+
+        // Validate time range: 7:00 AM to 2:00 PM only
+        LocalTime minTime = LocalTime.of(7, 0);
+        LocalTime maxTime = LocalTime.of(14, 0);
+        if (localStartTime.isBefore(minTime) || localStartTime.isAfter(maxTime)) {
+            JOptionPane.showMessageDialog(this, "Please select a time between 7:00 AM and 2:00 PM.");
+            return;
+        }
+
+        // Convert to SQL time
+        java.sql.Time sqlStartTime = java.sql.Time.valueOf(localStartTime);
+        java.sql.Time sqlEndTime = java.sql.Time.valueOf(localStartTime.plusHours(3));
+
+        int guestTotal = this.adults + this.children;
+
+        // Query for available boats
+        String boatQuery = "SELECT b.boat_number, b.boat_name, b.description, b.tour_price\n" +
+            "FROM boat b\n" +
+            "WHERE b.capacity >= ?\n" +
+            "AND b.boat_id NOT IN (\n" +
+            "    SELECT br.boat_id\n" +
+            "    FROM boat_reservation br\n" +
+            "    WHERE br.status = 'Reserved'\n" +
+            "    AND br.boat_tour_date = ?\n" +
+            "    AND (? < br.boat_tour_end_time AND ? > br.boat_tour_start_time)\n" +
+            ")\n" +
+            "ORDER BY b.tour_price ASC;";
+
+        pst = con.prepareStatement(boatQuery);
+        pst.setInt(1, guestTotal);
+        pst.setDate(2, sqlDate);
+        pst.setTime(3, sqlStartTime);
+        pst.setTime(4, sqlEndTime);
+        rs = pst.executeQuery();
+
+        // Clear the main panel first
+        mainPanel.removeAll();
+        mainPanel.setLayout(new BorderLayout());
+        mainPanel.setBackground(new Color(242,242,242));
+
+        // Create content container
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+        contentPanel.setBorder(BorderFactory.createEmptyBorder(25, 35, 35, 35));
+        contentPanel.setBackground(new Color(242,242,242));
+
+        // Add header
+        JPanel headerPanel = new JPanel(new BorderLayout());
+        headerPanel.setBackground(new Color(242,242,242));
+        headerPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+
+        JLabel titleLabel = new JLabel("Available Boat Tours");
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 17));
+        titleLabel.setForeground(new Color(33, 37, 41));
+        
+        JLabel subtitleLabel = new JLabel(
+            "<html><div style='color:#6c757d; font-size:11px;'>" +
+            "For " + selectedDateString + " at " + 
+            localStartTime.format(DateTimeFormatter.ofPattern("hh:mm a")) + 
+            "</div></html>"
+        );
+
+        headerPanel.add(titleLabel, BorderLayout.NORTH);
+        headerPanel.add(subtitleLabel, BorderLayout.SOUTH);
+        contentPanel.add(headerPanel);
+
+        // Create cards container
+        JPanel cardsContainer = new JPanel();
+        cardsContainer.setLayout(new BoxLayout(cardsContainer, BoxLayout.Y_AXIS));
+        cardsContainer.setBackground(new Color(242,242,242));
+        cardsContainer.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+
+        boolean foundBoats = false;
+        while (rs.next()) {
+            foundBoats = true;
+            String boatNumber = rs.getString("boat_number");
+            String boatName = rs.getString("boat_name");
+            String description = rs.getString("description");
+            double rate = rs.getDouble("tour_price");
+
+            // Create card panel
+            JPanel cardPanel = new JPanel(new BorderLayout(15, 0));
+            cardPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(1, 1, 1, 1, new Color(222, 226, 230)),
+                BorderFactory.createEmptyBorder(20, 20, 20, 20))
+            );
+            cardPanel.setBackground(Color.WHITE);
+            cardPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 150));
+            cardPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+            // Boat info panel
+            JPanel infoPanel = new JPanel();
+            infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+            infoPanel.setBackground(Color.WHITE);
+            infoPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+            JLabel nameLabel = new JLabel(boatName);
+            nameLabel.setFont(new Font("Segoe UI Semibold", Font.BOLD, 18));
+            nameLabel.setForeground(new Color(33, 37, 41));
+            nameLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 8, 0));
+
+            // Price label on left side
+            JLabel priceLabel = new JLabel("₱" + String.format("%.2f", rate) + " per ride");
+            priceLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+            priceLabel.setForeground(new Color(40, 167, 69));
+            priceLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 8, 0));
+
+            JLabel descLabel = new JLabel("<html><div style='width:400px; color:#495057;'>" + description + "</div></html>");
+            descLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+
+            infoPanel.add(nameLabel);
+            infoPanel.add(priceLabel);
+            infoPanel.add(descLabel);
+
+            // Smaller select button panel
+            JPanel selectButtonPanel = new JPanel();
+            selectButtonPanel.setLayout(new BorderLayout());
+            selectButtonPanel.setBackground(new Color(13, 110, 253));
+            selectButtonPanel.setBorder(BorderFactory.createEmptyBorder(8, 20, 8, 20));
+            selectButtonPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            selectButtonPanel.setMaximumSize(new Dimension(120, 35));
+
+            JLabel selectLabel = new JLabel("SELECT", SwingConstants.CENTER);
+            selectLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+            selectLabel.setForeground(Color.WHITE);
+            selectButtonPanel.add(selectLabel, BorderLayout.CENTER);
+
+            // Store boat details
+            selectButtonPanel.putClientProperty("boatName", boatName);
+            selectButtonPanel.putClientProperty("boatPrice", rate);
+
+            // Add hover effects
+            selectButtonPanel.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    selectButtonPanel.setBackground(new Color(11, 94, 215));
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    selectButtonPanel.setBackground(new Color(13, 110, 253));
+                }
+
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    String selectedBoatName = (String) selectButtonPanel.getClientProperty("boatName");
+                    double selectedBoatPrice = (double) selectButtonPanel.getClientProperty("boatPrice");
+                    handleBoatSelection(selectedBoatName, selectedBoatPrice);
+                }
+            });
+
+            // Add components to card
+            JPanel rightPanel = new JPanel();
+            rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+            rightPanel.setBackground(Color.WHITE);
+            rightPanel.add(Box.createVerticalGlue());
+            rightPanel.add(selectButtonPanel);
+            rightPanel.add(Box.createVerticalGlue());
+
+            cardPanel.add(infoPanel, BorderLayout.CENTER);
+            cardPanel.add(rightPanel, BorderLayout.EAST);
+
+            // Add card to container
+            cardsContainer.add(cardPanel);
+            cardsContainer.add(Box.createVerticalStrut(15));
+        }
+
+        if (!foundBoats) {
+            JPanel noResultsPanel = new JPanel(new BorderLayout());
+            noResultsPanel.setBackground(new Color(242,242,242));
+            noResultsPanel.setBorder(BorderFactory.createEmptyBorder(50, 0, 50, 0));
+
+            JLabel noResultsLabel = new JLabel("No available boats found for the selected date and time.");
+            noResultsLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+            noResultsLabel.setForeground(new Color(108, 117, 125));
+            noResultsLabel.setHorizontalAlignment(JLabel.CENTER);
+
+            noResultsPanel.add(noResultsLabel, BorderLayout.CENTER);
+            cardsContainer.add(noResultsPanel);
+        }
+
+        // Modern scroll pane
+        JScrollPane scrollPane = new JScrollPane(cardsContainer);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
+        scrollPane.getViewport().setBackground(new Color(242,242,242));
+        
+        // Custom scroll bar UI
+        JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();
+        verticalScrollBar.setUnitIncrement(16);
+        verticalScrollBar.setPreferredSize(new Dimension(10, Integer.MAX_VALUE));
+        
+        verticalScrollBar.setUI(new BasicScrollBarUI() {
+            @Override
+            protected void configureScrollBarColors() {
+                this.thumbColor = new Color(200, 200, 200);
+                this.trackColor = new Color(242, 242, 242);
+                this.thumbDarkShadowColor = new Color(180, 180, 180);
+                this.thumbHighlightColor = new Color(220, 220, 220);
+                this.thumbLightShadowColor = new Color(210, 210, 210);
+            }
+            
+            @Override
+            protected JButton createDecreaseButton(int orientation) {
+                return createZeroButton();
+            }
+            
+            @Override
+            protected JButton createIncreaseButton(int orientation) {
+                return createZeroButton();
+            }
+            
+            private JButton createZeroButton() {
+                JButton button = new JButton();
+                button.setPreferredSize(new Dimension(0, 0));
+                button.setMinimumSize(new Dimension(0, 0));
+                button.setMaximumSize(new Dimension(0, 0));
+                return button;
+            }
+            
+            @Override
+            protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
+                Graphics2D g2 = (Graphics2D)g;
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(trackColor);
+                g2.fillRoundRect(trackBounds.x, trackBounds.y, trackBounds.width, trackBounds.height, 5, 5);
+            }
+            
+            @Override
+            protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
+                Graphics2D g2 = (Graphics2D)g;
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                if (isDragging) {
+                    g2.setColor(thumbColor.darker());
+                } else if (isThumbRollover()) {
+                    g2.setColor(thumbColor.brighter());
+                } else {
+                    g2.setColor(thumbColor);
+                }
+                
+                g2.fillRoundRect(thumbBounds.x+1, thumbBounds.y, thumbBounds.width-2, thumbBounds.height, 5, 5);
             }
         });
-    }
 
-    public Component getTableCellEditorComponent(JTable table, Object value,
-            boolean isSelected, int row, int column) {
-        label = (value == null) ? "" : value.toString();
-        button.setText(label);
-        clickedRow = row;
-        return button;
-    }
+        contentPanel.add(scrollPane);
+        mainPanel.add(contentPanel, BorderLayout.CENTER);
 
-    public Object getCellEditorValue() {
-        return label;
+        // Refresh UI
+        mainPanel.revalidate();
+        mainPanel.repaint();
+
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage());
+    } catch (Exception ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
     }
 }
 
-// Method to handle boat selection
-private void selectBoat(int row) {
-    // Get selected boat details from the table
-    String boatName = (String) tblBoatDetails.getValueAt(row, 1); // Boat name is in column 0
-    String boatPriceString = (String) tblBoatDetails.getValueAt(row, 3); // Boat price is in column 3
-    boatPriceString = boatPriceString.replaceAll("[^0-9.]", "");
-    double boatPrice = 0.0;
-    if (boatPriceString.isEmpty()) {
-        // Handle the case where the boat price is empty
-        System.out.println("Boat price is empty!");
-        boatPrice = 0.0; // Default value for boat price if empty
-    } else {
-        boatPrice = Double.parseDouble(boatPriceString);
-    }
+private void handleBoatSelection(String boatName, double boatPrice) {
+   
 
 
     // Prompt the user about water activities
@@ -284,11 +549,7 @@ private void selectBoat(int row) {
     new guestProcess2(checkInDate, checkOutDate, roomNumber, roomType, 
             roomDescription, roomPrice, adults, children, userID).setVisible(true);
 }
-    
 }
-
-
-   
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -310,8 +571,7 @@ private void selectBoat(int row) {
         jLabel1 = new javax.swing.JLabel();
         dateComboBox = new GUI.ComboBoxSuggestion();
         panelRound4 = new GUI.PanelRound();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tblBoatDetails = new rojerusan.RSTableMetro();
+        mainPanel = new javax.swing.JPanel();
         panelRound1 = new GUI.PanelRound();
         panelRound2 = new GUI.PanelRound();
         jLabel8 = new javax.swing.JLabel();
@@ -341,7 +601,7 @@ private void selectBoat(int row) {
 
         jLabel13.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
         jLabel13.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel13.setText("DATE");
+        jLabel13.setText("Date");
         panelRound5.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, -1, -1));
 
         jLabel16.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
@@ -376,6 +636,8 @@ private void selectBoat(int row) {
         panelRound5.add(panelRound3, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 30, 130, 40));
 
         txtTime.setEditable(false);
+        txtTime.setSelectedTextColor(new java.awt.Color(0, 0, 0));
+        txtTime.setSelectionColor(new java.awt.Color(255, 255, 255));
         txtTime.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 txtTimeMouseClicked(evt);
@@ -407,48 +669,9 @@ private void selectBoat(int row) {
         panelRound4.setRoundTopRight(50);
         panelRound4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        tblBoatDetails.setBackground(new java.awt.Color(255, 255, 255));
-        tblBoatDetails.setForeground(new java.awt.Color(255, 255, 255));
-        tblBoatDetails.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "Boat Number", "Boat Name", "Description", "Price", "Action"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                true, false, false, false, true
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        tblBoatDetails.setColorBackgoundHead(new java.awt.Color(39, 114, 160));
-        tblBoatDetails.setColorBordeFilas(new java.awt.Color(255, 255, 255));
-        tblBoatDetails.setColorBordeHead(new java.awt.Color(255, 255, 255));
-        tblBoatDetails.setColorFilasBackgound2(new java.awt.Color(242, 242, 242));
-        tblBoatDetails.setColorFilasForeground1(new java.awt.Color(27, 59, 95));
-        tblBoatDetails.setColorFilasForeground2(new java.awt.Color(27, 59, 95));
-        tblBoatDetails.setColorSelBackgound(new java.awt.Color(27, 59, 95));
-        tblBoatDetails.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
-        tblBoatDetails.setFuenteFilas(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        tblBoatDetails.setFuenteFilasSelect(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        tblBoatDetails.setFuenteHead(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        tblBoatDetails.setGridColor(new java.awt.Color(255, 255, 255));
-        tblBoatDetails.setRowHeight(50);
-        tblBoatDetails.setSelectionBackground(new java.awt.Color(39, 114, 160));
-        tblBoatDetails.setSelectionForeground(new java.awt.Color(255, 255, 255));
-        tblBoatDetails.setShowGrid(false);
-        tblBoatDetails.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tblBoatDetailsMouseClicked(evt);
-            }
-        });
-        jScrollPane1.setViewportView(tblBoatDetails);
-
-        panelRound4.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 90, 1360, 540));
+        mainPanel.setBackground(new java.awt.Color(242, 242, 242));
+        mainPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        panelRound4.add(mainPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 60, 1440, 610));
 
         jPanel1.add(panelRound4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 120, 1440, 670));
 
@@ -544,138 +767,19 @@ private void selectBoat(int row) {
 
     }//GEN-LAST:event_jLabel10MouseClicked
 
-    private void tblBoatDetailsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblBoatDetailsMouseClicked
-
-    }//GEN-LAST:event_tblBoatDetailsMouseClicked
-
     private void panelRound3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelRound3MouseClicked
         // TODO add your handling code here:
     }//GEN-LAST:event_panelRound3MouseClicked
 
     private void jLabel12MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel12MouseClicked
-      try {
-    // Get selected date from combo box
-    String selectedDateString = (String) dateComboBox.getSelectedItem();
-    if (selectedDateString == null || selectedDateString.equals("Select a date")) {
-        JOptionPane.showMessageDialog(this, "Please select a valid date.");
-        return;
-    }
-
-    // Parse selected date
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy (EEE)", Locale.ENGLISH);
-    LocalDate selectedDate = LocalDate.parse(selectedDateString, formatter);
-    java.sql.Date sqlDate = java.sql.Date.valueOf(selectedDate);
-
-    // Get selected time from text field
-    String timeInput = txtTime.getText().trim();
-    LocalTime localStartTime;
-
-    try {
-        // Try AM/PM format first
-        DateTimeFormatter amPmFormatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.ENGLISH);
-        localStartTime = LocalTime.parse(timeInput.toUpperCase(), amPmFormatter);
-    } catch (DateTimeParseException e1) {
-        try {
-            // Try 24-hour format
-            DateTimeFormatter twentyFourHrFormatter = DateTimeFormatter.ofPattern("HH:mm");
-            localStartTime = LocalTime.parse(timeInput, twentyFourHrFormatter);
-        } catch (DateTimeParseException e2) {
-            JOptionPane.showMessageDialog(this, "Invalid time format. Please use hh:mm AM/PM or HH:mm (24hr).");
-            return;
-        }
-    }
-
-    // Validate time range: 7:00 AM to 2:00 PM only
-    LocalTime minTime = LocalTime.of(7, 0);
-    LocalTime maxTime = LocalTime.of(14, 0);
-    if (localStartTime.isBefore(minTime) || localStartTime.isAfter(maxTime)) {
-        JOptionPane.showMessageDialog(this, "Please select a time between 7:00 AM and 2:00 PM.");
-        return;
-    }
-
-    // Convert to SQL time
-    java.sql.Time sqlStartTime = java.sql.Time.valueOf(localStartTime);
-    java.sql.Time sqlEndTime = java.sql.Time.valueOf(localStartTime.plusHours(3));
-
-    int guestTotal = this.adults + this.children;
-
-    // Query for available boats
-    String boatQuery = "SELECT  b.boat_number, b.boat_name, b.description, b.tour_price\n" +
-        "FROM boat b\n" +
-        "WHERE b.capacity >= ?\n" +
-        "AND b.boat_id NOT IN (\n" +
-        "    SELECT br.boat_id\n" +
-        "    FROM boat_reservation br\n" +
-        "    WHERE br.status = 'Reserved'\n" +
-        "    AND br.boat_tour_date = ?\n" +
-        "    AND (? < br.boat_tour_end_time AND ? > br.boat_tour_start_time)\n" +
-        ")\n" +
-        "ORDER BY b.tour_price ASC;";
-
-    pst = con.prepareStatement(boatQuery);
-    pst.setInt(1, guestTotal);
-    pst.setDate(2, sqlDate);
-    pst.setTime(3, sqlStartTime);
-    pst.setTime(4, sqlEndTime);
-
-    rs = pst.executeQuery();
-
-    // Setup table model
-    DefaultTableModel boatModel = new DefaultTableModel(
-        new Object[]{"Boat Number","Boat Name", "Description", "Price/Ride", "Action"},
-        0
-    ) {
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return column == 4;
-        }
-
-        @Override
-        public Class<?> getColumnClass(int columnIndex) {
-            return columnIndex == 4 ? JButton.class : super.getColumnClass(columnIndex);
-        }
-    };
-
-    tblBoatDetails.setModel(boatModel);
-    tblBoatDetails.getColumnModel().getColumn(4).setCellRenderer(new ButtonRenderer());
-    tblBoatDetails.getColumnModel().getColumn(4).setCellEditor(new ButtonEditor(new JCheckBox()));
-
-    boolean foundBoats = false;
-
-    while (rs.next()) {
-        foundBoats = true;
-        String boatNumber = rs.getString("boat_number");
-        String boatName = rs.getString("boat_name");
-        String description = rs.getString("description");
-        double rate = rs.getDouble("tour_price");
-
-        boatModel.addRow(new Object[]{
-            boatNumber,
-            boatName,
-            description,
-            "₱" + String.format("%.2f", rate),
-            "Select"
-        });
-    }
-
-    if (!foundBoats) {
-        JOptionPane.showMessageDialog(this, "No available boats found for the selected date and time.");
-    }
-
-    // Debug info (optional)
-    System.out.println("Selected Date: " + sqlDate);
-    System.out.println("Start Time: " + sqlStartTime);
-    System.out.println("End Time: " + sqlEndTime);
-
-} catch (SQLException ex) {
-    ex.printStackTrace();
-    JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage());
-} catch (DateTimeParseException ex) {
-    JOptionPane.showMessageDialog(this, "Invalid date format: " + ex.getMessage());
-} catch (Exception ex) {
-    ex.printStackTrace();
-    JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
-}
+  
+        SearchBoat();
+        
+        
+        
+        
+        
+        
 
     }//GEN-LAST:event_jLabel12MouseClicked
 
@@ -761,13 +865,12 @@ private void selectBoat(int row) {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JPanel mainPanel;
     private GUI.PanelRound panelRound1;
     private GUI.PanelRound panelRound2;
     private GUI.PanelRound panelRound3;
     private GUI.PanelRound panelRound4;
     private GUI.PanelRound panelRound5;
-    private rojerusan.RSTableMetro tblBoatDetails;
     private com.raven.swing.TimePicker timePicker;
     private textfield_suggestion.TextFieldSuggestion txtTime;
     // End of variables declaration//GEN-END:variables
