@@ -29,9 +29,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  */
 public class adminUpdateRoom extends javax.swing.JFrame {
 
-    /**
-     * Creates new form roomAdd
-     */
+    private int userID;
     
     File f = null;
     String path = null;
@@ -40,7 +38,8 @@ public class adminUpdateRoom extends javax.swing.JFrame {
     int s = 0;
     byte[] pimage = null;
     
-    public adminUpdateRoom() {
+    public adminUpdateRoom(int userID) {
+        this.userID = userID;
         initComponents();
         DatabaseConnection();
         populateRoomNumbersComboBox();
@@ -370,6 +369,18 @@ private void loadRoomImage(byte[] imageData) {
         int rowsUpdated = pst.executeUpdate();
         
         if (rowsUpdated > 0) {
+                // Log the update action
+            String logSql = "INSERT INTO activity_log (user_id, action_type, action_description) VALUES (?, ?, ?)";
+            try (PreparedStatement logPst = con.prepareStatement(logSql)) {
+                logPst.setInt(1, userID); // Replace with actual logged-in user ID
+                logPst.setString(2, "UPDATE_ROOM");
+                logPst.setString(3, "Updated room with number " + roomNumber + " and type \"" + roomType + "\"");
+                logPst.executeUpdate();
+            } catch (SQLException ex) {
+                java.util.logging.Logger.getLogger(adminUpdateRoom.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            }
+
+            
             JOptionPane.showMessageDialog(this, "Room updated successfully!");
             this.dispose();
         } else {
@@ -496,7 +507,7 @@ if (rs.next()) {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new adminUpdateRoom().setVisible(true);
+                new adminUpdateRoom(2).setVisible(true);
             }
         });
     }

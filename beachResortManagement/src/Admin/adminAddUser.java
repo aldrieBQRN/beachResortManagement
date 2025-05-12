@@ -20,12 +20,13 @@ import org.mindrot.jbcrypt.BCrypt;
  */
 public class adminAddUser extends javax.swing.JFrame {
 
-    /**
-     * Creates new form roomAdd
-     */
-    public adminAddUser() {
+    private int userID;
+    
+    public adminAddUser(int userID) {
+        this.userID = userID;
         initComponents();
         DatabaseConnection();
+        setAutoUserId();
     }
     
     java.sql.Connection con; 
@@ -57,6 +58,26 @@ public class adminAddUser extends javax.swing.JFrame {
         }
     }
     
+    private void setAutoUserId() {
+    try {
+        String sql = "SELECT MAX(user_id) FROM user_details";
+        PreparedStatement pst = con.prepareStatement(sql);
+        ResultSet rs = pst.executeQuery();
+        if (rs.next()) {
+            int id = rs.getInt(1) + 1;
+            txtUserId.setText(String.valueOf(id));
+        } else {
+            txtUserId.setText("1");
+        }
+        rs.close();
+        pst.close();
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(this, "Failed to load user ID.", "Error", JOptionPane.ERROR_MESSAGE);
+        ex.printStackTrace();
+    }
+}
+
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -73,7 +94,7 @@ public class adminAddUser extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         rSButtonHover1 = new rojeru_san.complementos.RSButtonHover();
         rSButtonHover2 = new rojeru_san.complementos.RSButtonHover();
-        jTextField3 = new javax.swing.JTextField();
+        txtUserId = new javax.swing.JTextField();
         txtFirstName = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         txtLastName = new javax.swing.JTextField();
@@ -119,7 +140,7 @@ public class adminAddUser extends javax.swing.JFrame {
         jPanel2.add(rSButtonHover1, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 340, 100, -1));
 
         rSButtonHover2.setBackground(new java.awt.Color(0, 204, 0));
-        rSButtonHover2.setText("ADD");
+        rSButtonHover2.setText("CREATE");
         rSButtonHover2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 rSButtonHover2ActionPerformed(evt);
@@ -127,10 +148,11 @@ public class adminAddUser extends javax.swing.JFrame {
         });
         jPanel2.add(rSButtonHover2, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 340, 170, -1));
 
-        jTextField3.setBackground(new java.awt.Color(255, 255, 255));
-        jTextField3.setForeground(new java.awt.Color(102, 102, 102));
-        jTextField3.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        jPanel2.add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 50, 170, 30));
+        txtUserId.setEditable(false);
+        txtUserId.setBackground(new java.awt.Color(255, 255, 255));
+        txtUserId.setForeground(new java.awt.Color(102, 102, 102));
+        txtUserId.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
+        jPanel2.add(txtUserId, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 50, 170, 30));
 
         txtFirstName.setBackground(new java.awt.Color(255, 255, 255));
         txtFirstName.setForeground(new java.awt.Color(102, 102, 102));
@@ -246,7 +268,8 @@ public class adminAddUser extends javax.swing.JFrame {
             String fullName = firstName + " " + lastName;
             
             // Hash password (use proper password hashing in production)
-           String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+          String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+
             
             PreparedStatement pst = null;
             
@@ -272,6 +295,13 @@ public class adminAddUser extends javax.swing.JFrame {
             
             int rowsAffected = pst.executeUpdate();
             if (rowsAffected > 0) {
+                 String logSql = "INSERT INTO activity_log (user_id, action_type, action_description) VALUES (?, ?, ?)";
+                try (PreparedStatement logPst = con.prepareStatement(logSql)) {
+                    logPst.setInt(1, userID); // The ID of the admin registering the user
+                    logPst.setString(2, "REGISTER_USER");
+                    logPst.setString(3, "Registered new user with email " + email + " and role " + role);
+                    logPst.executeUpdate();
+                }
                 JOptionPane.showMessageDialog(this, "Registration successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
                 this.dispose();
             }
@@ -326,7 +356,7 @@ public class adminAddUser extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new adminAddUser().setVisible(true);
+                new adminAddUser(2).setVisible(true);
             }
         });
     }
@@ -343,7 +373,6 @@ public class adminAddUser extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JTextField jTextField3;
     private rojeru_san.complementos.RSButtonHover rSButtonHover1;
     private rojeru_san.complementos.RSButtonHover rSButtonHover2;
     private javax.swing.JPasswordField txtConfirmPassword;
@@ -351,5 +380,6 @@ public class adminAddUser extends javax.swing.JFrame {
     private javax.swing.JTextField txtFirstName;
     private javax.swing.JTextField txtLastName;
     private javax.swing.JTextField txtPhone;
+    private javax.swing.JTextField txtUserId;
     // End of variables declaration//GEN-END:variables
 }

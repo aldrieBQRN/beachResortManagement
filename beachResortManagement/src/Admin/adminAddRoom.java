@@ -28,6 +28,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  */
 public class adminAddRoom extends javax.swing.JFrame {
 
+    private int userID;
+    
     File f = null;
     String path = null;
     private ImageIcon format = null;
@@ -35,7 +37,8 @@ public class adminAddRoom extends javax.swing.JFrame {
     int s = 0;
     byte[] pimage = null;
 
-    public adminAddRoom() {
+    public adminAddRoom(int userID) {
+        this.userID = userID;
         try {
             initComponents();
             DatabaseConnection();
@@ -171,7 +174,7 @@ public class adminAddRoom extends javax.swing.JFrame {
 
         jLabel3.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel3.setText("PRICE/DAY");
+        jLabel3.setText("PRICE/NIGHT");
         jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 290, 122, 30));
 
         txtRoomPrice.setBackground(new java.awt.Color(255, 255, 255));
@@ -189,7 +192,7 @@ public class adminAddRoom extends javax.swing.JFrame {
         jPanel2.add(rSButtonHover1, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 340, 110, -1));
 
         rSButtonHover2.setBackground(new java.awt.Color(51, 204, 0));
-        rSButtonHover2.setText("CRAETE");
+        rSButtonHover2.setText("CREATE");
         rSButtonHover2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 rSButtonHover2ActionPerformed(evt);
@@ -228,6 +231,7 @@ public class adminAddRoom extends javax.swing.JFrame {
 
         cmbRoomType.setEditable(false);
         cmbRoomType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Deluxe Room", "Family Suite", "Beachfront Villa", "Cabana", "Premium Suite" }));
+        cmbRoomType.setSelectedIndex(-1);
         jPanel2.add(cmbRoomType, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 100, 240, -1));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 80, 790, 430));
@@ -320,6 +324,15 @@ public class adminAddRoom extends javax.swing.JFrame {
 
             int rowsInserted = pst.executeUpdate();
             if (rowsInserted > 0) {
+                 String logSql = "INSERT INTO activity_log (user_id, action_type, action_description) VALUES (?, ?, ?)";
+                try (PreparedStatement logPst = con.prepareStatement(logSql)) {
+                    logPst.setInt(1, userID); // Replace with the actual logged-in user ID
+                    logPst.setString(2, "REGISTER_ROOM");
+                    logPst.setString(3, "Registered new room with number " + roomNumber + " and type \"" + roomType + "\"");
+                    logPst.executeUpdate();
+                } catch (SQLException ex) {
+                    java.util.logging.Logger.getLogger(getClass().getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                }
                 JOptionPane.showMessageDialog(this, "Room registered successfully!");
                 this.dispose();
             }
@@ -394,7 +407,7 @@ if(load == fileChooser.APPROVE_OPTION){
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new adminAddRoom().setVisible(true);
+                new adminAddRoom(2).setVisible(true);
             }
         });
     }

@@ -17,10 +17,10 @@ import javax.swing.JOptionPane;
  */
 public class adminUpdateBoat extends javax.swing.JFrame {
 
-    /**
-     * Creates new form roomAdd
-     */
-    public adminUpdateBoat() {
+    private int userID;
+    
+    public adminUpdateBoat(int userID) {
+        this.userID = userID;
         initComponents();
         DatabaseConnection();
         populateBoatNumbersComboBox();
@@ -160,7 +160,7 @@ public class adminUpdateBoat extends javax.swing.JFrame {
         txtTourPrice.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jPanel2.add(txtTourPrice, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 270, 240, 30));
 
-        rSButtonHover1.setBackground(new java.awt.Color(27, 59, 95));
+        rSButtonHover1.setBackground(new java.awt.Color(255, 0, 0));
         rSButtonHover1.setText("CANCEL");
         rSButtonHover1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -169,8 +169,8 @@ public class adminUpdateBoat extends javax.swing.JFrame {
         });
         jPanel2.add(rSButtonHover1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 320, 160, -1));
 
-        rSButtonHover2.setBackground(new java.awt.Color(27, 59, 95));
-        rSButtonHover2.setText("CONTINUE");
+        rSButtonHover2.setBackground(new java.awt.Color(0, 204, 0));
+        rSButtonHover2.setText("UPDATE");
         rSButtonHover2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 rSButtonHover2ActionPerformed(evt);
@@ -267,19 +267,31 @@ public class adminUpdateBoat extends javax.swing.JFrame {
                 }
 
                 // Database Update Query using boat_number (unique)
-                String sql = "UPDATE boat SET boat_name = ?, description = ?, capacity = ?, tour_price = ? WHERE boat_number = ?";
-                pst = con.prepareStatement(sql);
-                pst.setString(1, boatName);
-                pst.setString(2, description);
-                pst.setInt(3, capacity);
-                pst.setDouble(4, tourPrice);
-                pst.setString(5, selectedBoatNumber); // Using selectedBoatNumber to identify the boat
+                // Update Boat Record
+                    String sql = "UPDATE boat SET boat_name = ?, description = ?, capacity = ?, tour_price = ? WHERE boat_number = ?";
+                    pst = con.prepareStatement(sql);
+                    pst.setString(1, boatName);
+                    pst.setString(2, description);
+                    pst.setInt(3, capacity);
+                    pst.setDouble(4, tourPrice);
+                    pst.setString(5, selectedBoatNumber);
+                    int rowsUpdated = pst.executeUpdate(); // Capture number of affected rows
 
-                int rowsUpdated = pst.executeUpdate();
-                if (rowsUpdated > 0) {
-                    JOptionPane.showMessageDialog(this, "Boat details updated successfully!");
-                    this.dispose(); // Close the update window
-                }
+                    if (rowsUpdated > 0) {
+                        // Log activity only if update succeeded
+                        String logSql = "INSERT INTO activity_log (user_id, action_type, action_description) VALUES (?, ?, ?)";
+                        pst = con.prepareStatement(logSql);
+                        pst.setInt(1, userID); // Replace with logged-in user's ID
+                        pst.setString(2, "UPDATE_BOAT");
+                        pst.setString(3, "Updated boat with number " + selectedBoatNumber + " and name \"" + boatName + "\"");
+                        pst.executeUpdate();
+
+                        JOptionPane.showMessageDialog(this, "Boat details updated successfully!");
+                        this.dispose(); // Close the update window
+                    } else {
+                        JOptionPane.showMessageDialog(this, "No boat was updated. Please check the boat number.", "Update Failed", JOptionPane.WARNING_MESSAGE);
+                    }
+
             }
 
         } catch (NumberFormatException ex) {
@@ -387,7 +399,7 @@ public class adminUpdateBoat extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new adminUpdateBoat().setVisible(true);
+                new adminUpdateBoat(2).setVisible(true);
             }
         });
     }

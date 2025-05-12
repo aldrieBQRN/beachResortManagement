@@ -1,2 +1,0 @@
-ReservationViewDetails
-DatabaseConnection

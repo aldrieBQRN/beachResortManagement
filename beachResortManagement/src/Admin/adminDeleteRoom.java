@@ -17,10 +17,10 @@ import javax.swing.JOptionPane;
  */
 public class adminDeleteRoom extends javax.swing.JFrame {
 
-    /**
-     * Creates new form roomAdd
-     */
-    public adminDeleteRoom() {
+    private int userID;
+    
+    public adminDeleteRoom(int userID) {
+        this.userID = userID;
         initComponents();
         DatabaseConnection();
     }
@@ -162,6 +162,13 @@ public class adminDeleteRoom extends javax.swing.JFrame {
             int rowsDeleted = pst.executeUpdate();
 
             if (rowsDeleted > 0) {
+                String logSql = "INSERT INTO activity_log (user_id, action_type, action_description) VALUES (?, ?, ?)";
+                try (PreparedStatement logPst = con.prepareStatement(logSql)) {
+                    logPst.setInt(1, userID);  // Replace this with the actual logged-in user ID
+                    logPst.setString(2, "DELETE_ROOM");
+                    logPst.setString(3, "Deleted room with room number " + selectedRoomNumber);
+                    logPst.executeUpdate();
+                }
                 JOptionPane.showMessageDialog(this, "Room remove successfully.");
                this.dispose();
             } else {
@@ -249,7 +256,7 @@ public class adminDeleteRoom extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new adminDeleteRoom().setVisible(true);
+                new adminDeleteRoom(2).setVisible(true);
             }
         });
     }

@@ -20,10 +20,10 @@ import javax.swing.JOptionPane;
  */
 public class adminAddBoat extends javax.swing.JFrame {
 
-    /**
-     * Creates new form roomAdd
-     */
-    public adminAddBoat() {
+    private int userID;
+    
+    public adminAddBoat(int userID) {
+        this.userID = userID;
         try {
             initComponents();
             DatabaseConnection(); 
@@ -173,7 +173,7 @@ public class adminAddBoat extends javax.swing.JFrame {
         txtTourPrice.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jPanel2.add(txtTourPrice, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 270, 240, 30));
 
-        rSButtonHover1.setBackground(new java.awt.Color(27, 59, 95));
+        rSButtonHover1.setBackground(new java.awt.Color(255, 0, 0));
         rSButtonHover1.setText("CANCEL");
         rSButtonHover1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -182,8 +182,8 @@ public class adminAddBoat extends javax.swing.JFrame {
         });
         jPanel2.add(rSButtonHover1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 320, 160, -1));
 
-        rSButtonHover2.setBackground(new java.awt.Color(27, 59, 95));
-        rSButtonHover2.setText("CONTINUE");
+        rSButtonHover2.setBackground(new java.awt.Color(0, 204, 0));
+        rSButtonHover2.setText("CREATE");
         rSButtonHover2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 rSButtonHover2ActionPerformed(evt);
@@ -270,6 +270,17 @@ public class adminAddBoat extends javax.swing.JFrame {
 
             int rowsInserted = pst.executeUpdate();
             if (rowsInserted > 0) {
+                   String logSql = "INSERT INTO activity_log (user_id, action_type, action_description) VALUES (?, ?, ?)";
+                    try (PreparedStatement logPst = con.prepareStatement(logSql)) {
+                        logPst.setInt(1, userID); // Replace with the actual logged-in user ID
+                        logPst.setString(2, "REGISTER_BOAT");
+                        logPst.setString(3, "Registered new boat with number " + boatNumber + " and name \"" + boatName + "\"");
+                        logPst.executeUpdate();
+                    } catch (SQLException ex) {
+                        java.util.logging.Logger.getLogger(getClass().getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                    }
+
+    
                 JOptionPane.showMessageDialog(this, "Boat registered successfully!");
                 this.dispose();
             }
@@ -322,7 +333,7 @@ public class adminAddBoat extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new adminAddBoat().setVisible(true);
+                new adminAddBoat(2).setVisible(true);
             }
         });
     }

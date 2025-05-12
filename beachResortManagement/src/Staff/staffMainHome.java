@@ -112,7 +112,7 @@ public class staffMainHome extends javax.swing.JInternalFrame {
     rs = pst.executeQuery();
     if (rs.next()) {
         int count = rs.getInt("total_room_reservations");
-        txtConfirmedCount.setText(String.valueOf(count));
+        txtReservationCount.setText(String.valueOf(count));
     }
     rs.close();
     pst.close();
@@ -307,7 +307,7 @@ if (rs.next()) {
         txtHead.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
         txtHead.setForeground(new java.awt.Color(0, 0, 0));
         txtHead.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        txtHead.setText("Beach-Front Resort Managemenr System");
+        txtHead.setText("Beach-Front Resort Management System");
         txtHead.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 3, 0, new java.awt.Color(39, 114, 160)));
         pnlmain.add(txtHead, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 1140, 80));
 

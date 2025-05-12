@@ -30,10 +30,10 @@ import javax.swing.table.TableRowSorter;
  */
 public class adminBoat extends javax.swing.JInternalFrame {
 
-    /**
-     * Creates new form staffReservation
-     */
-    public adminBoat() {
+    private int userID;
+    
+    public adminBoat(int userID) {
+        this.userID = userID;
         initComponents();
         removeBackground();
         DatabaseConnection();
@@ -76,9 +76,19 @@ public class adminBoat extends javax.swing.JInternalFrame {
         }
     }
     
-   public final void showBoatDetails() {
+public final void showBoatDetails() {
+    String sortOption = sortComboBox.getSelectedItem().toString(); // "All", "Ascending", "Descending"
+    
+    // Build query with optional sorting
+    String query = "SELECT * FROM boat";
+    if (sortOption.equalsIgnoreCase("Ascending")) {
+        query += " ORDER BY boat_name ASC";
+    } else if (sortOption.equalsIgnoreCase("Descending")) {
+        query += " ORDER BY boat_name DESC";
+    }
+
     try {
-        pst = con.prepareStatement("SELECT * FROM boat");
+        pst = con.prepareStatement(query);
         rs = pst.executeQuery();
 
         DefaultTableModel boatModel = (DefaultTableModel) tblBoatDetails.getModel();
@@ -90,14 +100,9 @@ public class adminBoat extends javax.swing.JInternalFrame {
             String description = rs.getString("description");
             int capacity = rs.getInt("capacity");
             double tourPrice = rs.getDouble("tour_price");
-            
 
-
-            // Add row to model
             boatModel.addRow(new Object[] {
-               
                 boatNumber,
-               
                 boatName,
                 description,
                 capacity,
@@ -105,12 +110,12 @@ public class adminBoat extends javax.swing.JInternalFrame {
             });
         }
 
-        
     } catch (SQLException ex) {
         Logger.getLogger(adminBoat.class.getName()).log(Level.SEVERE, null, ex);
         System.out.println("Error fetching boat data: " + ex.getMessage());
     }
 }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -126,6 +131,7 @@ public class adminBoat extends javax.swing.JInternalFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tblBoatDetails = new rojerusan.RSTableMetro();
         txtsearch = new textfield_suggestion.TextFieldSuggestion();
+        sortComboBox = new GUI.ComboBoxSuggestion();
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
@@ -224,7 +230,21 @@ public class adminBoat extends javax.swing.JInternalFrame {
                 txtsearchKeyReleased(evt);
             }
         });
-        jPanel2.add(txtsearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 270, 40));
+        jPanel2.add(txtsearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 20, 290, 40));
+
+        sortComboBox.setEditable(false);
+        sortComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All", "Ascending", "Descendin", " " }));
+        sortComboBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                sortComboBoxItemStateChanged(evt);
+            }
+        });
+        sortComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sortComboBoxActionPerformed(evt);
+            }
+        });
+        jPanel2.add(sortComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 110, 40));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 1160, 660));
 
@@ -314,7 +334,7 @@ public class adminBoat extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_tblBoatDetailsMouseClicked
 
     private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
-        adminAddBoat addBoatWindow = new adminAddBoat();
+        adminAddBoat addBoatWindow = new adminAddBoat(userID);
         addBoatWindow.setVisible(true);
 
         // Add a WindowListener to call showBoatDetails when the adminAddBoat window is closed/disposed
@@ -329,7 +349,7 @@ public class adminBoat extends javax.swing.JInternalFrame {
 
     private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
         
-        adminUpdateBoat updateBoatWindow = new adminUpdateBoat();
+        adminUpdateBoat updateBoatWindow = new adminUpdateBoat(userID);
         updateBoatWindow.setVisible(true);
 
         // Add a WindowListener to call showBoatDetails when the adminAddBoat window is closed/disposed
@@ -344,7 +364,7 @@ public class adminBoat extends javax.swing.JInternalFrame {
 
     private void jLabel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel5MouseClicked
        
-        adminDeleteBoat delete = new adminDeleteBoat();
+        adminDeleteBoat delete = new adminDeleteBoat(userID);
         delete.setVisible(true);
 
         // Add a WindowListener to call showBoatDetails when the adminAddBoat window is closed/disposed
@@ -385,6 +405,14 @@ public class adminBoat extends javax.swing.JInternalFrame {
 
     }//GEN-LAST:event_txtsearchKeyReleased
 
+    private void sortComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_sortComboBoxItemStateChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_sortComboBoxItemStateChanged
+
+    private void sortComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sortComboBoxActionPerformed
+        showBoatDetails();
+    }//GEN-LAST:event_sortComboBoxActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
@@ -400,6 +428,7 @@ public class adminBoat extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JScrollPane jScrollPane1;
+    private GUI.ComboBoxSuggestion sortComboBox;
     private rojerusan.RSTableMetro tblBoatDetails;
     private textfield_suggestion.TextFieldSuggestion txtsearch;
     // End of variables declaration//GEN-END:variables

@@ -29,10 +29,10 @@ import javax.swing.table.TableRowSorter;
  */
 public class adminUsers extends javax.swing.JInternalFrame {
 
-    /**
-     * Creates new form staffReservation
-     */
-    public adminUsers() {
+    private int userID;
+    
+    public adminUsers(int userID) {
+        this.userID = userID;
         initComponents();
         removeBackground();
         DatabaseConnection();
@@ -78,41 +78,43 @@ public class adminUsers extends javax.swing.JInternalFrame {
     }
     
    public final void showUserDetails() {
-        // Ensure that the database connection is valid
-       
+    String selectedRole = roleComboBox.getSelectedItem().toString(); // ComboBox holding role filters
 
-        // Prepare the SQL query to fetch the required data from user_details table
-        String query = "SELECT user_id, role, full_name, phone, email, password FROM user_details";
-        
-        // Set up the table model to display the data in the JTable
-        DefaultTableModel userModel = (DefaultTableModel) tblUserDetails.getModel();
-        
-        // Clear any previous rows from the table
-        userModel.setRowCount(0);
+    String query = "SELECT user_id, role, full_name, phone, email, password FROM user_details";
 
-        // Use try-with-resources to automatically close the resources
-        try (PreparedStatement pst = con.prepareStatement(query);
-             ResultSet rs = pst.executeQuery()) {
+    // Add WHERE clause if not "All"
+    if (!selectedRole.equalsIgnoreCase("All")) {
+        query += " WHERE role = ?";
+    }
 
-            // Iterate over the result set and add data to the table
+    DefaultTableModel userModel = (DefaultTableModel) tblUserDetails.getModel();
+    userModel.setRowCount(0);
+
+    try (PreparedStatement pst = con.prepareStatement(query)) {
+
+        // Bind role only if needed
+        if (!selectedRole.equalsIgnoreCase("All")) {
+            pst.setString(1, selectedRole);
+        }
+
+        try (ResultSet rs = pst.executeQuery()) {
             while (rs.next()) {
-                // Fetch each column's data
                 int userId = rs.getInt("user_id");
                 String role = rs.getString("role");
                 String fullName = rs.getString("full_name");
                 String phone = rs.getString("phone");
-         
                 String email = rs.getString("email");
-              
 
-                // Add data to the table model
                 userModel.addRow(new Object[]{ userId, role, fullName, phone, email });
             }
-        } catch (SQLException e) {
-            System.out.println("Error executing query: " + e.getMessage());
-            JOptionPane.showMessageDialog(this, "Failed to fetch user details.", "Query Error", JOptionPane.ERROR_MESSAGE);
         }
+
+    } catch (SQLException e) {
+        System.out.println("Error executing query: " + e.getMessage());
+        JOptionPane.showMessageDialog(this, "Failed to fetch user details.", "Query Error", JOptionPane.ERROR_MESSAGE);
     }
+}
+
 
 
 
@@ -138,6 +140,7 @@ public class adminUsers extends javax.swing.JInternalFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tblUserDetails = new rojerusan.RSTableMetro();
         txtsearch = new textfield_suggestion.TextFieldSuggestion();
+        roleComboBox = new GUI.ComboBoxSuggestion();
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
@@ -236,7 +239,21 @@ public class adminUsers extends javax.swing.JInternalFrame {
                 txtsearchKeyReleased(evt);
             }
         });
-        jPanel2.add(txtsearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 270, 40));
+        jPanel2.add(txtsearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 20, 290, 40));
+
+        roleComboBox.setEditable(false);
+        roleComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All", "Admin", "Staff", "Guest" }));
+        roleComboBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                roleComboBoxItemStateChanged(evt);
+            }
+        });
+        roleComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                roleComboBoxActionPerformed(evt);
+            }
+        });
+        jPanel2.add(roleComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 110, 40));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 1160, 660));
 
@@ -310,7 +327,7 @@ public class adminUsers extends javax.swing.JInternalFrame {
 
     private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
        
-        adminAddUser add = new adminAddUser();
+        adminAddUser add = new adminAddUser(userID);
         add.setVisible(true);
 
         // Add a WindowListener to call showBoatDetails when the adminAddBoat window is closed/disposed
@@ -324,7 +341,7 @@ public class adminUsers extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_jLabel3MouseClicked
 
     private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
-            adminUpdateUser update = new adminUpdateUser();
+            adminUpdateUser update = new adminUpdateUser(userID);
         update.setVisible(true);
 
         // Add a WindowListener to call showBoatDetails when the adminAddBoat window is closed/disposed
@@ -340,7 +357,7 @@ public class adminUsers extends javax.swing.JInternalFrame {
 
     private void jLabel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel5MouseClicked
        
-        adminDeleteUser delete = new adminDeleteUser();
+        adminDeleteUser delete = new adminDeleteUser(userID);
         delete.setVisible(true);
 
         // Add a WindowListener to call showBoatDetails when the adminAddBoat window is closed/disposed
@@ -376,6 +393,14 @@ public class adminUsers extends javax.swing.JInternalFrame {
         obj1.setRowFilter(RowFilter.regexFilter(txtsearch.getText()));
     }//GEN-LAST:event_txtsearchKeyReleased
 
+    private void roleComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_roleComboBoxItemStateChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_roleComboBoxItemStateChanged
+
+    private void roleComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_roleComboBoxActionPerformed
+        showUserDetails();
+    }//GEN-LAST:event_roleComboBoxActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
@@ -389,6 +414,7 @@ public class adminUsers extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JScrollPane jScrollPane1;
+    private GUI.ComboBoxSuggestion roleComboBox;
     private rojerusan.RSTableMetro tblUserDetails;
     private textfield_suggestion.TextFieldSuggestion txtsearch;
     // End of variables declaration//GEN-END:variables

@@ -26,6 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
@@ -44,7 +45,7 @@ public class landingPage extends javax.swing.JFrame {
     public landingPage() {
         initComponents();
         showHome();
-       
+        hoverEffect();
       
        
         
@@ -79,8 +80,56 @@ public class landingPage extends javax.swing.JFrame {
         mainPanel.repaint(); // Repaint the panel to show updates
         frame.setVisible(true);   
     }
+       
+    public void hoverEffect(){
+        txtHome.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                handleLabelEvent(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                handleLabelEvent(evt);
+            }
+        });
+
+        txtAbout.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                handleLabelEvent(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                handleLabelEvent(evt);
+            }
+        });
+
+        txtContact.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                handleLabelEvent(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                handleLabelEvent(evt);
+            }
+        });
+
+       }
     
-        
+    
+// Helper function to handle mouse enter and mouse exit for all labels
+private void handleLabelEvent(java.awt.event.MouseEvent evt) {                                     
+    JLabel sourceLabel = (JLabel) evt.getSource();  // Get the label that triggered the event
+    Color customColor = new Color(255, 191, 0);    // Hover color
+    Color defaultColor = new Color(255, 255, 255); // Default color
+
+    // Handle mouse enter event - change text color to customColor
+    if (evt.getID() == java.awt.event.MouseEvent.MOUSE_ENTERED) {
+        sourceLabel.setForeground(customColor);  // Set the hover color on the source label
+    }
+
+    // Handle mouse exit event - reset text color to default (white)
+    if (evt.getID() == java.awt.event.MouseEvent.MOUSE_EXITED) {
+        sourceLabel.setForeground(defaultColor);  // Reset color to white on exit
+    }
+}
+
+   
         
     
     
@@ -102,9 +151,9 @@ public class landingPage extends javax.swing.JFrame {
         jPanel4 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         panelRound1 = new GUI.PanelRound();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
+        txtAbout = new javax.swing.JLabel();
+        txtHome = new javax.swing.JLabel();
+        txtContact = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
         pnlmain = new javax.swing.JPanel();
@@ -131,35 +180,44 @@ public class landingPage extends javax.swing.JFrame {
         panelRound1.setRoundBottomRight(50);
         panelRound1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel1.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 13)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("ABOUT");
-        jLabel1.addMouseListener(new java.awt.event.MouseAdapter() {
+        txtAbout.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 13)); // NOI18N
+        txtAbout.setForeground(new java.awt.Color(255, 255, 255));
+        txtAbout.setText("ABOUT");
+        txtAbout.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel1MouseClicked(evt);
+                txtAboutMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                txtAboutMouseEntered(evt);
             }
         });
-        panelRound1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1220, 10, -1, 40));
+        panelRound1.add(txtAbout, new org.netbeans.lib.awtextra.AbsoluteConstraints(1220, 10, -1, 40));
 
-        jLabel3.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 13)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setText("HOME");
-        jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
+        txtHome.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 13)); // NOI18N
+        txtHome.setForeground(new java.awt.Color(255, 255, 255));
+        txtHome.setText("HOME");
+        txtHome.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel3MouseClicked(evt);
+                txtHomeMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                txtHomeMouseEntered(evt);
             }
         });
-        panelRound1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(1150, 10, -1, 40));
+        panelRound1.add(txtHome, new org.netbeans.lib.awtextra.AbsoluteConstraints(1150, 10, -1, 40));
 
-        jLabel4.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 13)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setText("CONTACT");
-        jLabel4.addMouseListener(new java.awt.event.MouseAdapter() {
+        txtContact.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 13)); // NOI18N
+        txtContact.setForeground(new java.awt.Color(255, 255, 255));
+        txtContact.setText("CONTACT");
+        txtContact.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel4MouseClicked(evt);
+                txtContactMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                txtContactMouseEntered(evt);
             }
         });
-        panelRound1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(1290, 10, -1, 40));
+        panelRound1.add(txtContact, new org.netbeans.lib.awtextra.AbsoluteConstraints(1290, 10, -1, 40));
 
         jLabel17.setFont(new java.awt.Font("Tahoma", 1, 25)); // NOI18N
         jLabel17.setForeground(new java.awt.Color(255, 255, 255));
@@ -192,18 +250,36 @@ public class landingPage extends javax.swing.JFrame {
 
     }//GEN-LAST:event_jLabel10MouseClicked
 
-    private void jLabel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseClicked
+    private void txtAboutMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtAboutMouseClicked
         showAbout();
-    }//GEN-LAST:event_jLabel1MouseClicked
+    }//GEN-LAST:event_txtAboutMouseClicked
 
-    private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
+    private void txtHomeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtHomeMouseClicked
 
        showHome();
-    }//GEN-LAST:event_jLabel3MouseClicked
+    }//GEN-LAST:event_txtHomeMouseClicked
 
-    private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
+    private void txtContactMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtContactMouseClicked
         showContact();
-    }//GEN-LAST:event_jLabel4MouseClicked
+    }//GEN-LAST:event_txtContactMouseClicked
+
+    private void txtHomeMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtHomeMouseEntered
+        Color customColor = new Color(255, 191, 0);
+        Color defaultColor = new Color(255, 255, 255);
+        txtHome.setForeground(customColor);
+        txtAbout.setForeground(defaultColor);
+        txtContact.setForeground(defaultColor);
+    }//GEN-LAST:event_txtHomeMouseEntered
+
+    private void txtAboutMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtAboutMouseEntered
+        Color customColor = new Color(255, 191, 0);
+        txtAbout.setForeground(customColor);
+    }//GEN-LAST:event_txtAboutMouseEntered
+
+    private void txtContactMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtContactMouseEntered
+         Color customColor = new Color(255, 191, 0);
+        txtContact.setForeground(customColor);
+    }//GEN-LAST:event_txtContactMouseEntered
 
     /**
      * @param args the command line arguments
@@ -243,15 +319,15 @@ public class landingPage extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel mainPanel;
     private GUI.PanelRound panelRound1;
     private javax.swing.JPanel pnlmain;
+    private javax.swing.JLabel txtAbout;
+    private javax.swing.JLabel txtContact;
+    private javax.swing.JLabel txtHome;
     // End of variables declaration//GEN-END:variables
 }

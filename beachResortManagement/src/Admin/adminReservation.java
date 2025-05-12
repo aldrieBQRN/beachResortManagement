@@ -75,39 +75,44 @@ public class adminReservation extends javax.swing.JInternalFrame {
         UI.setNorthPane(null); 
     }
     
-   public final void showReservations() {
+public final void showReservations() {
+    String selectedStatus = statusComboBox.getSelectedItem().toString(); // "All", "Pending", etc.
+
     try {
-        // Corrected SQL query with proper comma between fields
+        // Base query
         String query = "SELECT reservation_number, guest.guest_name, r.check_in_date, " +
                        "r.check_out_date, r.total_price, r.status, r.created_at " +
                        "FROM reservation r " +
                        "JOIN guest ON r.guest_id = guest.guest_id";
-        
+
+        // Add WHERE clause if a specific status is selected
+        if (!selectedStatus.equalsIgnoreCase("All")) {
+            query += " WHERE r.status = ?";
+        }
+
         pst = con.prepareStatement(query);
-        
-        // Execute the query
+
+        if (!selectedStatus.equalsIgnoreCase("All")) {
+            pst.setString(1, selectedStatus);
+        }
+
         rs = pst.executeQuery();
 
-        // Set up the table model to display the data in the JTable
         DefaultTableModel model = (DefaultTableModel) completedTable.getModel();
-        
-        // Clear any existing rows in the table
-        model.setRowCount(0);
+        model.setRowCount(0); // clear old data
 
-        // Formatters for date display
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        // Loop through the result and add data to the table
         while (rs.next()) {
             model.addRow(new Object[] {
-                timestampFormat.format(rs.getTimestamp("created_at")),  // Formatted timestamp
-                rs.getString("reservation_number"),                      // Reservation number
-                rs.getString("guest_name"),                              // Guest name
-                dateFormat.format(rs.getDate("check_in_date")),          // Check-in date
-                dateFormat.format(rs.getDate("check_out_date")),         // Check-out date
-                "₱" + String.format("%.2f", rs.getDouble("total_price")), // Total price formatted
-                rs.getString("status")                                  // Status
+                timestampFormat.format(rs.getTimestamp("created_at")),
+                rs.getString("reservation_number"),
+                rs.getString("guest_name"),
+                dateFormat.format(rs.getDate("check_in_date")),
+                dateFormat.format(rs.getDate("check_out_date")),
+                "₱" + String.format("%.2f", rs.getDouble("total_price")),
+                rs.getString("status")
             });
         }
 
@@ -116,6 +121,7 @@ public class adminReservation extends javax.swing.JInternalFrame {
                                       "Database Error", JOptionPane.ERROR_MESSAGE);
     }
 }
+
 
     
    
@@ -135,6 +141,7 @@ public class adminReservation extends javax.swing.JInternalFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         completedTable = new rojerusan.RSTableMetro();
         txtsearch = new textfield_suggestion.TextFieldSuggestion();
+        statusComboBox = new GUI.ComboBoxSuggestion();
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
 
@@ -218,7 +225,21 @@ public class adminReservation extends javax.swing.JInternalFrame {
                 txtsearchKeyReleased(evt);
             }
         });
-        jPanel2.add(txtsearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 270, 40));
+        jPanel2.add(txtsearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 20, 290, 40));
+
+        statusComboBox.setEditable(false);
+        statusComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All", "Pending", "Confirmed", "Check-in", "Check-out" }));
+        statusComboBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                statusComboBoxItemStateChanged(evt);
+            }
+        });
+        statusComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                statusComboBoxActionPerformed(evt);
+            }
+        });
+        jPanel2.add(statusComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 110, 40));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 1160, 660));
 
@@ -266,6 +287,14 @@ public class adminReservation extends javax.swing.JInternalFrame {
         obj1.setRowFilter(RowFilter.regexFilter(txtsearch.getText()));
     }//GEN-LAST:event_txtsearchKeyReleased
 
+    private void statusComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_statusComboBoxItemStateChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_statusComboBoxItemStateChanged
+
+    private void statusComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_statusComboBoxActionPerformed
+        showReservations();
+    }//GEN-LAST:event_statusComboBoxActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private rojerusan.RSTableMetro completedTable;
@@ -274,6 +303,7 @@ public class adminReservation extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
+    private GUI.ComboBoxSuggestion statusComboBox;
     private textfield_suggestion.TextFieldSuggestion txtsearch;
     // End of variables declaration//GEN-END:variables
 }

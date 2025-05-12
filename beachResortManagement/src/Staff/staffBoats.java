@@ -4,6 +4,7 @@
  */
 package Staff;
 
+import Admin.adminBoat;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -69,38 +70,44 @@ public class staffBoats extends javax.swing.JInternalFrame {
     }
     
     public final void showBoatDetails() {
-        try {
-            // Prepare the SQL query to select all boats from the boat_details table
-            pst = con.prepareStatement("SELECT * FROM boat");
-
-            // Execute the query and get the results
-            rs = pst.executeQuery();
-
-            // Set up the table model to display the data in the JTable
-            DefaultTableModel boatModel = (DefaultTableModel) tblBoatDetails.getModel();
-
-            // Clear any previous rows
-            boatModel.setRowCount(0);
-
-            // Iterate over the result set and add data to the table
-            while (rs.next()) {
-                // Fetch the boat details from the result set
-                String boatNumber = rs.getString("boat_number");
-                String boatName = rs.getString("boat_name");
-                String description = rs.getString("description");
-                int capacity = rs.getInt("capacity");
-                String registrationDate = rs.getString("registration_date");
-                double price = rs.getDouble("tour_price");
-
-                // Add data to the table model
-                boatModel.addRow(new Object[] { boatNumber, registrationDate, boatName, description, capacity, price });
-            }
-        } catch (SQLException ex) {
-            // Handle any SQL exceptions
-            Logger.getLogger(staffBoats.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("Error fetching boat details: " + ex.getMessage());
-        }
+    String sortOption = sortComboBox.getSelectedItem().toString(); // "All", "Ascending", "Descending"
+    
+    // Build query with optional sorting
+    String query = "SELECT * FROM boat";
+    if (sortOption.equalsIgnoreCase("Ascending")) {
+        query += " ORDER BY boat_name ASC";
+    } else if (sortOption.equalsIgnoreCase("Descending")) {
+        query += " ORDER BY boat_name DESC";
     }
+
+    try {
+        pst = con.prepareStatement(query);
+        rs = pst.executeQuery();
+
+        DefaultTableModel boatModel = (DefaultTableModel) tblBoatDetails.getModel();
+        boatModel.setRowCount(0); // clear table
+
+        while (rs.next()) {
+            String boatNumber = rs.getString("boat_number");
+            String boatName = rs.getString("boat_name");
+            String description = rs.getString("description");
+            int capacity = rs.getInt("capacity");
+            double tourPrice = rs.getDouble("tour_price");
+
+            boatModel.addRow(new Object[] {
+                boatNumber,
+                boatName,
+                description,
+                capacity,
+                tourPrice
+            });
+        }
+
+    } catch (SQLException ex) {
+        Logger.getLogger(adminBoat.class.getName()).log(Level.SEVERE, null, ex);
+        System.out.println("Error fetching boat data: " + ex.getMessage());
+    }
+}
 
 
     /**
@@ -117,6 +124,7 @@ public class staffBoats extends javax.swing.JInternalFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tblBoatDetails = new rojerusan.RSTableMetro();
         txtsearch = new textfield_suggestion.TextFieldSuggestion();
+        sortComboBox = new GUI.ComboBoxSuggestion();
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
@@ -137,23 +145,23 @@ public class staffBoats extends javax.swing.JInternalFrame {
         tblBoatDetails.setForeground(new java.awt.Color(255, 255, 255));
         tblBoatDetails.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Boat Number", "Registration Date", "Name", "Details", "Capacity", "Price/Tour"
+                "Boat Number", "Name", "Details", "Capacity", "Price/Tour"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -185,9 +193,8 @@ public class staffBoats extends javax.swing.JInternalFrame {
         if (tblBoatDetails.getColumnModel().getColumnCount() > 0) {
             tblBoatDetails.getColumnModel().getColumn(0).setPreferredWidth(5);
             tblBoatDetails.getColumnModel().getColumn(1).setPreferredWidth(5);
-            tblBoatDetails.getColumnModel().getColumn(2).setPreferredWidth(5);
+            tblBoatDetails.getColumnModel().getColumn(3).setPreferredWidth(5);
             tblBoatDetails.getColumnModel().getColumn(4).setPreferredWidth(5);
-            tblBoatDetails.getColumnModel().getColumn(5).setPreferredWidth(5);
         }
 
         jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 1120, 570));
@@ -210,7 +217,21 @@ public class staffBoats extends javax.swing.JInternalFrame {
                 txtsearchKeyReleased(evt);
             }
         });
-        jPanel2.add(txtsearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 270, 40));
+        jPanel2.add(txtsearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 20, 290, 40));
+
+        sortComboBox.setEditable(false);
+        sortComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All", "Ascending", "Descendin", " " }));
+        sortComboBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                sortComboBoxItemStateChanged(evt);
+            }
+        });
+        sortComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sortComboBoxActionPerformed(evt);
+            }
+        });
+        jPanel2.add(sortComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 110, 40));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 1160, 660));
 
@@ -278,6 +299,14 @@ public class staffBoats extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_txtsearchFocusGained
 
+    private void sortComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_sortComboBoxItemStateChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_sortComboBoxItemStateChanged
+
+    private void sortComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sortComboBoxActionPerformed
+        showBoatDetails();
+    }//GEN-LAST:event_sortComboBoxActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
@@ -287,6 +316,7 @@ public class staffBoats extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
+    private GUI.ComboBoxSuggestion sortComboBox;
     private rojerusan.RSTableMetro tblBoatDetails;
     private textfield_suggestion.TextFieldSuggestion txtsearch;
     // End of variables declaration//GEN-END:variables

@@ -247,7 +247,7 @@
             <Component class="rojeru_san.complementos.RSButtonHover" name="rSButtonHover1">
               <Properties>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="5f" green="3b" red="1b" type="rgb"/>
+                  <Color blue="0" green="0" red="ff" type="rgb"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="CANCEL"/>
               </Properties>
@@ -263,9 +263,9 @@
             <Component class="rojeru_san.complementos.RSButtonHover" name="rSButtonHover2">
               <Properties>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="5f" green="3b" red="1b" type="rgb"/>
+                  <Color blue="0" green="cc" red="0" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="CONTINUE"/>
+                <Property name="text" type="java.lang.String" value="CREATE"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="rSButtonHover2ActionPerformed"/>

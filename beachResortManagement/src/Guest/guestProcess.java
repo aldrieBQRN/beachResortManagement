@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -63,6 +64,7 @@ public final class guestProcess extends javax.swing.JFrame {
         
        
             initComponents();  // Initialize UI components (if any)
+            hoverEffect();
             pnlPayment.setVisible(false);
             DatabaseConnection();
             
@@ -299,6 +301,55 @@ public final class guestProcess extends javax.swing.JFrame {
     }
 }
     
+         public void hoverEffect(){
+        txtHome.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                handleLabelEvent(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                handleLabelEvent(evt);
+            }
+        });
+
+        txtReservation.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                handleLabelEvent(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                handleLabelEvent(evt);
+            }
+        });
+
+        txtProfile.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                handleLabelEvent(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                handleLabelEvent(evt);
+            }
+        });
+
+       }
+    
+    
+// Helper function to handle mouse enter and mouse exit for all labels
+private void handleLabelEvent(java.awt.event.MouseEvent evt) {                                     
+    JLabel sourceLabel = (JLabel) evt.getSource();  // Get the label that triggered the event
+    Color customColor = new Color(255, 191, 0);    // Hover color
+    Color defaultColor = new Color(255, 255, 255); // Default color
+
+    // Handle mouse enter event - change text color to customColor
+    if (evt.getID() == java.awt.event.MouseEvent.MOUSE_ENTERED) {
+        sourceLabel.setForeground(customColor);  // Set the hover color on the source label
+    }
+
+    // Handle mouse exit event - reset text color to default (white)
+    if (evt.getID() == java.awt.event.MouseEvent.MOUSE_EXITED) {
+        sourceLabel.setForeground(defaultColor);  // Reset color to white on exit
+    }
+}
+
+    
     
  
   
@@ -380,16 +431,16 @@ public final class guestProcess extends javax.swing.JFrame {
         txtFName = new textfield.TextField();
         panelRound4 = new GUI.PanelRound();
         jLabel1 = new javax.swing.JLabel();
-        panelRound1 = new GUI.PanelRound();
-        panelRound2 = new GUI.PanelRound();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel17 = new javax.swing.JLabel();
-        jLabel21 = new javax.swing.JLabel();
-        jLabel28 = new javax.swing.JLabel();
-        jLabel33 = new javax.swing.JLabel();
-        jLabel26 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
+        panelRound1 = new GUI.PanelRound();
+        jLabel17 = new javax.swing.JLabel();
+        jLabel19 = new javax.swing.JLabel();
+        txtHome = new javax.swing.JLabel();
+        txtReservation = new javax.swing.JLabel();
+        txtProfile = new javax.swing.JLabel();
+        panelRound6 = new GUI.PanelRound();
+        jLabel8 = new javax.swing.JLabel();
         jPanel9 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -794,22 +845,74 @@ public final class guestProcess extends javax.swing.JFrame {
 
         jPanel1.add(jPanel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 60, 1440, 730));
 
+        jPanel4.setBackground(new java.awt.Color(39, 114, 160));
+        jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel6.setText("© 2025 Papaya Beach Resort. All rights reserved.");
+        jLabel6.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jPanel4.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 13, -1, -1));
+
+        jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 790, 1440, 40));
+
         panelRound1.setBackground(new java.awt.Color(27, 59, 95));
         panelRound1.setRoundBottomLeft(50);
         panelRound1.setRoundBottomRight(50);
         panelRound1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        panelRound2.setBackground(new java.awt.Color(0, 153, 255));
-        panelRound2.setRoundBottomLeft(20);
-        panelRound2.setRoundBottomRight(20);
-        panelRound2.setRoundTopLeft(20);
-        panelRound2.setRoundTopRight(20);
-        panelRound2.addMouseListener(new java.awt.event.MouseAdapter() {
+        jLabel17.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jLabel17.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel17.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logoFinal copy.png"))); // NOI18N
+        jLabel17.setText(" PAPAYA BEACH RESORT,");
+        panelRound1.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 310, 60));
+
+        jLabel19.setFont(new java.awt.Font("Arial Rounded MT Bold", 2, 14)); // NOI18N
+        jLabel19.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel19.setText("Escape to Paradise");
+        panelRound1.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(299, 11, -1, 40));
+
+        txtHome.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 12)); // NOI18N
+        txtHome.setForeground(new java.awt.Color(255, 255, 255));
+        txtHome.setText("HOME");
+        txtHome.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                panelRound2MouseClicked(evt);
+                txtHomeMouseClicked(evt);
             }
         });
-        panelRound2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        panelRound1.add(txtHome, new org.netbeans.lib.awtextra.AbsoluteConstraints(1060, 0, 40, 60));
+
+        txtReservation.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 12)); // NOI18N
+        txtReservation.setForeground(new java.awt.Color(255, 255, 255));
+        txtReservation.setText("RESERVATION");
+        txtReservation.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtReservationMouseClicked(evt);
+            }
+        });
+        panelRound1.add(txtReservation, new org.netbeans.lib.awtextra.AbsoluteConstraints(1130, 0, -1, 60));
+
+        txtProfile.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 12)); // NOI18N
+        txtProfile.setForeground(new java.awt.Color(255, 255, 255));
+        txtProfile.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        txtProfile.setText("PROFILE");
+        txtProfile.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtProfileMouseClicked(evt);
+            }
+        });
+        panelRound1.add(txtProfile, new org.netbeans.lib.awtextra.AbsoluteConstraints(1240, 0, 60, 60));
+
+        panelRound6.setBackground(new java.awt.Color(0, 153, 255));
+        panelRound6.setRoundBottomLeft(20);
+        panelRound6.setRoundBottomRight(20);
+        panelRound6.setRoundTopLeft(20);
+        panelRound6.setRoundTopRight(20);
+        panelRound6.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                panelRound6MouseClicked(evt);
+            }
+        });
+        panelRound6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel8.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
@@ -820,61 +923,11 @@ public final class guestProcess extends javax.swing.JFrame {
                 jLabel8MouseClicked(evt);
             }
         });
-        panelRound2.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 70, 35));
+        panelRound6.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 70, 35));
 
-        panelRound1.add(panelRound2, new org.netbeans.lib.awtextra.AbsoluteConstraints(1320, 12, 90, -1));
-
-        jLabel17.setFont(new java.awt.Font("Tahoma", 1, 25)); // NOI18N
-        jLabel17.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel17.setText("Welcome,");
-        panelRound1.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 0, 180, 60));
-
-        jLabel21.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 14)); // NOI18N
-        jLabel21.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel21.setText("to Papaya Beach Resort");
-        panelRound1.add(jLabel21, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 20, -1, 30));
-
-        jLabel28.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
-        jLabel28.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel28.setText("HOME");
-        jLabel28.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel28MouseClicked(evt);
-            }
-        });
-        panelRound1.add(jLabel28, new org.netbeans.lib.awtextra.AbsoluteConstraints(1000, 0, -1, 60));
-
-        jLabel33.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
-        jLabel33.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel33.setText("RESERVATION");
-        jLabel33.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel33MouseClicked(evt);
-            }
-        });
-        panelRound1.add(jLabel33, new org.netbeans.lib.awtextra.AbsoluteConstraints(1080, 0, -1, 60));
-
-        jLabel26.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 14)); // NOI18N
-        jLabel26.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel26.setText("PROFILE");
-        jLabel26.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel26MouseClicked(evt);
-            }
-        });
-        panelRound1.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(1220, 0, 60, 60));
+        panelRound1.add(panelRound6, new org.netbeans.lib.awtextra.AbsoluteConstraints(1320, 12, 90, -1));
 
         jPanel1.add(panelRound1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 60));
-
-        jPanel4.setBackground(new java.awt.Color(39, 114, 160));
-        jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel6.setText("© 2025 Papaya Beach Resort. All rights reserved.");
-        jLabel6.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jPanel4.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 13, -1, -1));
-
-        jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 790, 1440, 40));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 830));
 
@@ -993,27 +1046,49 @@ if ("GCash".equalsIgnoreCase(paymentMethod)) {
         // TODO add your handling code here:
     }//GEN-LAST:event_jPanel5ComponentAdded
 
-    private void jLabel8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel8MouseClicked
-        this.dispose();
-        new landingPage().setVisible(true);
-    }//GEN-LAST:event_jLabel8MouseClicked
-
-    private void panelRound2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelRound2MouseClicked
-
-    }//GEN-LAST:event_panelRound2MouseClicked
-
-    private void jLabel28MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel28MouseClicked
+    private void txtHomeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtHomeMouseClicked
         new guestHome(userID).setVisible(true);
-    }//GEN-LAST:event_jLabel28MouseClicked
+    }//GEN-LAST:event_txtHomeMouseClicked
 
-    private void jLabel33MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel33MouseClicked
+    private void txtReservationMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtReservationMouseClicked
         new guestReservation(userID).setVisible(true);
-    }//GEN-LAST:event_jLabel33MouseClicked
+    }//GEN-LAST:event_txtReservationMouseClicked
 
-    private void jLabel26MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel26MouseClicked
+    private void txtProfileMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtProfileMouseClicked
         guestProfile user = new guestProfile(userID);
         user.setVisible(true);
-    }//GEN-LAST:event_jLabel26MouseClicked
+    }//GEN-LAST:event_txtProfileMouseClicked
+
+    private void jLabel8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel8MouseClicked
+        try {
+            // Prepare the SQL query for logging the logout action
+            String logSql = "INSERT INTO activity_log (user_id, action_type, action_description) VALUES (?, ?, ?)";
+
+            // Log the logout activity using the userID of the logged-in user
+            try (PreparedStatement pst = con.prepareStatement(logSql)) {
+                pst.setInt(1, userID);  // Assuming userID is available after login
+                pst.setString(2, "LOGOUT");
+                pst.setString(3, "User logged out successfully");
+
+                // Execute the update to log the action
+                pst.executeUpdate();
+            } catch (SQLException ex) {
+                java.util.logging.Logger.getLogger(guestProcess.class.getName()).log(java.util.logging.Level.SEVERE, "Error logging logout activity", ex);
+            }
+
+            // Close the current window and open the landing page (logout action)
+            this.dispose();
+            new landingPage().setVisible(true);
+
+        }catch (Exception ex) {
+            // Handle any other unforeseen exceptions
+            java.util.logging.Logger.getLogger(guestProcess.class.getName()).log(java.util.logging.Level.SEVERE, "Unexpected error during logout", ex);
+        }
+    }//GEN-LAST:event_jLabel8MouseClicked
+
+    private void panelRound6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelRound6MouseClicked
+
+    }//GEN-LAST:event_panelRound6MouseClicked
 
     /**
      * @param args the command line arguments
@@ -1104,18 +1179,15 @@ if ("GCash".equalsIgnoreCase(paymentMethod)) {
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel20;
-    private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel25;
-    private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
-    private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel30;
-    private javax.swing.JLabel jLabel33;
     private javax.swing.JLabel jLabel35;
     private javax.swing.JLabel jLabel36;
     private javax.swing.JLabel jLabel39;
@@ -1162,16 +1234,19 @@ if ("GCash".equalsIgnoreCase(paymentMethod)) {
     private javax.swing.JLabel lblStartTime;
     private javax.swing.JLabel lblTotalRoomPrice;
     private GUI.PanelRound panelRound1;
-    private GUI.PanelRound panelRound2;
     private GUI.PanelRound panelRound4;
     private GUI.PanelRound panelRound5;
+    private GUI.PanelRound panelRound6;
     private rojerusan.RSComboMetro paymentMethodComboBox;
     private javax.swing.JPanel pnlPayment;
     private textfield.TextField txtAddress;
     private textfield.TextField txtContact;
     private textfield.TextField txtEmail;
     private textfield.TextField txtFName;
+    private javax.swing.JLabel txtHome;
     private textfield.TextField txtLName;
+    private javax.swing.JLabel txtProfile;
+    private javax.swing.JLabel txtReservation;
     private javax.swing.JLabel txtmessage;
     // End of variables declaration//GEN-END:variables
 }

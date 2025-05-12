@@ -5,8 +5,21 @@
 package Staff;
 
 import Login.landingPage;
+
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyVetoException;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.border.Border;
+import java.sql.*;
 
 
 
@@ -16,14 +29,41 @@ import java.beans.PropertyVetoException;
  */
 public class staffHome extends javax.swing.JFrame {
 
-    /**
-     * Creates new form custormerHOME
-     */
-    public staffHome(String name) {
+    private int userID;
+    
+    public staffHome(String name, int userID) {
+        this.userID = userID;
         initComponents();
         setMainHome();
         txtname.setText(name);
+        setupNavigation();
+        connectToDatabase();
+      
+      
     }
+    
+    Connection con;
+PreparedStatement pst;
+ResultSet rs;
+    
+        private void connectToDatabase() {
+    try {
+        String url = "jdbc:mysql://localhost:3307/beachResortManagement";
+        String user = "root";  // MySQL username
+        String password = "";   // MySQL password
+        
+        // Load MySQL JDBC driver (optional in newer versions of JDBC)
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        
+        // Create the connection
+        con = DriverManager.getConnection(url, user, password);
+        System.out.println("Connected to the database successfully!");
+    } catch (ClassNotFoundException ex) {
+        java.util.logging.Logger.getLogger(staffHome.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (SQLException ex) {
+        java.util.logging.Logger.getLogger(staffHome.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    }
+}
     
     public void setMainHome(){
         staffMainHome boat = new staffMainHome();
@@ -34,6 +74,100 @@ public class staffHome extends javax.swing.JFrame {
         pnlmain.repaint(); // Repaint the panel to show updates
         boat.setVisible(true); 
     }
+    
+ // Method to set up panel and label hover effect
+    private void addPanelHoverEffect(JPanel panel, JLabel label, JPanel[] allPanels, JLabel[] allLabels) {
+        // Colors for hover and default state
+        Color selectedBG = new Color(242,242,242); // Background color when hovered or clicked
+        Color selectedFG = Color.BLACK;  // Text color when hovered or clicked
+        Color defaultBG = new Color(27, 59, 95);  // Default background color for the panel
+        Color defaultFG = Color.WHITE;  // Default text color for the label
+        Color borderColor = new Color(39, 114, 160);  // Border color for hover effect
+
+        // Default label border and padding setup
+        Border defaultLabelBorder = BorderFactory.createEmptyBorder(8, 15, 8, 15);  // Padding
+        Border selectedLabelBorder = BorderFactory.createMatteBorder(0, 10, 0, 0, borderColor); // Left inset border for hover effect
+
+        // Set default properties for the label
+        label.setOpaque(true);
+        label.setBackground(defaultBG);
+        label.setForeground(defaultFG);
+        label.setCursor(new Cursor(Cursor.HAND_CURSOR));  // Set the cursor to hand (pointer)
+        label.setBorder(defaultLabelBorder);
+        label.setFont(new Font("Tahoma", Font.BOLD, 13));  // Set default font to Tahoma Bold 13
+
+        // Mouse listener to handle hover and click on the label
+        label.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                // Apply hover effect (background color change) when mouse enters the label
+                resetOtherPanels(allPanels, allLabels); // Reset other panels and labels to default
+                panel.setBackground(selectedBG);  // Change panel background to white
+                label.setBackground(selectedBG);  // Change label background to white
+                label.setForeground(selectedFG);  // Change label text color to black
+                label.setBorder(selectedLabelBorder);  // Add left inset border on hover
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                // Apply the same effect when clicked on the label
+                resetOtherPanels(allPanels, allLabels); // Reset other panels and labels to default
+                panel.setBackground(selectedBG);  // Change panel background to white
+                label.setBackground(selectedBG);  // Change label background to white
+                label.setForeground(selectedFG);  // Change label text color to black
+                label.setBorder(selectedLabelBorder);  // Add left inset border on click
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                // Optional action on click (e.g., navigating to another page)
+                System.out.println(label.getText() + " clicked!");
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                // Do not revert the background after mouse exit
+                // This keeps the clicked label hover effect active
+            }
+        });
+    }
+
+    // Method to reset all panels and labels to their default color
+    private void resetOtherPanels(JPanel[] allPanels, JLabel[] allLabels) {
+        Color defaultBG = new Color(27, 59, 95);  // Default background color for the panel
+        Color defaultFG = Color.WHITE;  // Default text color for the label
+        Border defaultLabelBorder = BorderFactory.createEmptyBorder(8, 15, 8, 15);  // Padding
+
+        // Loop through all panels and labels and reset their colors to default
+        for (int i = 0; i < allPanels.length; i++) {
+            allPanels[i].setBackground(defaultBG);
+            allLabels[i].setBackground(defaultBG);
+            allLabels[i].setForeground(defaultFG);
+            allLabels[i].setBorder(defaultLabelBorder);
+        }
+    }
+
+
+
+
+
+
+
+private void setupNavigation() {
+    // Apply hover effect to each existing panel with its corresponding label
+    JPanel[] panels = {dashboardPanel, listOfRoomPanel, listOfBoatPanel, pendingPanel, checkInOutPanel, reservationPanel};
+        JLabel[] labels = {dashboardLabel, listOfRoomLabel, listOfBoatLabel, pendingLabel, checkInOutLabel, reservationLabel};
+
+        // Apply hover effect to each panel with its corresponding label
+        addPanelHoverEffect(dashboardPanel, dashboardLabel, panels, labels);
+        addPanelHoverEffect(listOfRoomPanel, listOfRoomLabel, panels, labels);
+        addPanelHoverEffect(listOfBoatPanel, listOfBoatLabel, panels, labels);
+        addPanelHoverEffect(pendingPanel, pendingLabel, panels, labels);
+        addPanelHoverEffect(checkInOutPanel, checkInOutLabel, panels, labels);
+        addPanelHoverEffect(reservationPanel, reservationLabel, panels, labels);
+}
+
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -53,20 +187,20 @@ public class staffHome extends javax.swing.JFrame {
         panelRound2 = new GUI.PanelRound();
         jLabel8 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
-        jPanel7 = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
-        jPanel8 = new javax.swing.JPanel();
-        jLabel4 = new javax.swing.JLabel();
-        jPanel9 = new javax.swing.JPanel();
-        jLabel5 = new javax.swing.JLabel();
-        jPanel11 = new javax.swing.JPanel();
-        jLabel26 = new javax.swing.JLabel();
+        dashboardPanel = new javax.swing.JPanel();
+        dashboardLabel = new javax.swing.JLabel();
+        listOfRoomPanel = new javax.swing.JPanel();
+        listOfRoomLabel = new javax.swing.JLabel();
+        listOfBoatPanel = new javax.swing.JPanel();
+        listOfBoatLabel = new javax.swing.JLabel();
+        pendingPanel = new javax.swing.JPanel();
+        pendingLabel = new javax.swing.JLabel();
         jLabel28 = new javax.swing.JLabel();
         jLabel29 = new javax.swing.JLabel();
-        jPanel14 = new javax.swing.JPanel();
-        jLabel30 = new javax.swing.JLabel();
-        jPanel15 = new javax.swing.JPanel();
-        jLabel31 = new javax.swing.JLabel();
+        checkInOutPanel = new javax.swing.JPanel();
+        checkInOutLabel = new javax.swing.JLabel();
+        reservationPanel = new javax.swing.JPanel();
+        reservationLabel = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         pnlmain = new javax.swing.JPanel();
 
@@ -132,71 +266,71 @@ public class staffHome extends javax.swing.JFrame {
         jPanel3.setPreferredSize(new java.awt.Dimension(170, 200));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel7.setBackground(new java.awt.Color(27, 59, 95));
-        jPanel7.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        dashboardPanel.setBackground(new java.awt.Color(27, 59, 95));
+        dashboardPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel3.setBackground(new java.awt.Color(0, 0, 0));
-        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setText("DASHBOARD");
-        jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
+        dashboardLabel.setBackground(new java.awt.Color(0, 0, 0));
+        dashboardLabel.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        dashboardLabel.setForeground(new java.awt.Color(255, 255, 255));
+        dashboardLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        dashboardLabel.setText("DASHBOARD");
+        dashboardLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel3MouseClicked(evt);
+                dashboardLabelMouseClicked(evt);
             }
         });
-        jPanel7.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(28, 0, 140, 50));
+        dashboardPanel.add(dashboardLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 200, 50));
 
-        jPanel3.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 290, 200, 50));
+        jPanel3.add(dashboardPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 290, 220, 50));
 
-        jPanel8.setBackground(new java.awt.Color(27, 59, 95));
-        jPanel8.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        listOfRoomPanel.setBackground(new java.awt.Color(27, 59, 95));
+        listOfRoomPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel4.setText("MANAGE ROOMS");
-        jLabel4.addMouseListener(new java.awt.event.MouseAdapter() {
+        listOfRoomLabel.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        listOfRoomLabel.setForeground(new java.awt.Color(255, 255, 255));
+        listOfRoomLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        listOfRoomLabel.setText("ROOMS");
+        listOfRoomLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel4MouseClicked(evt);
+                listOfRoomLabelMouseClicked(evt);
             }
         });
-        jPanel8.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(18, 0, 160, 50));
+        listOfRoomPanel.add(listOfRoomLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 200, 50));
 
-        jPanel3.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 340, 200, 50));
+        jPanel3.add(listOfRoomPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 340, 220, 50));
 
-        jPanel9.setBackground(new java.awt.Color(27, 59, 95));
-        jPanel9.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        listOfBoatPanel.setBackground(new java.awt.Color(27, 59, 95));
+        listOfBoatPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel5.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel5.setText("MANAGE BOATS");
-        jLabel5.addMouseListener(new java.awt.event.MouseAdapter() {
+        listOfBoatLabel.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        listOfBoatLabel.setForeground(new java.awt.Color(255, 255, 255));
+        listOfBoatLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        listOfBoatLabel.setText("BOATS");
+        listOfBoatLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel5MouseClicked(evt);
+                listOfBoatLabelMouseClicked(evt);
             }
         });
-        jPanel9.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(28, 0, 140, 50));
+        listOfBoatPanel.add(listOfBoatLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 200, 50));
 
-        jPanel3.add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 390, 200, 50));
+        jPanel3.add(listOfBoatPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 390, 220, 50));
 
-        jPanel11.setBackground(new java.awt.Color(27, 59, 95));
-        jPanel11.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        pendingPanel.setBackground(new java.awt.Color(27, 59, 95));
+        pendingPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel26.setBackground(new java.awt.Color(242, 242, 242));
-        jLabel26.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
-        jLabel26.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel26.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel26.setText("RESERVATION");
-        jLabel26.addMouseListener(new java.awt.event.MouseAdapter() {
+        pendingLabel.setBackground(new java.awt.Color(242, 242, 242));
+        pendingLabel.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        pendingLabel.setForeground(new java.awt.Color(255, 255, 255));
+        pendingLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        pendingLabel.setText("PENDING");
+        pendingLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel26MouseClicked(evt);
+                pendingLabelMouseClicked(evt);
             }
         });
-        jPanel11.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(28, 0, 140, 50));
+        pendingPanel.add(pendingLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 200, 50));
 
-        jPanel3.add(jPanel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 440, 200, 50));
+        jPanel3.add(pendingPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 440, 220, 50));
 
         jLabel28.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
         jLabel28.setForeground(new java.awt.Color(255, 255, 255));
@@ -210,38 +344,38 @@ public class staffHome extends javax.swing.JFrame {
         jLabel29.setText("Beach Resort");
         jPanel3.add(jLabel29, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 200, 220, 20));
 
-        jPanel14.setBackground(new java.awt.Color(27, 59, 95));
-        jPanel14.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        checkInOutPanel.setBackground(new java.awt.Color(27, 59, 95));
+        checkInOutPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel30.setBackground(new java.awt.Color(204, 0, 153));
-        jLabel30.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
-        jLabel30.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel30.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel30.setText("CHECK OUT/IN");
-        jLabel30.addMouseListener(new java.awt.event.MouseAdapter() {
+        checkInOutLabel.setBackground(new java.awt.Color(204, 0, 153));
+        checkInOutLabel.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        checkInOutLabel.setForeground(new java.awt.Color(255, 255, 255));
+        checkInOutLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        checkInOutLabel.setText("CHECK IN/OUT");
+        checkInOutLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel30MouseClicked(evt);
+                checkInOutLabelMouseClicked(evt);
             }
         });
-        jPanel14.add(jLabel30, new org.netbeans.lib.awtextra.AbsoluteConstraints(28, 0, 140, 50));
+        checkInOutPanel.add(checkInOutLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 200, 50));
 
-        jPanel3.add(jPanel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 490, 200, 50));
+        jPanel3.add(checkInOutPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 490, 220, 50));
 
-        jPanel15.setBackground(new java.awt.Color(27, 59, 95));
-        jPanel15.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        reservationPanel.setBackground(new java.awt.Color(27, 59, 95));
+        reservationPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel31.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
-        jLabel31.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel31.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel31.setText("HISTORY");
-        jLabel31.addMouseListener(new java.awt.event.MouseAdapter() {
+        reservationLabel.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        reservationLabel.setForeground(new java.awt.Color(255, 255, 255));
+        reservationLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        reservationLabel.setText("RESERVATION");
+        reservationLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel31MouseClicked(evt);
+                reservationLabelMouseClicked(evt);
             }
         });
-        jPanel15.add(jLabel31, new org.netbeans.lib.awtextra.AbsoluteConstraints(28, 0, 140, 50));
+        reservationPanel.add(reservationLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 200, 50));
 
-        jPanel3.add(jPanel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 540, 200, 50));
+        jPanel3.add(reservationPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 540, 220, 50));
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logoFinal.png"))); // NOI18N
@@ -259,7 +393,7 @@ public class staffHome extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
+    private void listOfRoomLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listOfRoomLabelMouseClicked
         staffRooms room = new staffRooms();
         pnlmain.removeAll(); // Remove existing components
         pnlmain.setLayout(new BorderLayout()); // Set the layout
@@ -267,9 +401,9 @@ public class staffHome extends javax.swing.JFrame {
         pnlmain.revalidate(); // Revalidate to reflect changes
         pnlmain.repaint(); // Repaint the panel to show updates
         room.setVisible(true);   
-    }//GEN-LAST:event_jLabel4MouseClicked
+    }//GEN-LAST:event_listOfRoomLabelMouseClicked
 
-    private void jLabel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel5MouseClicked
+    private void listOfBoatLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listOfBoatLabelMouseClicked
         staffBoats boat = new staffBoats();
         pnlmain.removeAll(); // Remove existing components
         pnlmain.setLayout(new BorderLayout()); // Set the layout
@@ -277,9 +411,9 @@ public class staffHome extends javax.swing.JFrame {
         pnlmain.revalidate(); // Revalidate to reflect changes
         pnlmain.repaint(); // Repaint the panel to show updates
         boat.setVisible(true); 
-    }//GEN-LAST:event_jLabel5MouseClicked
+    }//GEN-LAST:event_listOfBoatLabelMouseClicked
 
-    private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
+    private void dashboardLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashboardLabelMouseClicked
     
         staffMainHome boat = new staffMainHome();
         pnlmain.removeAll(); // Remove existing components
@@ -289,11 +423,11 @@ public class staffHome extends javax.swing.JFrame {
         pnlmain.repaint(); // Repaint the panel to show updates
         boat.setVisible(true); 
         
-    }//GEN-LAST:event_jLabel3MouseClicked
+    }//GEN-LAST:event_dashboardLabelMouseClicked
 
-    private void jLabel30MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel30MouseClicked
+    private void checkInOutLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_checkInOutLabelMouseClicked
        
-        staffCheckin checkin = new staffCheckin();
+        staffCheckin checkin = new staffCheckin(userID);
         pnlmain.removeAll(); // Remove existing components
         pnlmain.setLayout(new BorderLayout()); // Set the layout
         pnlmain.add(checkin, BorderLayout.CENTER); // Add new component
@@ -301,10 +435,10 @@ public class staffHome extends javax.swing.JFrame {
         pnlmain.repaint(); // Repaint the panel to show updates
         checkin.setVisible(true); 
         
-    }//GEN-LAST:event_jLabel30MouseClicked
+    }//GEN-LAST:event_checkInOutLabelMouseClicked
 
-    private void jLabel26MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel26MouseClicked
-        staffReservation reservation = new staffReservation();
+    private void pendingLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pendingLabelMouseClicked
+        staffReservation reservation = new staffReservation(userID);
         pnlmain.removeAll(); // Remove existing components
         pnlmain.setLayout(new BorderLayout()); // Set the layout
         pnlmain.add(reservation, BorderLayout.CENTER); // Add new component
@@ -312,9 +446,9 @@ public class staffHome extends javax.swing.JFrame {
         pnlmain.repaint(); // Repaint the panel to show updates
         reservation.setVisible(true); 
         
-    }//GEN-LAST:event_jLabel26MouseClicked
+    }//GEN-LAST:event_pendingLabelMouseClicked
 
-    private void jLabel31MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel31MouseClicked
+    private void reservationLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_reservationLabelMouseClicked
         staffHistory history = new staffHistory();
         pnlmain.removeAll(); // Remove existing components
         pnlmain.setLayout(new BorderLayout()); // Set the layout
@@ -322,11 +456,40 @@ public class staffHome extends javax.swing.JFrame {
         pnlmain.revalidate(); // Revalidate to reflect changes
         pnlmain.repaint(); // Repaint the panel to show updates
         history.setVisible(true); 
-    }//GEN-LAST:event_jLabel31MouseClicked
+    }//GEN-LAST:event_reservationLabelMouseClicked
 
     private void jLabel8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel8MouseClicked
+                                      
+    // Assuming userID is available and assigned after login
+    try {
+        // Prepare the SQL query for logging the logout action
+        String logSql = "INSERT INTO activity_log (user_id, action_type, action_description) VALUES (?, ?, ?)";
+        
+        // Log the logout activity using the userID of the logged-in user
+        try (PreparedStatement pst = con.prepareStatement(logSql)) {
+            pst.setInt(1, userID);  // Assuming userID is available after login
+            pst.setString(2, "LOGOUT");
+            pst.setString(3, "User logged out successfully");
+            
+            // Execute the update to log the action
+            pst.executeUpdate();
+        } catch (SQLException ex) {
+            java.util.logging.Logger.getLogger(staffHome.class.getName()).log(java.util.logging.Level.SEVERE, "Error logging logout activity", ex);
+        }
+        
+        // Close the current window and open the landing page (logout action)
         this.dispose();
         new landingPage().setVisible(true);
+
+    }catch (Exception ex) {
+        // Handle any other unforeseen exceptions
+        java.util.logging.Logger.getLogger(staffHome.class.getName()).log(java.util.logging.Level.SEVERE, "Unexpected error during logout", ex);
+    }
+        // Handle any SQL errors during the process
+        
+
+
+
     }//GEN-LAST:event_jLabel8MouseClicked
 
     private void panelRound2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelRound2MouseClicked
@@ -364,35 +527,35 @@ public class staffHome extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
             String name = "";
-new staffHome(name).setVisible(true);
+new staffHome(name, 1).setVisible(true);
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel checkInOutLabel;
+    private javax.swing.JPanel checkInOutPanel;
+    private javax.swing.JLabel dashboardLabel;
+    private javax.swing.JPanel dashboardPanel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel29;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel30;
-    private javax.swing.JLabel jLabel31;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel13;
-    private javax.swing.JPanel jPanel14;
-    private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel7;
-    private javax.swing.JPanel jPanel8;
-    private javax.swing.JPanel jPanel9;
+    private javax.swing.JLabel listOfBoatLabel;
+    private javax.swing.JPanel listOfBoatPanel;
+    private javax.swing.JLabel listOfRoomLabel;
+    private javax.swing.JPanel listOfRoomPanel;
     private GUI.PanelRound panelRound2;
+    private javax.swing.JLabel pendingLabel;
+    private javax.swing.JPanel pendingPanel;
     private javax.swing.JPanel pnlmain;
+    private javax.swing.JLabel reservationLabel;
+    private javax.swing.JPanel reservationPanel;
     private javax.swing.JLabel txtname;
     // End of variables declaration//GEN-END:variables
 }

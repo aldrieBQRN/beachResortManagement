@@ -18,10 +18,10 @@ import javax.swing.JOptionPane;
  */
 public class adminDeleteBoat extends javax.swing.JFrame {
 
-    /**
-     * Creates new form roomAdd
-     */
-    public adminDeleteBoat() {
+    private int userID;
+    
+    public adminDeleteBoat(int userID) {
+        this.userID = userID;
         initComponents();
         DatabaseConnection();
     }
@@ -164,6 +164,14 @@ public class adminDeleteBoat extends javax.swing.JFrame {
             int rowsAffected = pst.executeUpdate(); // Execute the delete query
 
             if (rowsAffected > 0) {
+                String logSql = "INSERT INTO activity_log (user_id, action_type, action_description) VALUES (?, ?, ?)";
+                try (PreparedStatement logPst = con.prepareStatement(logSql)) {
+                    logPst.setInt(1, userID); // Replace with the actual logged-in user's ID
+                    logPst.setString(2, "DELETE_BOAT");
+                    logPst.setString(3, "Deleted boat with boat number " + boatNumber);
+                    logPst.executeUpdate();
+                }
+
                 JOptionPane.showMessageDialog(this, "Boat unregistered successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
                 this.dispose();
 
@@ -235,7 +243,7 @@ if(txtBoatNumber.getText().equals("Enter boat number here...")){
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
-            new adminDeleteBoat().setVisible(true);
+            new adminDeleteBoat(2).setVisible(true);
         });
     }
 

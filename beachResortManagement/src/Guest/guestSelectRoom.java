@@ -75,7 +75,7 @@ public class guestSelectRoom extends javax.swing.JFrame {
     public guestSelectRoom(Date checkInDate, Date checkOutDate, int adults, int children, int userID) {
         
         initComponents();
-        
+        hoverEffect();
         
         this.checkInDate = checkInDate;
         this.checkOutDate = checkOutDate;
@@ -172,16 +172,21 @@ public void searchAvailableRooms() {
         java.sql.Date sqlCheckOut = new java.sql.Date(this.checkOutDate.getTime());
         int totalGuests = this.adults + this.children;
 
-        // Build and execute query
-        String query = "SELECT r.room_number, r.room_type, r.description, r.room_price, r.room_image, max_occupancy " +
-                     "FROM room r " +
-                     "WHERE r.max_occupancy >= ? " +
-                     "AND r.room_number NOT IN (" +
-                     "   SELECT room_number FROM room_reservation " +
-                     "   WHERE status = 'Reserved' " +
-                     "   AND (? <= check_out_date AND ? >= check_in_date)" +
-                     ") " +
-                     "ORDER BY r.room_price ASC";
+        // Build and execute query with ratings
+        String query = "SELECT r.room_number, r.room_type, r.description, r.room_price, r.room_image, r.max_occupancy,\n" +
+                        "       COALESCE(AVG(rr.rating_value), 0) AS average_rating,\n" +
+                        "       COUNT(rr.rating_id) AS rating_count\n" +
+                        "FROM room r\n" +
+                        "LEFT JOIN room_reservation res ON res.room_number = r.room_number\n" +
+                        "LEFT JOIN reservation_ratings rr ON rr.room_reservation_id = res.room_reservation_id\n" +
+                        "WHERE r.max_occupancy >= ?\n" +
+                        "AND r.room_number NOT IN (\n" +
+                        "    SELECT room_number FROM room_reservation\n" +
+                        "    WHERE status = 'Reserved'\n" +
+                        "    AND (? <= check_out_date AND ? >= check_in_date)\n" +
+                        ")\n" +
+                        "GROUP BY r.room_number, r.room_type, r.description, r.room_price, r.room_image, r.max_occupancy\n" +
+                        "ORDER BY average_rating DESC, r.room_price DESC;";
 
         pst = con.prepareStatement(query);
         pst.setInt(1, totalGuests);
@@ -212,80 +217,80 @@ public void searchAvailableRooms() {
                 rs.getDouble("room_price"),
                 rs.getString("description"),
                 rs.getInt("max_occupancy"),
-                rs.getBytes("room_image")
+                rs.getBytes("room_image"),
+                rs.getDouble("average_rating"),
+                rs.getInt("rating_count")
             ));
         }
 
         if (!hasResults) {
             mainContainer.add(createNoResultsPanel(), BorderLayout.CENTER);
         } else {
-           // Wrap grid panel in scroll pane
-JScrollPane scrollPane = new JScrollPane(gridPanel);
-scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-scrollPane.setBorder(BorderFactory.createEmptyBorder());
-scrollPane.getViewport().setBackground(new Color(248, 248, 252));
-scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+            // Wrap grid panel in scroll pane
+            JScrollPane scrollPane = new JScrollPane(gridPanel);
+            scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+            scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            scrollPane.setBorder(BorderFactory.createEmptyBorder());
+            scrollPane.getViewport().setBackground(new Color(248, 248, 252));
+            scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
-// Minimalist, narrow scrollbar
-scrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
-    private final int SCROLLBAR_WIDTH = 6; // narrower width
+            // Minimalist, narrow scrollbar
+            scrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
+                private final int SCROLLBAR_WIDTH = 6;
 
-    @Override
-    protected void configureScrollBarColors() {
-        this.thumbColor = new Color(180, 180, 190);
-        this.trackColor = new Color(248, 248, 252);
-    }
+                @Override
+                protected void configureScrollBarColors() {
+                    this.thumbColor = new Color(180, 180, 190);
+                    this.trackColor = new Color(248, 248, 252);
+                }
 
-    @Override
-    protected JButton createDecreaseButton(int orientation) {
-        return createZeroButton();
-    }
+                @Override
+                protected JButton createDecreaseButton(int orientation) {
+                    return createZeroButton();
+                }
 
-    @Override
-    protected JButton createIncreaseButton(int orientation) {
-        return createZeroButton();
-    }
+                @Override
+                protected JButton createIncreaseButton(int orientation) {
+                    return createZeroButton();
+                }
 
-    private JButton createZeroButton() {
-        JButton button = new JButton();
-        button.setPreferredSize(new Dimension(0, 0));
-        button.setMinimumSize(new Dimension(0, 0));
-        button.setMaximumSize(new Dimension(0, 0));
-        return button;
-    }
+                private JButton createZeroButton() {
+                    JButton button = new JButton();
+                    button.setPreferredSize(new Dimension(0, 0));
+                    button.setMinimumSize(new Dimension(0, 0));
+                    button.setMaximumSize(new Dimension(0, 0));
+                    return button;
+                }
 
-    @Override
-    protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
-        if (!scrollbar.isEnabled() || thumbBounds.width > thumbBounds.height) return;
+                @Override
+                protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
+                    if (!scrollbar.isEnabled() || thumbBounds.width > thumbBounds.height) return;
 
-        Graphics2D g2 = (Graphics2D) g.create();
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setPaint(new Color(150, 150, 160)); // subtle dark thumb
-        g2.fillRoundRect(thumbBounds.x, thumbBounds.y, SCROLLBAR_WIDTH, thumbBounds.height, 10, 10);
-        g2.dispose();
-    }
+                    Graphics2D g2 = (Graphics2D)g.create();
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2.setPaint(new Color(150, 150, 160));
+                    g2.fillRoundRect(thumbBounds.x, thumbBounds.y, SCROLLBAR_WIDTH, thumbBounds.height, 10, 10);
+                    g2.dispose();
+                }
 
-    @Override
-    protected Dimension getMinimumThumbSize() {
-        return new Dimension(SCROLLBAR_WIDTH, 30);
-    }
+                @Override
+                protected Dimension getMinimumThumbSize() {
+                    return new Dimension(SCROLLBAR_WIDTH, 30);
+                }
 
-    @Override
-    protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
-        // Keep it clean
-    }
+                @Override
+                protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
+                    // Keep it clean
+                }
 
-    @Override
-    protected void setThumbBounds(int x, int y, int width, int height) {
-        super.setThumbBounds(x, y, SCROLLBAR_WIDTH, height);
-        scrollbar.repaint();
-    }
-});
+                @Override
+                protected void setThumbBounds(int x, int y, int width, int height) {
+                    super.setThumbBounds(x, y, SCROLLBAR_WIDTH, height);
+                    scrollbar.repaint();
+                }
+            });
 
-
-mainContainer.add(scrollPane, BorderLayout.CENTER);
-
+            mainContainer.add(scrollPane, BorderLayout.CENTER);
         }
 
         // Update the main display
@@ -302,6 +307,25 @@ mainContainer.add(scrollPane, BorderLayout.CENTER);
             "Database Error",
             JOptionPane.ERROR_MESSAGE);
     }
+}
+
+
+
+
+// Helper method to create star icons
+private JLabel createStarIcon(boolean filled) {
+    return createStarIcon(filled, false);
+}
+
+private JLabel createStarIcon(boolean filled, boolean half) {
+    JLabel star = new JLabel();
+    star.setPreferredSize(new Dimension(16, 16));
+    if (half) {
+        star.setIcon(new ImageIcon(getClass().getResource("/icons/star-half.png")));
+    } else {
+        star.setIcon(new ImageIcon(getClass().getResource(filled ? "/icons/star-filled.png" : "/icons/star-empty.png")));
+    }
+    return star;
 }
 
 
@@ -343,10 +367,11 @@ private JPanel createNoResultsPanel() {
 // exactly as you have them in your original code
 
 private JPanel createRoomCard(String roomNumber, String roomType, double roomPrice, 
-                             String description, int maxOccupancy, byte[] imageBytes) {
+                             String description, int maxOccupancy, byte[] imageBytes,
+                             double averageRating, int ratingCount) {
     JPanel roomCard = new JPanel();
     roomCard.setLayout(new BorderLayout());
-    roomCard.setPreferredSize(new Dimension(320, 480));
+    roomCard.setPreferredSize(new Dimension(320, 520)); // Increased height for ratings
     roomCard.setBackground(Color.WHITE);
     roomCard.setBorder(BorderFactory.createCompoundBorder(
         BorderFactory.createLineBorder(new Color(230, 230, 230), 1),
@@ -355,11 +380,12 @@ private JPanel createRoomCard(String roomNumber, String roomType, double roomPri
     roomCard.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
     roomCard.add(createImagePanel(imageBytes, roomType), BorderLayout.NORTH);
-    roomCard.add(createInfoPanel(roomType, description, maxOccupancy), BorderLayout.CENTER);
+    roomCard.add(createInfoPanel(roomType, description, maxOccupancy, averageRating, ratingCount), BorderLayout.CENTER);
     roomCard.add(createBookingPanel(roomNumber, roomType, description, roomPrice), BorderLayout.SOUTH);
 
     return roomCard;
 }
+
 
 
 private JPanel createImagePanel(byte[] imageBytes, String roomType) {
@@ -387,42 +413,142 @@ private JPanel createImagePanel(byte[] imageBytes, String roomType) {
     return imagePanel;
 }
 
-private JPanel createInfoPanel(String roomType, String description, int maxOccupancy) {
+private JPanel createInfoPanel(String roomType, String description, int maxOccupancy,
+                              double averageRating, int ratingCount) {
     JPanel infoPanel = new JPanel();
     infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
     infoPanel.setBackground(Color.WHITE);
-    infoPanel.setBorder(BorderFactory.createEmptyBorder(15, 10, 15, 10));
+    infoPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Reduced padding
 
     // Room type label
     JLabel lblRoomType = new JLabel(roomType);
-    lblRoomType.setFont(new Font("Segoe UI", Font.BOLD, 22));
+    lblRoomType.setFont(new Font("Segoe UI", Font.BOLD, 20)); // Slightly smaller font
     lblRoomType.setForeground(new Color(50, 50, 50));
     lblRoomType.setAlignmentX(Component.CENTER_ALIGNMENT);
     
-    // Occupancy label
+    // Rating panel with reduced spacing
+    JPanel ratingPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 0)); // Reduced horizontal spacing
+    ratingPanel.setBackground(Color.WHITE);
+    ratingPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+    ratingPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0)); // Reduced vertical padding
+
+    // Add stars based on average rating
+    int fullStars = (int) averageRating;
+    boolean hasHalfStar = (averageRating - fullStars) >= 0.5;
+
+    // Full stars (yellow)
+    for (int i = 0; i < fullStars; i++) {
+        ratingPanel.add(createStarLabel(true));
+    }
+
+    // Half star if needed (yellow)
+    if (hasHalfStar) {
+        ratingPanel.add(createStarLabel(false, true));
+    }
+
+    // Empty stars (gray)
+    int emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+    for (int i = 0; i < emptyStars; i++) {
+        ratingPanel.add(createStarLabel(false));
+    }
+
+    // Rating text with smaller font and less spacing
+    JLabel ratingText = new JLabel(String.format(" %.1f (%d)", averageRating, ratingCount));
+    ratingText.setFont(new Font("Segoe UI", Font.PLAIN, 11)); // Smaller font
+    ratingText.setForeground(new Color(120, 120, 120));
+    ratingPanel.add(ratingText);
+
+    // Occupancy label with reduced spacing
     JLabel lblOccupancy = new JLabel("Max Guests: " + maxOccupancy);
-    lblOccupancy.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+    lblOccupancy.setFont(new Font("Segoe UI", Font.PLAIN, 13)); // Slightly smaller
     lblOccupancy.setForeground(new Color(100, 100, 100));
     lblOccupancy.setAlignmentX(Component.CENTER_ALIGNMENT);
-    lblOccupancy.setBorder(BorderFactory.createEmptyBorder(5, 0, 15, 0));
+    lblOccupancy.setBorder(BorderFactory.createEmptyBorder(3, 0, 10, 0)); // Reduced spacing
 
-    // Description label with HTML formatting for better text wrapping
-    JLabel lblDescription = new JLabel("<html><div style='text-align:center;color:#555;padding:0 5px;'>" 
-        + description + "</div></html>");
-    lblDescription.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+    // Description label
+    JLabel lblDescription = new JLabel("<html><div style='text-align:center;color:#555;padding:0 5px;font-size:13px'>" 
+        + description + "</div></html>"); // Smaller font size
     lblDescription.setAlignmentX(Component.CENTER_ALIGNMENT);
 
     infoPanel.add(lblRoomType);
+    infoPanel.add(ratingPanel);
     infoPanel.add(lblOccupancy);
     infoPanel.add(lblDescription);
     
     return infoPanel;
 }
 
+
+
+private JLabel createStarLabel(boolean filled) {
+    return createStarLabel(filled, false);
+}
+
+private JLabel createStarLabel(boolean filled, boolean half) {
+    JLabel star = new JLabel();
+    star.setPreferredSize(new Dimension(14, 14)); // Slightly smaller stars
+    
+    if (half) {
+        // Half star (yellow left, gray right)
+        star.setIcon(new ImageIcon(createHalfStarIcon()));
+    } else if (filled) {
+        // Full yellow star
+        star.setIcon(new ImageIcon(createStarIcon(new Color(255, 215, 0)))); // Gold color
+    } else {
+        // Empty gray star
+        star.setIcon(new ImageIcon(createStarIcon(new Color(200, 200, 200)))); // Light gray
+    }
+    
+    return star;
+}
+
+// Creates a star icon with specified color
+private BufferedImage createStarIcon(Color color) {
+    BufferedImage image = new BufferedImage(14, 14, BufferedImage.TYPE_INT_ARGB);
+    Graphics2D g2 = image.createGraphics();
+    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    
+    // Star polygon coordinates
+    int[] xPoints = {7, 9, 13, 10, 11, 7, 3, 4, 1, 5};
+    int[] yPoints = {1, 5, 5, 8, 12, 10, 12, 8, 5, 5};
+    
+    g2.setColor(color);
+    g2.fillPolygon(xPoints, yPoints, xPoints.length);
+    g2.dispose();
+    
+    return image;
+}
+
+// Creates a half-filled star icon (yellow left, gray right)
+private BufferedImage createHalfStarIcon() {
+    BufferedImage image = new BufferedImage(14, 14, BufferedImage.TYPE_INT_ARGB);
+    Graphics2D g2 = image.createGraphics();
+    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    
+    // Star polygon coordinates
+    int[] xPoints = {7, 9, 13, 10, 11, 7, 3, 4, 1, 5};
+    int[] yPoints = {1, 5, 5, 8, 12, 10, 12, 8, 5, 5};
+    
+    // Left half (yellow)
+    g2.setClip(new Rectangle(0, 0, 7, 14));
+    g2.setColor(new Color(255, 215, 0)); // Gold color
+    g2.fillPolygon(xPoints, yPoints, xPoints.length);
+    
+    // Right half (gray)
+    g2.setClip(new Rectangle(7, 0, 7, 14));
+    g2.setColor(new Color(200, 200, 200)); // Light gray
+    g2.fillPolygon(xPoints, yPoints, xPoints.length);
+    
+    g2.dispose();
+    
+    return image;
+}
+
+
 private JPanel createBookingPanel(String roomNumber, String roomType, String description, double roomPrice) {
     JPanel bookingPanel = new JPanel();
     bookingPanel.setLayout(new GridBagLayout());
-    bookingPanel.setBackground(new Color(39, 114, 160)); // Primary color
+    bookingPanel.setBackground(new Color(39, 114, 160));
     bookingPanel.setBorder(BorderFactory.createEmptyBorder(12, 0, 12, 0));
     bookingPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
@@ -436,23 +562,23 @@ private JPanel createBookingPanel(String roomNumber, String roomType, String des
     bookingPanel.addMouseListener(new MouseAdapter() {
         @Override
         public void mouseEntered(MouseEvent e) {
-            bookingPanel.setBackground(new Color(29, 94, 140)); // darker when hover
+            bookingPanel.setBackground(new Color(29, 94, 140));
         }
 
         @Override
         public void mouseExited(MouseEvent e) {
-            bookingPanel.setBackground(new Color(39, 114, 160)); // original color
+            bookingPanel.setBackground(new Color(39, 114, 160));
         }
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            // Call your selectRoom function correctly
             selectRoom(roomNumber, roomType, description, roomPrice);
         }
     });
 
     return bookingPanel;
 }
+
 
 private void selectRoom(String roomNumber, String roomType, String description, double price) {
     try {
@@ -502,14 +628,7 @@ private void selectRoom(String roomNumber, String roomType, String description, 
         boolean wantsWaterActivities = (waterActivities == JOptionPane.YES_OPTION);
 
         // Open appropriate form based on user choice
-         if (wantsWaterActivities) {
-            // Add debug logging
-            System.out.println("Creating guestSelectBoat with:");
-            System.out.println("checkInDate: " + checkInDate);
-            System.out.println("checkOutDate: " + checkOutDate);
-            System.out.println("roomNumber: " + roomNumber);
-            System.out.println("userID: " + userID);
-            
+        if (wantsWaterActivities) {
             new guestSelectBoat(
                 checkInDate, 
                 checkOutDate, 
@@ -546,15 +665,62 @@ private void selectRoom(String roomNumber, String roomType, String description, 
             JOptionPane.ERROR_MESSAGE);
         ex.printStackTrace();
     } catch (Exception ex) {
-        // Existing error han
-    JOptionPane.showMessageDialog(this, 
-        "<html>Unexpected error while processing booking:<br>" + ex.getMessage() + "</html>",
-        "Booking Error", 
-        JOptionPane.ERROR_MESSAGE);
-    ex.printStackTrace();
+        JOptionPane.showMessageDialog(this, 
+            "<html>Unexpected error while processing booking:<br>" + ex.getMessage() + "</html>",
+            "Booking Error", 
+            JOptionPane.ERROR_MESSAGE);
+        ex.printStackTrace();
+    }
 }
 
+     public void hoverEffect(){
+        txtHome.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                handleLabelEvent(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                handleLabelEvent(evt);
+            }
+        });
+
+        txtReservation.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                handleLabelEvent(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                handleLabelEvent(evt);
+            }
+        });
+
+        txtProfile.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                handleLabelEvent(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                handleLabelEvent(evt);
+            }
+        });
+
+       }
+    
+    
+// Helper function to handle mouse enter and mouse exit for all labels
+private void handleLabelEvent(java.awt.event.MouseEvent evt) {                                     
+    JLabel sourceLabel = (JLabel) evt.getSource();  // Get the label that triggered the event
+    Color customColor = new Color(255, 191, 0);    // Hover color
+    Color defaultColor = new Color(255, 255, 255); // Default color
+
+    // Handle mouse enter event - change text color to customColor
+    if (evt.getID() == java.awt.event.MouseEvent.MOUSE_ENTERED) {
+        sourceLabel.setForeground(customColor);  // Set the hover color on the source label
+    }
+
+    // Handle mouse exit event - reset text color to default (white)
+    if (evt.getID() == java.awt.event.MouseEvent.MOUSE_EXITED) {
+        sourceLabel.setForeground(defaultColor);  // Reset color to white on exit
+    }
 }
+
 
 
 
@@ -589,14 +755,14 @@ private void selectRoom(String roomNumber, String roomType, String description, 
         jLabel10 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
         panelRound4 = new GUI.PanelRound();
-        jLabel18 = new javax.swing.JLabel();
         panelRound5 = new GUI.PanelRound();
-        jLabel25 = new javax.swing.JLabel();
-        panelRound2 = new GUI.PanelRound();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel27 = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
-        jLabel26 = new javax.swing.JLabel();
+        jLabel21 = new javax.swing.JLabel();
+        txtHome = new javax.swing.JLabel();
+        txtReservation = new javax.swing.JLabel();
+        txtProfile = new javax.swing.JLabel();
+        panelRound7 = new GUI.PanelRound();
+        jLabel8 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
 
@@ -721,37 +887,64 @@ private void selectRoom(String roomNumber, String roomType, String description, 
         panelRound4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
         jPanel2.add(panelRound4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 120, 1440, 670));
 
-        jLabel18.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 14)); // NOI18N
-        jLabel18.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel18.setText("to Papaya Beach Resort");
-        jPanel2.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 20, -1, 30));
-
         panelRound5.setBackground(new java.awt.Color(27, 59, 95));
         panelRound5.setRoundBottomLeft(50);
         panelRound5.setRoundBottomRight(50);
         panelRound5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel25.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
-        jLabel25.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel25.setText("HOME");
-        jLabel25.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel25MouseClicked(evt);
-            }
-        });
-        panelRound5.add(jLabel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(1000, 0, -1, 60));
+        jLabel17.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jLabel17.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel17.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logoFinal copy.png"))); // NOI18N
+        jLabel17.setText(" PAPAYA BEACH RESORT,");
+        panelRound5.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 310, 60));
 
-        panelRound2.setBackground(new java.awt.Color(0, 153, 255));
-        panelRound2.setRoundBottomLeft(20);
-        panelRound2.setRoundBottomRight(20);
-        panelRound2.setRoundTopLeft(20);
-        panelRound2.setRoundTopRight(20);
-        panelRound2.addMouseListener(new java.awt.event.MouseAdapter() {
+        jLabel21.setFont(new java.awt.Font("Arial Rounded MT Bold", 2, 14)); // NOI18N
+        jLabel21.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel21.setText("Escape to Paradise");
+        panelRound5.add(jLabel21, new org.netbeans.lib.awtextra.AbsoluteConstraints(299, 11, -1, 40));
+
+        txtHome.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 12)); // NOI18N
+        txtHome.setForeground(new java.awt.Color(255, 255, 255));
+        txtHome.setText("HOME");
+        txtHome.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                panelRound2MouseClicked(evt);
+                txtHomeMouseClicked(evt);
             }
         });
-        panelRound2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        panelRound5.add(txtHome, new org.netbeans.lib.awtextra.AbsoluteConstraints(1060, 0, 40, 60));
+
+        txtReservation.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 12)); // NOI18N
+        txtReservation.setForeground(new java.awt.Color(255, 255, 255));
+        txtReservation.setText("RESERVATION");
+        txtReservation.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtReservationMouseClicked(evt);
+            }
+        });
+        panelRound5.add(txtReservation, new org.netbeans.lib.awtextra.AbsoluteConstraints(1130, 0, -1, 60));
+
+        txtProfile.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 12)); // NOI18N
+        txtProfile.setForeground(new java.awt.Color(255, 255, 255));
+        txtProfile.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        txtProfile.setText("PROFILE");
+        txtProfile.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtProfileMouseClicked(evt);
+            }
+        });
+        panelRound5.add(txtProfile, new org.netbeans.lib.awtextra.AbsoluteConstraints(1240, 0, 60, 60));
+
+        panelRound7.setBackground(new java.awt.Color(0, 153, 255));
+        panelRound7.setRoundBottomLeft(20);
+        panelRound7.setRoundBottomRight(20);
+        panelRound7.setRoundTopLeft(20);
+        panelRound7.setRoundTopRight(20);
+        panelRound7.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                panelRound7MouseClicked(evt);
+            }
+        });
+        panelRound7.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel8.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
@@ -762,34 +955,9 @@ private void selectRoom(String roomNumber, String roomType, String description, 
                 jLabel8MouseClicked(evt);
             }
         });
-        panelRound2.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 70, 35));
+        panelRound7.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 70, 35));
 
-        panelRound5.add(panelRound2, new org.netbeans.lib.awtextra.AbsoluteConstraints(1320, 12, 90, -1));
-
-        jLabel27.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
-        jLabel27.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel27.setText("RESERVATION");
-        jLabel27.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel27MouseClicked(evt);
-            }
-        });
-        panelRound5.add(jLabel27, new org.netbeans.lib.awtextra.AbsoluteConstraints(1080, 0, -1, 60));
-
-        jLabel17.setFont(new java.awt.Font("Tahoma", 1, 25)); // NOI18N
-        jLabel17.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel17.setText("Welcome,");
-        panelRound5.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 0, 180, 60));
-
-        jLabel26.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 14)); // NOI18N
-        jLabel26.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel26.setText("PROFILE");
-        jLabel26.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel26MouseClicked(evt);
-            }
-        });
-        panelRound5.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(1220, 0, 60, 60));
+        panelRound5.add(panelRound7, new org.netbeans.lib.awtextra.AbsoluteConstraints(1320, 12, 90, -1));
 
         jPanel2.add(panelRound5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 60));
 
@@ -884,27 +1052,49 @@ private void selectRoom(String roomNumber, String roomType, String description, 
         dateChooserCheckout.showPopup();
     }//GEN-LAST:event_jLabel5MouseClicked
 
-    private void jLabel25MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel25MouseClicked
+    private void txtHomeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtHomeMouseClicked
         new guestHome(userID).setVisible(true);
-    }//GEN-LAST:event_jLabel25MouseClicked
+    }//GEN-LAST:event_txtHomeMouseClicked
 
-    private void jLabel8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel8MouseClicked
-        this.dispose();
-        new landingPage().setVisible(true);
-    }//GEN-LAST:event_jLabel8MouseClicked
-
-    private void panelRound2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelRound2MouseClicked
-
-    }//GEN-LAST:event_panelRound2MouseClicked
-
-    private void jLabel27MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel27MouseClicked
+    private void txtReservationMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtReservationMouseClicked
         new guestReservation(userID).setVisible(true);
-    }//GEN-LAST:event_jLabel27MouseClicked
+    }//GEN-LAST:event_txtReservationMouseClicked
 
-    private void jLabel26MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel26MouseClicked
+    private void txtProfileMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtProfileMouseClicked
         guestProfile user = new guestProfile(userID);
         user.setVisible(true);
-    }//GEN-LAST:event_jLabel26MouseClicked
+    }//GEN-LAST:event_txtProfileMouseClicked
+
+    private void jLabel8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel8MouseClicked
+        try {
+            // Prepare the SQL query for logging the logout action
+            String logSql = "INSERT INTO activity_log (user_id, action_type, action_description) VALUES (?, ?, ?)";
+
+            // Log the logout activity using the userID of the logged-in user
+            try (PreparedStatement pst = con.prepareStatement(logSql)) {
+                pst.setInt(1, userID);  // Assuming userID is available after login
+                pst.setString(2, "LOGOUT");
+                pst.setString(3, "User logged out successfully");
+
+                // Execute the update to log the action
+                pst.executeUpdate();
+            } catch (SQLException ex) {
+                java.util.logging.Logger.getLogger(guestSelectRoom.class.getName()).log(java.util.logging.Level.SEVERE, "Error logging logout activity", ex);
+            }
+
+            // Close the current window and open the landing page (logout action)
+            this.dispose();
+            new landingPage().setVisible(true);
+
+        }catch (Exception ex) {
+            // Handle any other unforeseen exceptions
+            java.util.logging.Logger.getLogger(guestSelectRoom.class.getName()).log(java.util.logging.Level.SEVERE, "Unexpected error during logout", ex);
+        }
+    }//GEN-LAST:event_jLabel8MouseClicked
+
+    private void panelRound7MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelRound7MouseClicked
+
+    }//GEN-LAST:event_panelRound7MouseClicked
 
     /**
      * @param args the command line arguments
@@ -1017,10 +1207,7 @@ private void selectRoom(String roomNumber, String roomType, String description, 
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel18;
-    private javax.swing.JLabel jLabel25;
-    private javax.swing.JLabel jLabel26;
-    private javax.swing.JLabel jLabel27;
+    private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -1030,12 +1217,15 @@ private void selectRoom(String roomNumber, String roomType, String description, 
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
     private GUI.PanelRound panelRound1;
-    private GUI.PanelRound panelRound2;
     private GUI.PanelRound panelRound3;
     private GUI.PanelRound panelRound4;
     private GUI.PanelRound panelRound5;
+    private GUI.PanelRound panelRound7;
     private textfield_suggestion.TextFieldSuggestion txtCheckin;
     private textfield_suggestion.TextFieldSuggestion txtCheckout;
+    private javax.swing.JLabel txtHome;
+    private javax.swing.JLabel txtProfile;
+    private javax.swing.JLabel txtReservation;
     private javax.swing.JPanel yourMainPanelOrFrame;
     // End of variables declaration//GEN-END:variables
 }

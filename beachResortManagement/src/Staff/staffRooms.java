@@ -80,15 +80,26 @@ public class staffRooms extends javax.swing.JInternalFrame {
         UI.setNorthPane(null); 
     }
     
- public final void showRoomDetails() {
+public final void showRoomDetails() {
+    String selectedRoomType = roomTypeComboBox.getSelectedItem().toString(); // your JComboBox for filtering
+
+    String query = "SELECT * FROM room";
+    if (!selectedRoomType.equalsIgnoreCase("All")) {
+        query += " WHERE room_type = ?";
+    }
+
     try {
-        pst = con.prepareStatement("SELECT * FROM room");
+        pst = con.prepareStatement(query);
+        if (!selectedRoomType.equalsIgnoreCase("All")) {
+            pst.setString(1, selectedRoomType);
+        }
+
         rs = pst.executeQuery();
 
         DefaultTableModel roomModel = (DefaultTableModel) tblroom.getModel();
         roomModel.setRowCount(0); // clear table
 
-        // Add custom renderer just for the image column (column 1)
+        // Add image renderer
         tblroom.getColumnModel().getColumn(1).setCellRenderer(new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value,
@@ -102,8 +113,7 @@ public class staffRooms extends javax.swing.JInternalFrame {
                     }
                     return label;
                 }
-                return super.getTableCellRendererComponent(table, value, isSelected, 
-                        hasFocus, row, column);
+                return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             }
         });
 
@@ -114,20 +124,16 @@ public class staffRooms extends javax.swing.JInternalFrame {
             String description = rs.getString("description");
             int maxOccupancy = rs.getInt("max_occupancy");
 
-            // Get the image as bytes
             byte[] imgBytes = rs.getBytes("room_image");
-            ImageIcon imageIcon = null;
+            ImageIcon imageIcon;
 
             if (imgBytes != null) {
-                Image img = new ImageIcon(imgBytes).getImage();
-                img = img.getScaledInstance(100, 80, Image.SCALE_SMOOTH);
+                Image img = new ImageIcon(imgBytes).getImage().getScaledInstance(100, 80, Image.SCALE_SMOOTH);
                 imageIcon = new ImageIcon(img);
             } else {
-                // Set a default blank icon if no image exists
                 imageIcon = new ImageIcon(new BufferedImage(100, 80, BufferedImage.TYPE_INT_ARGB));
             }
 
-            // Add row to model
             roomModel.addRow(new Object[] {
                 roomNumber,
                 imageIcon,
@@ -138,7 +144,6 @@ public class staffRooms extends javax.swing.JInternalFrame {
             });
         }
 
-        // Set the row height to fit the image
         tblroom.setRowHeight(80);
 
     } catch (SQLException ex) {
@@ -146,6 +151,7 @@ public class staffRooms extends javax.swing.JInternalFrame {
         System.out.println("Error fetching room data: " + ex.getMessage());
     }
 }
+
     
    
 
@@ -167,6 +173,7 @@ public class staffRooms extends javax.swing.JInternalFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tblroom = new rojerusan.RSTableMetro();
         txtsearch = new textfield_suggestion.TextFieldSuggestion();
+        roomTypeComboBox = new GUI.ComboBoxSuggestion();
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
@@ -261,12 +268,31 @@ public class staffRooms extends javax.swing.JInternalFrame {
                 txtsearchFocusLost(evt);
             }
         });
+        txtsearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtsearchActionPerformed(evt);
+            }
+        });
         txtsearch.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 txtsearchKeyReleased(evt);
             }
         });
-        jPanel2.add(txtsearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 270, 40));
+        jPanel2.add(txtsearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 20, 290, 40));
+
+        roomTypeComboBox.setEditable(false);
+        roomTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All", "Family Suite", "Beachfront Villa", "Cabana", "Premium Suite" }));
+        roomTypeComboBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                roomTypeComboBoxItemStateChanged(evt);
+            }
+        });
+        roomTypeComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                roomTypeComboBoxActionPerformed(evt);
+            }
+        });
+        jPanel2.add(roomTypeComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 110, 40));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 1160, 660));
 
@@ -336,6 +362,18 @@ public class staffRooms extends javax.swing.JInternalFrame {
 
     }//GEN-LAST:event_txtsearchKeyReleased
 
+    private void roomTypeComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_roomTypeComboBoxItemStateChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_roomTypeComboBoxItemStateChanged
+
+    private void roomTypeComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_roomTypeComboBoxActionPerformed
+        showRoomDetails();
+    }//GEN-LAST:event_roomTypeComboBoxActionPerformed
+
+    private void txtsearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtsearchActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtsearchActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
@@ -345,6 +383,7 @@ public class staffRooms extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
+    private GUI.ComboBoxSuggestion roomTypeComboBox;
     private rojerusan.RSTableMetro tblroom;
     private textfield_suggestion.TextFieldSuggestion txtsearch;
     // End of variables declaration//GEN-END:variables

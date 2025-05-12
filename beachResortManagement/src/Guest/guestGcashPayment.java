@@ -5,13 +5,19 @@
 package Guest;
 
 import Login.landingPage;
+import Staff.staffHome;
+import java.awt.Color;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 
 
@@ -111,6 +117,7 @@ public class guestGcashPayment extends javax.swing.JFrame {
     private void initializeUI() {
         String formattedDownPayment = String.format("₱%.2f", downPayment);
         initComponents(); // Assuming this initializes the UI components
+        hoverEffect();
         txtAmount.setText(formattedDownPayment);
         txtAmount2.setText(formattedDownPayment);
         DatabaseConnection();
@@ -481,6 +488,22 @@ private void handleDatabaseError(String message, SQLException e) {
     
     private void handlePaymentResult(boolean success) {
         if (success) {
+            try {
+                if (con == null || con.isClosed()) {
+                    DatabaseConnection(); // Ensure connection
+                }
+
+                String logSql = "INSERT INTO activity_log (user_id, action_type, action_description) VALUES (?, ?, ?)";
+                try (PreparedStatement logPst = con.prepareStatement(logSql)) {
+                    logPst.setInt(1, userID);  // Assuming userID is available
+                    logPst.setString(2, "RESERVATION");
+                    logPst.setString(3, "User completed a reservation successfully.");
+                    logPst.executeUpdate();
+                }
+
+            } catch (SQLException e) {
+                Logger.getLogger(getClass().getName()).log(Level.WARNING, "Failed to log reservation activity", e);
+            }
             JOptionPane.showMessageDialog(null, "Your reservation is complete! Waiting for the resort to confirm.", 
                                       "Reservation Complete", JOptionPane.INFORMATION_MESSAGE);
             this.dispose();
@@ -498,6 +521,54 @@ private void handleDatabaseError(String message, SQLException e) {
                                     "Database Error", JOptionPane.ERROR_MESSAGE);
     }
     
+    public void hoverEffect(){
+        txtHome.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                handleLabelEvent(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                handleLabelEvent(evt);
+            }
+        });
+
+        txtReservation.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                handleLabelEvent(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                handleLabelEvent(evt);
+            }
+        });
+
+        txtProfile.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                handleLabelEvent(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                handleLabelEvent(evt);
+            }
+        });
+
+       }
+    
+    
+// Helper function to handle mouse enter and mouse exit for all labels
+private void handleLabelEvent(java.awt.event.MouseEvent evt) {                                     
+    JLabel sourceLabel = (JLabel) evt.getSource();  // Get the label that triggered the event
+    Color customColor = new Color(255, 191, 0);    // Hover color
+    Color defaultColor = new Color(255, 255, 255); // Default color
+
+    // Handle mouse enter event - change text color to customColor
+    if (evt.getID() == java.awt.event.MouseEvent.MOUSE_ENTERED) {
+        sourceLabel.setForeground(customColor);  // Set the hover color on the source label
+    }
+
+    // Handle mouse exit event - reset text color to default (white)
+    if (evt.getID() == java.awt.event.MouseEvent.MOUSE_EXITED) {
+        sourceLabel.setForeground(defaultColor);  // Reset color to white on exit
+    }
+}
+
 
     
     
@@ -537,16 +608,16 @@ private void handleDatabaseError(String message, SQLException e) {
         jLabel27 = new javax.swing.JLabel();
         txtAmount = new javax.swing.JLabel();
         jLabel30 = new javax.swing.JLabel();
-        panelRound1 = new GUI.PanelRound();
-        panelRound3 = new GUI.PanelRound();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel17 = new javax.swing.JLabel();
-        jLabel20 = new javax.swing.JLabel();
-        jLabel25 = new javax.swing.JLabel();
-        jLabel31 = new javax.swing.JLabel();
-        jLabel26 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
+        panelRound1 = new GUI.PanelRound();
+        jLabel17 = new javax.swing.JLabel();
+        jLabel21 = new javax.swing.JLabel();
+        panelRound4 = new GUI.PanelRound();
+        jLabel8 = new javax.swing.JLabel();
+        txtHome = new javax.swing.JLabel();
+        txtReservation = new javax.swing.JLabel();
+        txtProfile = new javax.swing.JLabel();
         jPanel9 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -704,22 +775,43 @@ private void handleDatabaseError(String message, SQLException e) {
 
         jPanel1.add(jPanel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 60, 1440, 730));
 
+        jPanel4.setBackground(new java.awt.Color(39, 114, 160));
+        jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel9.setText("© 2025 Papaya Beach Resort. All rights reserved.");
+        jLabel9.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jPanel4.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 13, -1, -1));
+
+        jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 790, 1440, 40));
+
         panelRound1.setBackground(new java.awt.Color(27, 59, 95));
         panelRound1.setRoundBottomLeft(50);
         panelRound1.setRoundBottomRight(50);
         panelRound1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        panelRound3.setBackground(new java.awt.Color(0, 153, 255));
-        panelRound3.setRoundBottomLeft(20);
-        panelRound3.setRoundBottomRight(20);
-        panelRound3.setRoundTopLeft(20);
-        panelRound3.setRoundTopRight(20);
-        panelRound3.addMouseListener(new java.awt.event.MouseAdapter() {
+        jLabel17.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jLabel17.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel17.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Image/logoFinal copy.png"))); // NOI18N
+        jLabel17.setText(" PAPAYA BEACH RESORT,");
+        panelRound1.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 310, 60));
+
+        jLabel21.setFont(new java.awt.Font("Arial Rounded MT Bold", 2, 14)); // NOI18N
+        jLabel21.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel21.setText("Escape to Paradise");
+        panelRound1.add(jLabel21, new org.netbeans.lib.awtextra.AbsoluteConstraints(299, 11, -1, 40));
+
+        panelRound4.setBackground(new java.awt.Color(0, 153, 255));
+        panelRound4.setRoundBottomLeft(20);
+        panelRound4.setRoundBottomRight(20);
+        panelRound4.setRoundTopLeft(20);
+        panelRound4.setRoundTopRight(20);
+        panelRound4.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                panelRound3MouseClicked(evt);
+                panelRound4MouseClicked(evt);
             }
         });
-        panelRound3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        panelRound4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel8.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
@@ -730,61 +822,42 @@ private void handleDatabaseError(String message, SQLException e) {
                 jLabel8MouseClicked(evt);
             }
         });
-        panelRound3.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 70, 35));
+        panelRound4.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 70, 35));
 
-        panelRound1.add(panelRound3, new org.netbeans.lib.awtextra.AbsoluteConstraints(1320, 12, 90, -1));
+        panelRound1.add(panelRound4, new org.netbeans.lib.awtextra.AbsoluteConstraints(1320, 12, 90, -1));
 
-        jLabel17.setFont(new java.awt.Font("Tahoma", 1, 25)); // NOI18N
-        jLabel17.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel17.setText("Welcome,");
-        panelRound1.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 0, 180, 60));
-
-        jLabel20.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 14)); // NOI18N
-        jLabel20.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel20.setText("to Papaya Beach Resort");
-        panelRound1.add(jLabel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 20, -1, 30));
-
-        jLabel25.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
-        jLabel25.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel25.setText("HOME");
-        jLabel25.addMouseListener(new java.awt.event.MouseAdapter() {
+        txtHome.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 12)); // NOI18N
+        txtHome.setForeground(new java.awt.Color(255, 255, 255));
+        txtHome.setText("HOME");
+        txtHome.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel25MouseClicked(evt);
+                txtHomeMouseClicked(evt);
             }
         });
-        panelRound1.add(jLabel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(1000, 0, -1, 60));
+        panelRound1.add(txtHome, new org.netbeans.lib.awtextra.AbsoluteConstraints(1060, 0, 40, 60));
 
-        jLabel31.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 14)); // NOI18N
-        jLabel31.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel31.setText("RESERVATION");
-        jLabel31.addMouseListener(new java.awt.event.MouseAdapter() {
+        txtReservation.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 12)); // NOI18N
+        txtReservation.setForeground(new java.awt.Color(255, 255, 255));
+        txtReservation.setText("RESERVATION");
+        txtReservation.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel31MouseClicked(evt);
+                txtReservationMouseClicked(evt);
             }
         });
-        panelRound1.add(jLabel31, new org.netbeans.lib.awtextra.AbsoluteConstraints(1080, 0, -1, 60));
+        panelRound1.add(txtReservation, new org.netbeans.lib.awtextra.AbsoluteConstraints(1130, 0, -1, 60));
 
-        jLabel26.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 14)); // NOI18N
-        jLabel26.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel26.setText("PROFILE");
-        jLabel26.addMouseListener(new java.awt.event.MouseAdapter() {
+        txtProfile.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 12)); // NOI18N
+        txtProfile.setForeground(new java.awt.Color(255, 255, 255));
+        txtProfile.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        txtProfile.setText("PROFILE");
+        txtProfile.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel26MouseClicked(evt);
+                txtProfileMouseClicked(evt);
             }
         });
-        panelRound1.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(1220, 0, 60, 60));
+        panelRound1.add(txtProfile, new org.netbeans.lib.awtextra.AbsoluteConstraints(1240, 0, 60, 60));
 
         jPanel1.add(panelRound1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 60));
-
-        jPanel4.setBackground(new java.awt.Color(39, 114, 160));
-        jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel9.setText("© 2025 Papaya Beach Resort. All rights reserved.");
-        jLabel9.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jPanel4.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 13, -1, -1));
-
-        jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 790, 1440, 40));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 830));
 
@@ -828,27 +901,49 @@ if (isBoatAvailed) {
 
     }//GEN-LAST:event_jLabel1MouseClicked
 
-    private void jLabel8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel8MouseClicked
-        this.dispose();
-        new landingPage().setVisible(true);
-    }//GEN-LAST:event_jLabel8MouseClicked
-
-    private void panelRound3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelRound3MouseClicked
-
-    }//GEN-LAST:event_panelRound3MouseClicked
-
-    private void jLabel25MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel25MouseClicked
+    private void txtHomeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtHomeMouseClicked
         new guestHome(userID).setVisible(true);
-    }//GEN-LAST:event_jLabel25MouseClicked
+    }//GEN-LAST:event_txtHomeMouseClicked
 
-    private void jLabel31MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel31MouseClicked
+    private void txtReservationMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtReservationMouseClicked
         new guestReservation(userID).setVisible(true);
-    }//GEN-LAST:event_jLabel31MouseClicked
+    }//GEN-LAST:event_txtReservationMouseClicked
 
-    private void jLabel26MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel26MouseClicked
+    private void txtProfileMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtProfileMouseClicked
         guestProfile user = new guestProfile(userID);
         user.setVisible(true);
-    }//GEN-LAST:event_jLabel26MouseClicked
+    }//GEN-LAST:event_txtProfileMouseClicked
+
+    private void panelRound4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelRound4MouseClicked
+
+    }//GEN-LAST:event_panelRound4MouseClicked
+
+    private void jLabel8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel8MouseClicked
+        try {
+        // Prepare the SQL query for logging the logout action
+        String logSql = "INSERT INTO activity_log (user_id, action_type, action_description) VALUES (?, ?, ?)";
+        
+        // Log the logout activity using the userID of the logged-in user
+        try (PreparedStatement pst = con.prepareStatement(logSql)) {
+            pst.setInt(1, userID);  // Assuming userID is available after login
+            pst.setString(2, "LOGOUT");
+            pst.setString(3, "User logged out successfully");
+            
+            // Execute the update to log the action
+            pst.executeUpdate();
+        } catch (SQLException ex) {
+            java.util.logging.Logger.getLogger(guestGcashPayment.class.getName()).log(java.util.logging.Level.SEVERE, "Error logging logout activity", ex);
+        }
+        
+        // Close the current window and open the landing page (logout action)
+        this.dispose();
+        new landingPage().setVisible(true);
+
+    }catch (Exception ex) {
+        // Handle any other unforeseen exceptions
+        java.util.logging.Logger.getLogger(guestGcashPayment.class.getName()).log(java.util.logging.Level.SEVERE, "Unexpected error during logout", ex);
+    }
+    }//GEN-LAST:event_jLabel8MouseClicked
 
     /**
      * @param args the command line arguments
@@ -1434,16 +1529,13 @@ java.awt.EventQueue.invokeLater(() -> {
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel24;
-    private javax.swing.JLabel jLabel25;
-    private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel30;
-    private javax.swing.JLabel jLabel31;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
@@ -1460,9 +1552,12 @@ java.awt.EventQueue.invokeLater(() -> {
     private javax.swing.JPanel jPanel9;
     private GUI.PanelRound panelRound1;
     private GUI.PanelRound panelRound2;
-    private GUI.PanelRound panelRound3;
+    private GUI.PanelRound panelRound4;
     private javax.swing.JLabel txtAmount;
     private javax.swing.JLabel txtAmount2;
+    private javax.swing.JLabel txtHome;
+    private javax.swing.JLabel txtProfile;
     private GUI.TextFieldSuggestion txtReferenceNumber;
+    private javax.swing.JLabel txtReservation;
     // End of variables declaration//GEN-END:variables
 }

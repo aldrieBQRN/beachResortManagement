@@ -20,10 +20,10 @@ import org.mindrot.jbcrypt.BCrypt;
  */
 public class adminUpdateUser extends javax.swing.JFrame {
 
-    /**
-     * Creates new form roomAdd
-     */
-    public adminUpdateUser() {
+    private int userID;
+    
+    public adminUpdateUser(int userID) {
+        this.userID = userID;
         initComponents();
         DatabaseConnection();
         populateUserIdsComboBox();
@@ -307,6 +307,17 @@ public class adminUpdateUser extends javax.swing.JFrame {
 
     int rowsAffected = pst.executeUpdate();
     if (rowsAffected > 0) {
+            // Log the update action
+            String logSql = "INSERT INTO activity_log (user_id, action_type, action_description) VALUES (?, ?, ?)";
+            try (PreparedStatement logPst = con.prepareStatement(logSql)) {
+                logPst.setInt(1, userID); // Replace with actual logged-in user ID
+                logPst.setString(2, "UPDATE_USER");
+                logPst.setString(3, "Updated user with ID " + userId + " and name \"" + fullName + "\"");
+                logPst.executeUpdate();
+            } catch (SQLException ex) {
+                java.util.logging.Logger.getLogger(getClass().getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            }
+
         JOptionPane.showMessageDialog(this, "User updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
         this.dispose();
     }
@@ -425,7 +436,7 @@ if (rs.next()) {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new adminUpdateUser().setVisible(true);
+                new adminUpdateUser(2).setVisible(true);
             }
         });
     }

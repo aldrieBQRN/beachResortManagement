@@ -50,10 +50,10 @@ import javax.swing.table.TableRowSorter;
  */
 public final class staffReservation extends javax.swing.JInternalFrame {
 
-    /**
-     * Creates new form staffReservation
-     */
-    public staffReservation() {
+    private int userID;
+    
+    public staffReservation(int userID) {
+        this.userID = userID;
         initComponents();
         removeBackground();
         DatabaseConnection();
@@ -443,6 +443,8 @@ private void confirmReservation(String reservationNumber) {
     PreparedStatement updatePaymentStmt = null;
     PreparedStatement getIdStmt = null;
     ResultSet rs = null;
+    PreparedStatement logStmt = null; // Add at the top
+
     
     try {
         // Start transaction
@@ -480,6 +482,12 @@ private void confirmReservation(String reservationNumber) {
         // Check if both updates were successful
         if (reservationUpdated > 0 && paymentUpdated > 0) {
             con.commit();
+            String logQuery = "INSERT INTO activity_log (user_id, action_type, action_description) VALUES (?, ?, ?)";
+            logStmt = con.prepareStatement(logQuery);
+            logStmt.setInt(1, userID); // Make sure userId is available in this class
+            logStmt.setString(2, "CONFIRM_RESERVATION");
+            logStmt.setString(3, "Confirmed reservation #" + reservationNumber);
+            logStmt.executeUpdate();
             JOptionPane.showMessageDialog(this, 
                 "Reservation #" + reservationNumber + " confirmed successfully!\n" +
                 "Payment status updated to 'Paid'.",

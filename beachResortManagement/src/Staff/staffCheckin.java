@@ -50,8 +50,10 @@ public class staffCheckin extends javax.swing.JInternalFrame {
 
     private static final String CONFIRMED_STATUS = "Confirmed";
     private static final String CHECKIN_STATUS = "Check-in";
+    private int userID;
     
-    public staffCheckin() {
+    public staffCheckin(int userID) {
+        this.userID = userID;
         initComponents();
         removeBackground();
         DatabaseConnection();
@@ -541,6 +543,8 @@ private void processOnSitePayment(int reservationId, double balanceAmount) {
 
 private void updateReservationStatus(String reservationNumber, String newStatus) {
     try {
+        PreparedStatement logStmt = null;
+
         DatabaseConnection();
         String query = "UPDATE reservation SET status = ? WHERE reservation_number = ?";
         pst = con.prepareStatement(query);
@@ -549,7 +553,12 @@ private void updateReservationStatus(String reservationNumber, String newStatus)
         int rows = pst.executeUpdate();
 
         if (rows > 0) {
-           
+           String logQuery = "INSERT INTO activity_log (user_id, action_type, action_description) VALUES (?, ?, ?)";
+            logStmt = con.prepareStatement(logQuery);
+            logStmt.setInt(1, userID); // Ensure userId is available in this class
+            logStmt.setString(2, "UPDATE_RESERVATION_STATUS");
+            logStmt.setString(3, "Updated reservation #" + reservationNumber + " to status: " + newStatus);
+            logStmt.executeUpdate();
             fetchRoomReservations(checkInTable, CONFIRMED_STATUS);
             fetchRoomReservations(checkOutTable, CHECKIN_STATUS);
         } else {

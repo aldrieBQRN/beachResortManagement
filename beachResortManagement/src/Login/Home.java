@@ -137,6 +137,16 @@ public class Home extends javax.swing.JInternalFrame {
                     
                     // Verify the password against the stored hash
                     if (BCrypt.checkpw(password, storedHash)) {
+                        String logSql = "INSERT INTO activity_log (user_id, action_type, action_description) VALUES (?, ?, ?)";
+                        try (PreparedStatement logPst = con.prepareStatement(logSql)) {
+                            logPst.setInt(1, userID);
+                            logPst.setString(2, "LOGIN");
+                            logPst.setString(3, "User logged in successfully");
+                            logPst.executeUpdate();
+                        } catch (SQLException e) {
+                            Logger.getLogger(landingPage.class.getName()).log(Level.WARNING, "Login activity not logged", e);
+                        }
+
                         // Login successful
                         JOptionPane.showMessageDialog(this, 
                             "Login Successful", 
@@ -171,13 +181,13 @@ public class Home extends javax.swing.JInternalFrame {
     }
 }
 
-private void openHomePage(String role, String userName, int userID) {
+private void openHomePage(String role, String userName, int userID) throws SQLException {
     switch (role) {
         case "Admin":
-            new adminMainHome(userName).setVisible(true);
+            new adminMainHome(userName, userID).setVisible(true);
             break;
         case "Staff":
-            new staffHome(userName).setVisible(true);
+            new staffHome(userName, userID).setVisible(true);
             break;
         case "Guest":
             new guestHome(userID).setVisible(true);

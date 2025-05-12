@@ -18,10 +18,10 @@ import javax.swing.JOptionPane;
  */
 public class adminDeleteUser extends javax.swing.JFrame {
 
-    /**
-     * Creates new form roomAdd
-     */
-    public adminDeleteUser() {
+    private int userID;
+    
+    public adminDeleteUser(int userID) {
+        this.userID = userID;
         initComponents();
         DatabaseConnection();
     }
@@ -171,6 +171,14 @@ public class adminDeleteUser extends javax.swing.JFrame {
 
     int rowsAffected = pst.executeUpdate();
     if (rowsAffected > 0) {
+        String logSql = "INSERT INTO activity_log (user_id, action_type, action_description) VALUES (?, ?, ?)";
+        try (PreparedStatement logPst = con.prepareStatement(logSql)) {
+            logPst.setInt(1, userID);  // The admin performing the deletion
+            logPst.setString(2, "DELETE_USER");
+            logPst.setString(3, "Deleted user with ID " + userId);
+            logPst.executeUpdate();
+        }
+
         JOptionPane.showMessageDialog(this, "User deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
         txtUserId.setText(""); // Clear field
     }
@@ -252,7 +260,7 @@ public class adminDeleteUser extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new adminDeleteUser().setVisible(true);
+                new adminDeleteUser(2).setVisible(true);
             }
         });
     }
