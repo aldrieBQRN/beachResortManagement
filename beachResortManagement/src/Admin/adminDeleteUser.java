@@ -181,6 +181,7 @@ public class adminDeleteUser extends javax.swing.JFrame {
 
         JOptionPane.showMessageDialog(this, "User deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
         txtUserId.setText(""); // Clear field
+        this.dispose();
     }
 } catch (SQLException ex) {
     java.util.logging.Logger.getLogger(adminDeleteUser.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);

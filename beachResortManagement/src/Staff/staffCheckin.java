@@ -393,7 +393,7 @@ private void handleButtonClick(int row, String action, JTable sourceTable) {
     } else if ("Check-out".equals(action)) {
         newStatus = "Check-out";
 
-        // ✅ Confirm check-out before proceeding
+        // Confirm check-out before proceeding
         int confirm = JOptionPane.showConfirmDialog(this,
                 "Are you sure you want to check out this reservation?",
                 "Confirm Check-out",
@@ -405,12 +405,12 @@ private void handleButtonClick(int row, String action, JTable sourceTable) {
     }
 
     try {
-        // 🔄 Calculate remaining balance
+        // Calculate remaining balance
         DatabaseConnection();
         String balanceQuery = "SELECT r.total_price, COALESCE(SUM(p.amount), 0) as paid " +
-                              "FROM reservation r " +
-                              "LEFT JOIN payment p ON r.reservation_id = p.reservation_id AND p.status = 'Paid' " +
-                              "WHERE r.reservation_id = ?";
+                            "FROM reservation r " +
+                            "LEFT JOIN payment p ON r.reservation_id = p.reservation_id AND p.status = 'Paid' " +
+                            "WHERE r.reservation_id = ?";
         pst = con.prepareStatement(balanceQuery);
         pst.setInt(1, reservationId);
         rs = pst.executeQuery();
@@ -421,7 +421,7 @@ private void handleButtonClick(int row, String action, JTable sourceTable) {
             remainingBalance = totalPrice - paidAmount;
         }
 
-        // 🔒 For check-in, ensure payment
+        // For check-in, ensure payment
         if (requiresPayment && remainingBalance > 0) {
             int option = JOptionPane.showConfirmDialog(this,
                     "This reservation has ₱" + String.format("%.2f", remainingBalance) + " remaining balance.\n" +
@@ -429,14 +429,17 @@ private void handleButtonClick(int row, String action, JTable sourceTable) {
                     "Payment Required",
                     JOptionPane.YES_NO_OPTION);
 
-            if (option == JOptionPane.YES_OPTION) {
-                processOnSitePayment(reservationId, remainingBalance);
-            } else {
+            if (option != JOptionPane.YES_OPTION) {
                 return; // Don't proceed with check-in if payment not made
+            }
+            
+            // Process payment - if this fails, we shouldn't proceed with status update
+            if (!processOnSitePayment(reservationId, remainingBalance)) {
+                return; // Payment failed or was canceled
             }
         }
 
-        // ✅ Update status (Check-in or Check-out)
+        // Update status (Check-in or Check-out)
         updateReservationStatus(reservationNumber, newStatus);
 
     } catch (SQLException ex) {
@@ -449,10 +452,14 @@ private void handleButtonClick(int row, String action, JTable sourceTable) {
     }
 }
 
-
-private void processOnSitePayment(int reservationId, double balanceAmount) {
+private boolean processOnSitePayment(int reservationId, double balanceAmount) {
+    Connection con = null;
+    PreparedStatement pst = null;
+    ResultSet rs = null;
+    
     try {
         DatabaseConnection();
+        con = this.con; // Assuming DatabaseConnection() sets this.con
 
         // Prompt for amount paid
         String input = JOptionPane.showInputDialog(this,
@@ -461,15 +468,19 @@ private void processOnSitePayment(int reservationId, double balanceAmount) {
             JOptionPane.PLAIN_MESSAGE);
 
         // Check if canceled or blank
-        if (input == null || input.trim().isEmpty()) {
+        if (input == null) {
+            return false; // User canceled
+        }
+        
+        input = input.trim();
+        
+        if (input.isEmpty()) {
             JOptionPane.showMessageDialog(this,
                 "Input cannot be empty.",
                 "Input Error",
                 JOptionPane.ERROR_MESSAGE);
-            return;
+            return false;
         }
-
-        input = input.trim();
 
         // Validate using regex: only digits and optional decimal
         if (!input.matches("\\d+(\\.\\d{1,2})?")) {
@@ -477,18 +488,26 @@ private void processOnSitePayment(int reservationId, double balanceAmount) {
                 "Invalid amount entered. Please enter a valid number (e.g., 100 or 100.50).",
                 "Input Error",
                 JOptionPane.ERROR_MESSAGE);
-            return;
+            return false;
         }
 
         double amountPaid = Double.parseDouble(input);
 
         // Negative or insufficient
+        if (amountPaid <= 0) {
+            JOptionPane.showMessageDialog(this,
+                "Amount must be greater than zero.",
+                "Invalid Amount",
+                JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        
         if (amountPaid < balanceAmount) {
             JOptionPane.showMessageDialog(this,
                 "Amount paid is less than the remaining balance.\nPlease collect full payment.",
                 "Insufficient Payment",
                 JOptionPane.WARNING_MESSAGE);
-            return;
+            return false;
         }
 
         double change = amountPaid - balanceAmount;
@@ -525,11 +544,14 @@ private void processOnSitePayment(int reservationId, double balanceAmount) {
             "Payment Successful",
             JOptionPane.INFORMATION_MESSAGE);
 
+        return true;
+
     } catch (SQLException ex) {
         JOptionPane.showMessageDialog(this,
             "Error processing payment: " + ex.getMessage(),
             "Payment Error",
             JOptionPane.ERROR_MESSAGE);
+        return false;
     } finally {
         try { if (rs != null) rs.close(); } catch (SQLException e) {}
         try { if (pst != null) pst.close(); } catch (SQLException e) {}

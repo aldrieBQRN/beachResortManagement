@@ -137,6 +137,13 @@ public class signUp extends javax.swing.JFrame {
         int rowsAffected = pst.executeUpdate();
         
         if (rowsAffected > 0) {
+            String activityQuery = "INSERT INTO activity_log (user_id, action_type, action_description, action_timestamp) " +
+                                   "SELECT user_id, ?, ?, NOW() FROM user_details WHERE email = ?";
+            pst = con.prepareStatement(activityQuery);
+            pst.setString(1, "Create Account");
+            pst.setString(2, "New guest account created: " + fullName);
+            pst.setString(3, email);
+            pst.executeUpdate();
             JOptionPane.showMessageDialog(this, "Account created successfully!", 
                 "Success", JOptionPane.INFORMATION_MESSAGE);
             clearFields();

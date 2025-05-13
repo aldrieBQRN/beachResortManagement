@@ -5,7 +5,15 @@
 package Guest;
 
 import Login.landingPage;
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,6 +24,12 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
 
 
 
@@ -485,35 +499,134 @@ private void handleDatabaseError(String message, SQLException e) {
         stmt.setString(8, "Pending");
     }
     
-    private void handlePaymentResult(boolean success) {
-        if (success) {
-            try {
-                if (con == null || con.isClosed()) {
-                    DatabaseConnection(); // Ensure connection
-                }
-
-                String logSql = "INSERT INTO activity_log (user_id, action_type, action_description) VALUES (?, ?, ?)";
-                try (PreparedStatement logPst = con.prepareStatement(logSql)) {
-                    logPst.setInt(1, userID);  // Assuming userID is available
-                    logPst.setString(2, "RESERVATION");
-                    logPst.setString(3, "User completed a reservation successfully.");
-                    logPst.executeUpdate();
-                }
-
-            } catch (SQLException e) {
-                Logger.getLogger(getClass().getName()).log(Level.WARNING, "Failed to log reservation activity", e);
+  private void handlePaymentResult(boolean success) {
+    if (success) {
+        try {
+            if (con == null || con.isClosed()) {
+                DatabaseConnection(); // Ensure connection
             }
-            JOptionPane.showMessageDialog(null, "Your reservation is complete! Waiting for the resort to confirm.", 
-                                      "Reservation Complete", JOptionPane.INFORMATION_MESSAGE);
-            this.dispose();
-            guestHome gh = new guestHome(userID);
-            gh.setVisible(true);
-        } else {
-            JOptionPane.showMessageDialog(null, "Error processing your payment. Please try again.", 
-                                      "Payment Error", JOptionPane.ERROR_MESSAGE);
+            String logSql = "INSERT INTO activity_log (user_id, action_type, action_description) VALUES (?, ?, ?)";
+            try (PreparedStatement logPst = con.prepareStatement(logSql)) {
+                logPst.setInt(1, userID);  // Assuming userID is available
+                logPst.setString(2, "RESERVATION");
+                logPst.setString(3, "User completed a reservation successfully.");
+                logPst.executeUpdate();
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(getClass().getName()).log(Level.WARNING, "Failed to log reservation activity", e);
         }
+        
+        // Create custom dialog similar to the rating submitted dialog
+        JDialog customDialog = new JDialog();
+        customDialog.setSize(400, 250);
+        customDialog.setLocationRelativeTo(null);
+        customDialog.setModal(true);
+        customDialog.setUndecorated(true);
+        
+        // Main panel with border
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BorderLayout());
+        mainPanel.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200), 1));
+        
+        // Header panel with green background
+        JPanel headerPanel = new JPanel(new BorderLayout());
+        headerPanel.setBackground(new Color(76, 175, 80));
+        headerPanel.setPreferredSize(new Dimension(400, 50));
+        
+        JLabel headerLabel = new JLabel("Reservation Submitted", JLabel.CENTER);
+        headerLabel.setForeground(Color.WHITE);
+        headerLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        headerLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        headerPanel.add(headerLabel, BorderLayout.CENTER);
+        
+        // Content panel
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+        contentPanel.setBorder(BorderFactory.createEmptyBorder(25, 20, 25, 20));
+        contentPanel.setBackground(Color.WHITE);
+        
+        // Check mark icon and message
+        JPanel messagePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+        messagePanel.setBackground(Color.WHITE);
+        
+        // Create checkmark icon
+        JLabel checkIcon = new JLabel("\u2714"); // Unicode checkmark
+        checkIcon.setFont(new Font("Arial", Font.BOLD, 28));
+        checkIcon.setForeground(new Color(76, 175, 80));
+        messagePanel.add(checkIcon);
+        
+        JLabel messageLabel = new JLabel("Thank you for your reservation!");
+        messageLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        messagePanel.add(messageLabel);
+        
+        // Second line of message
+        JPanel subMessagePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        subMessagePanel.setBackground(Color.WHITE);
+        JLabel subMessageLabel = new JLabel("Waiting for the resort to confirm.");
+        subMessageLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        subMessagePanel.add(subMessageLabel);
+        
+        // OK button panel - using panel with label instead of JButton
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(Color.WHITE);
+        
+        // Create panel-based button
+        JPanel okButton = new JPanel();
+        okButton.setLayout(new GridBagLayout()); // Use GridBagLayout for perfect centering
+        okButton.setBackground(new Color(76, 175, 80));
+        okButton.setPreferredSize(new Dimension(100, 36));
+        okButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        
+        // Add label to the panel
+        JLabel okLabel = new JLabel("OK");
+        okLabel.setForeground(Color.WHITE);
+        okLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        okButton.add(okLabel);
+        
+        // Add mouse listener for click event and hover effects
+        okButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                customDialog.dispose();
+                dispose(); // Close the current form
+                guestHome gh = new guestHome(userID);
+                gh.setVisible(true);
+            }
+            
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                okButton.setBackground(new Color(66, 165, 70)); // Slightly darker on hover
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e) {
+                okButton.setBackground(new Color(76, 175, 80)); // Original color
+            }
+        });
+        
+        buttonPanel.add(okButton);
+        
+        // Add components to content panel
+        contentPanel.add(Box.createVerticalStrut(15));
+        contentPanel.add(messagePanel);
+        contentPanel.add(Box.createVerticalStrut(8));
+        contentPanel.add(subMessagePanel);
+        contentPanel.add(Box.createVerticalStrut(25));
+        contentPanel.add(buttonPanel);
+        
+        // Add panels to main panel
+        mainPanel.add(headerPanel, BorderLayout.NORTH);
+        mainPanel.add(contentPanel, BorderLayout.CENTER);
+        
+        customDialog.add(mainPanel);
+        customDialog.setVisible(true);
+    } else {
+        JOptionPane.showMessageDialog(null, "Error processing your payment. Please try again.", 
+                                  "Payment Error", JOptionPane.ERROR_MESSAGE);
     }
-    
+}
+
     private void handleDatabaseError(String message, Exception e) {
         System.out.println(message + ": " + e.getMessage());
         JOptionPane.showMessageDialog(null, message + ": " + e.getMessage(), 

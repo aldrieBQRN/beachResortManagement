@@ -376,6 +376,8 @@ class DualPanelEditor extends AbstractCellEditor implements TableCellEditor {
         
         if (confirm == JOptionPane.YES_OPTION) {
             confirmReservation(reservationNumber);
+        } else {
+            return;
         }
     }
 }
