@@ -223,12 +223,13 @@
               <Properties>
                 <Property name="editable" type="boolean" value="false"/>
                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                  <StringArray count="5">
+                  <StringArray count="6">
                     <StringItem index="0" value="All"/>
                     <StringItem index="1" value="Pending"/>
-                    <StringItem index="2" value="Confirmed"/>
-                    <StringItem index="3" value="Check-in"/>
-                    <StringItem index="4" value="Check-out"/>
+                    <StringItem index="2" value="Rejected"/>
+                    <StringItem index="3" value="Confirmed"/>
+                    <StringItem index="4" value="Check-in"/>
+                    <StringItem index="5" value="Check-out"/>
                   </StringArray>
                 </Property>
               </Properties>

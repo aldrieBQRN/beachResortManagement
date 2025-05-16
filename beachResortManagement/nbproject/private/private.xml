@@ -27,10 +27,8 @@
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Login/Contact.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Staff/staffReservation.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/adminDashboard.java</file>
-            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/ResortAdminDashboard.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/ResortDashboard.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/adminAddBoat.java</file>
-            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/PieChartPanel.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Guest/guestReservation.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/test/test/ModelMenuItem.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/test/test/maps.java</file>
@@ -57,6 +55,10 @@
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Admin/adminReservationBoat.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Staff/staffBoats.java</file>
             <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Staff/staffBoatReservation.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/textfield/Combobox.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/GUI/Combobox.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/GUI/ModernScrollBarUI.java</file>
+            <file>file:/Users/yeojvaldez/NetBeansProjects/beachResortManagement/src/Staff/ReservationDetailsView.java</file>
         </group>
     </open-files>
 </project-private>

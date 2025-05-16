@@ -477,6 +477,11 @@ private void handleLabelEvent(java.awt.event.MouseEvent evt) {
     // 3. Parse strings into Date objects using the correct format
     Date checkInDate = displayFormat.parse(checkInStr);
     Date checkOutDate = displayFormat.parse(checkOutStr);
+    
+   
+    System.out.println("Selected Check-in Date: " + displayFormat.format(checkInDate));
+    System.out.println("Selected Check-out Date: " + displayFormat.format(checkOutDate));
+
 
     // 4. Get today's date (normalized to ignore time)
     Date today = new Date();
@@ -511,6 +516,10 @@ private void handleLabelEvent(java.awt.event.MouseEvent evt) {
     // 7. Convert to SQL dates
     java.sql.Date sqlCheckIn = new java.sql.Date(checkInDate.getTime());
     java.sql.Date sqlCheckOut = new java.sql.Date(checkOutDate.getTime());
+    
+      // Print the SQL dates here
+    System.out.println("SQL Check-in Date: " + sqlCheckIn);
+    System.out.println("SQL Check-out Date: " + sqlCheckOut);
 
     // 8. Search for available rooms
     searchAvailableRooms(sqlCheckIn, sqlCheckOut, totalGuests, adults, children);

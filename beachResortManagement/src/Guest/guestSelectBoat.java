@@ -4,6 +4,7 @@
  */
 package Guest;
 
+import Guest.guestProcess.ComboItem;
 import Login.landingPage;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -477,11 +478,7 @@ public void SearchBoat() {
         JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
     }
 }
-
 private void handleBoatSelection(String boatName, double boatPrice) {
-   
-
-
     // Prompt the user about water activities
     int response = JOptionPane.showConfirmDialog(
             this,
@@ -489,67 +486,95 @@ private void handleBoatSelection(String boatName, double boatPrice) {
             "Add Boat Activity",
             JOptionPane.YES_NO_OPTION,
             JOptionPane.QUESTION_MESSAGE
-        );
+    );
 
     boolean wantsWaterActivities = (response == JOptionPane.YES_OPTION);
-   
-    
-    if (wantsWaterActivities) {
-    try {
-        // Get the selected date and parse it
-        String selectedDateString = (String) dateComboBox.getSelectedItem();
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy (EEE)", Locale.ENGLISH);
-        LocalDate selectedDate = LocalDate.parse(selectedDateString, dateFormatter);
-        java.sql.Date sqlDate = java.sql.Date.valueOf(selectedDate);
 
-        // Get time from text field and parse it
-        String timeText = txtTime.getText().trim();
-        SimpleDateFormat timeFormat12hr = new SimpleDateFormat("hh:mm a");
-        SimpleDateFormat timeFormat24hr = new SimpleDateFormat("HH:mm");
-        SimpleDateFormat timeFormat24hrWithAMPM = new SimpleDateFormat("HH:mm a");
-        
-        Date timeDate;
-        
+    if (wantsWaterActivities) {
         try {
-            // Try parsing with AM/PM first (12-hour format)
-            timeDate = timeFormat12hr.parse(timeText);
-        } catch (ParseException e1) {
-            try {
-                // Try parsing as 24-hour format without AM/PM
-                timeDate = timeFormat24hr.parse(timeText);
-            } catch (ParseException e2) {
+            // Get the selected date and parse it
+            if (dateComboBox.getSelectedItem() == null) {
+                JOptionPane.showMessageDialog(this, "Please select a date.");
+                return;
+            }
+
+            String selectedDateString;
+            Object selectedItem = dateComboBox.getSelectedItem();
+            if (selectedItem instanceof ComboItem) {
+                selectedDateString = ((ComboItem) selectedItem).toString();
+            } else {
+                selectedDateString = selectedItem.toString();
+            }
+
+            if (selectedDateString.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please select a valid date.");
+                return;
+            }
+
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy (EEE)", Locale.ENGLISH);
+            LocalDate selectedDate = LocalDate.parse(selectedDateString, dateFormatter);
+            java.sql.Date sqlDate = java.sql.Date.valueOf(selectedDate);
+
+            // Get time from text field and parse it
+            String timeText = txtTime.getText().trim();
+            if (timeText.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter a time.");
+                return;
+            }
+
+            Date timeDate = null;
+            ParseException parseError = null;
+
+            SimpleDateFormat[] formats = {
+                new SimpleDateFormat("hh:mm a"),
+                new SimpleDateFormat("HH:mm"),
+                new SimpleDateFormat("HH:mm a")
+            };
+
+            for (SimpleDateFormat format : formats) {
                 try {
-                    // Try parsing as 24-hour format with AM/PM (unlikely but possible)
-                    timeDate = timeFormat24hrWithAMPM.parse(timeText);
-                } catch (ParseException e3) {
-                    JOptionPane.showMessageDialog(this, "Invalid time format. Please use HH:mm (24-hour) or hh:mm a (12-hour) format.");
-                    return;
+                    timeDate = format.parse(timeText);
+                    break;
+                } catch (ParseException e) {
+                    parseError = e;
                 }
             }
+
+            if (timeDate == null) {
+                JOptionPane.showMessageDialog(this,
+                        "Invalid time format.\nPlease use one of the following:\n- 02:00 PM (12-hour)\n- 14:00 (24-hour)");
+                return;
+            }
+
+            // Convert to SQL Time
+            java.sql.Time sqlStartTime = new java.sql.Time(timeDate.getTime());
+
+            // Add 3 hours to get end time
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(sqlStartTime);
+            cal.add(Calendar.HOUR_OF_DAY, 3);
+            java.sql.Time sqlEndTime = new java.sql.Time(cal.getTimeInMillis());
+
+            // Proceed with guest process including boat
+            guestProcess process = new guestProcess(
+                    checkInDate, checkOutDate, roomNumber, roomType, roomDescription,
+                    roomPrice, sqlDate, sqlStartTime, sqlEndTime, boatName,
+                    boatPrice, adults, children, userID);
+            process.setVisible(true);
+
+        } catch (DateTimeParseException e) {
+            JOptionPane.showMessageDialog(this, "Invalid date format in the dropdown.");
+            e.printStackTrace();
         }
-
-        // Convert to SQL Time
-        java.sql.Time sqlStartTime = new java.sql.Time(timeDate.getTime());
-        
-        // Add 3 hours to get end time
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(sqlStartTime);
-        cal.add(Calendar.HOUR_OF_DAY, 3);
-        java.sql.Time sqlEndTime = new java.sql.Time(cal.getTimeInMillis());
-
-        // Proceed with creating a new instance
-        new guestProcess(checkInDate, checkOutDate, roomNumber, roomType, roomDescription, 
-                roomPrice, sqlDate, sqlStartTime, sqlEndTime, boatName, 
-                boatPrice, adults, children, userID).setVisible(true);
-    } catch (Exception ex) {
-        JOptionPane.showMessageDialog(this, "Error processing time: " + ex.getMessage());
-        ex.printStackTrace();
+    } else {
+        // Proceed with guest process without boat
+        guestProcess2 process2 = new guestProcess2(
+                checkInDate, checkOutDate, roomNumber, roomType,
+                roomDescription, roomPrice, adults, children, userID);
+        process2.setVisible(true);
     }
-} else {
-    new guestProcess2(checkInDate, checkOutDate, roomNumber, roomType, 
-            roomDescription, roomPrice, adults, children, userID).setVisible(true);
 }
-}
+
 
      public void hoverEffect(){
         txtHome.addMouseListener(new java.awt.event.MouseAdapter() {

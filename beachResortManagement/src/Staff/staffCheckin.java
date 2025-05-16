@@ -723,7 +723,7 @@ private void updateReservationStatus(String reservationNumber, String newStatus)
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         materialTabbed1.setForeground(new java.awt.Color(0, 0, 0));
-        materialTabbed1.setFont(new java.awt.Font("Helvetica Neue", 0, 15)); // NOI18N
+        materialTabbed1.setFont(new java.awt.Font("Helvetica Neue", 1, 15)); // NOI18N
 
         jPanel4.setBackground(new java.awt.Color(255, 255, 255));
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());

@@ -16,6 +16,7 @@ import com.toedter.calendar.JCalendar;
 import java.awt.HeadlessException;
 import java.awt.Image;
 import java.beans.Statement;
+import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -25,9 +26,32 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import java.sql.Connection;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import java.awt.Color;
+import java.awt.Image;
+import javax.swing.DefaultComboBoxModel;
+import java.sql.DriverManager;
+
+
 
 
 
@@ -45,9 +69,13 @@ public class guestProcess2 extends javax.swing.JFrame {
     private String roomNumber;
     private String roomType;
     private String roomDescription;
-    private double roomPrice;
-   
+    private double roomPrice; 
     private int userID;
+    
+    Connection resortCon; // Connection for beachResortManagement
+    Connection locationCon; // Connection for the location database
+    PreparedStatement pst;
+    ResultSet rs;
     
 
     // Constructor to initialize guestProcess with all the parameters
@@ -60,7 +88,17 @@ public class guestProcess2 extends javax.swing.JFrame {
         initComponents();  // Initialize UI components (if any)
         hoverEffect();
          pnlPayment.setVisible(false);
-        DatabaseConnection();
+           DatabaseConnection(); // Initialize the connection for the resort database
+        DatabaseLocationConnection(); 
+            DatabaseConnection();
+            loadRegions(regionCombo);
+            regionCombo.setSelectedIndex(-1);
+            provinceCombo.removeAllItems();
+            provinceCombo.setSelectedIndex(-1);  // reset selection
+            municipalCombo.removeAllItems();      // clear old data
+            municipalCombo.setSelectedIndex(-1); // reset selection
+            brgyCombo.removeAllItems();
+            brgyCombo.setSelectedIndex(-1);
 
         // Store the parameters in the instance variables
         this.checkInDate = checkInDate;
@@ -121,27 +159,59 @@ public class guestProcess2 extends javax.swing.JFrame {
         
         checkGuestDetails();
         
-          try {
+            try {
             // Prepare the SQL query to fetch all room details including image
             String sql = "SELECT room_type, description, room_price, max_occupancy, room_image FROM room WHERE room_number = ?";
-            pst = con.prepareStatement(sql);
+            pst = resortCon.prepareStatement(sql); // Use the resort database connection
             pst.setString(1, roomNumber);
-            
+
             // Execute the query
             rs = pst.executeQuery();
 
             // Check if the room exists in the database
             if (rs.next()) {
-
-
                 // Load and display the room image
                 loadRoomImage(rs.getBytes("room_image"));
             } else {
                 JOptionPane.showMessageDialog(this, "Room not found in database", "Error", JOptionPane.WARNING_MESSAGE);
-
-}       } catch (SQLException ex) {   
+            }
+        } catch (SQLException ex) {
             Logger.getLogger(guestProcess.class.getName()).log(Level.SEVERE, null, ex);
         }
+          
+          regionCombo.addActionListener(e -> {
+            guestProcess2.ComboItem selected = (guestProcess2.ComboItem) regionCombo.getSelectedItem();
+            if (selected != null) {
+                String regCode = selected.getCode();
+                loadProvinces(provinceCombo, regCode);
+                provinceCombo.setSelectedIndex(-1);
+                municipalCombo.removeAllItems();
+                municipalCombo.setSelectedIndex(-1);
+                brgyCombo.removeAllItems();
+                brgyCombo.setSelectedIndex(-1);
+            }
+        });
+
+        provinceCombo.addActionListener(e -> {
+            guestProcess2.ComboItem selected = (guestProcess2.ComboItem) provinceCombo.getSelectedItem();
+            if (selected != null) {
+                String provCode = selected.getCode();
+                loadCities(municipalCombo, provCode);
+                municipalCombo.setSelectedIndex(-1);
+                brgyCombo.removeAllItems();
+                brgyCombo.setSelectedIndex(-1);
+            }
+        });
+
+        municipalCombo.addActionListener(e -> {
+            guestProcess2.ComboItem selected = (guestProcess2.ComboItem) municipalCombo.getSelectedItem();
+            if (selected != null) {
+                String citymunCode = selected.getCode();
+                loadBarangays(brgyCombo, citymunCode);
+                brgyCombo.setSelectedIndex(-1);
+            }
+        });
+
     }
 
        
@@ -151,115 +221,268 @@ public class guestProcess2 extends javax.swing.JFrame {
   
 
 
-    
-    java.sql.Connection con; 
-    PreparedStatement pst;
-    ResultSet rs; 
-    
-    public final void DatabaseConnection() {
-          String url = "jdbc:mysql://localhost:3307/beachResortManagement";
+  
+     public final void DatabaseConnection() {
+        String url = "jdbc:mysql://localhost:3307/beachResortManagement";
         String user = "root"; // MySQL username
         String password = ""; // MySQL password
-        
-        // Establishing the connection
+
         try {
-            // Load MySQL JDBC driver (optional in newer versions of JDBC)
             Class.forName("com.mysql.cj.jdbc.Driver");
-            
-            // Create the connection
-            con = DriverManager.getConnection(url, user, password);
-            
-            System.out.println("Connected to the database successfully!");
-
-            // Perform database operations here...
-
-      
+            resortCon = DriverManager.getConnection(url, user, password);
+            System.out.println("Connected to beachResortManagement database successfully!");
         } catch (SQLException e) {
-            System.out.println("Error connecting to the database: " + e.getMessage());
+            System.out.println("Error connecting to beachResortManagement database: " + e.getMessage());
         } catch (ClassNotFoundException e) {
-            System.out.println("MySQL JDBC Driver not found: " + e.getMessage());
+            System.out.println("MySQL JDBC Driver not found for beachResortManagement: " + e.getMessage());
         }
     }
+
+    // Method to establish connection to the location database
+    public final void DatabaseLocationConnection() {
+        String url = "jdbc:mysql://localhost:3307/location";
+        String user = "root";
+        String password = "";
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            locationCon = DriverManager.getConnection(url, user, password);
+            System.out.println("Connected to location database successfully!");
+        } catch (SQLException e) {
+            System.out.println("Error connecting to location database: " + e.getMessage());
+        } catch (ClassNotFoundException e) {
+            System.out.println("MySQL JDBC Driver not found for location database: " + e.getMessage());
+        }
+    }
+
+public class ComboItem {
+    private String code;
+    private String description;
+
+    public ComboItem(String code, String description) {
+        this.code = code;
+        this.description = description;
+    }
+
+    @Override
+    public String toString() {
+        return description; // Shown in combo box
+    }
+
+    public String getCode() {
+        return code;
+    }
+}
+
+
+  public void loadRegions(JComboBox<ComboItem> regionCombo) {
+        try {
+            regionCombo.removeAllItems();
+            String sql = "SELECT regCode, regDesc FROM refregion ORDER BY regDesc";
+            pst = locationCon.prepareStatement(sql); // Use the location database connection
+            rs = pst.executeQuery();
+            while (rs.next()) {
+                String code = rs.getString("regCode");
+                String desc = rs.getString("regDesc");
+                regionCombo.addItem(new ComboItem(code, desc));
+            }
+            if (rs != null) rs.close();
+            if (pst != null) pst.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(guestProcess2.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+  
+  public void loadProvinces(JComboBox<ComboItem> provinceCombo, String regCode) {
+    Connection con = null; // Declare connection here
+    PreparedStatement pst = null;
+    ResultSet rs = null;
+    try {
+        provinceCombo.removeAllItems();
+        con = locationCon; // Use the class-level locationCon
+        String sql = "SELECT provCode, provDesc FROM refprovince WHERE regCode = ? ORDER BY provDesc";
+        pst = con.prepareStatement(sql); // Ensure you're using the locationCon
+        pst.setString(1, regCode);
+        rs = pst.executeQuery();
+        while (rs.next()) {
+            String code = rs.getString("provCode");
+            String desc = rs.getString("provDesc");
+            provinceCombo.addItem(new ComboItem(code, desc));
+        }
+    } catch (SQLException ex) {
+        Logger.getLogger(guestProcess2.class.getName()).log(Level.SEVERE, null, ex);
+        // Important: Consider displaying an error message to the user
+        JOptionPane.showMessageDialog(this, "Error loading provinces: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+    } finally {
+        // Ensure resources are closed in the finally block
+        try {
+            if (rs != null) rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+            if (pst != null) pst.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        // Note: We are NOT closing the locationCon here, as it's managed at the class level
+    }
+}
+
+    public void loadCities(JComboBox<ComboItem> cityCombo, String provCode) {
+    Connection con = null;
+    PreparedStatement pst = null;
+    ResultSet rs = null;
+    try {
+        cityCombo.removeAllItems();
+        con = locationCon; // Use the class-level locationCon
+        String sql = "SELECT citymunCode, citymunDesc FROM refcitymun WHERE provCode = ? ORDER BY citymunDesc";
+        pst = con.prepareStatement(sql);
+        pst.setString(1, provCode);
+        rs = pst.executeQuery();
+        while (rs.next()) {
+            String code = rs.getString("citymunCode");
+            String desc = rs.getString("citymunDesc");
+            cityCombo.addItem(new ComboItem(code, desc));
+        }
+    } catch (SQLException ex) {
+        Logger.getLogger(guestProcess2.class.getName()).log(Level.SEVERE, null, ex);
+        JOptionPane.showMessageDialog(this, "Error loading municipalities: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+    } finally {
+        try {
+            if (rs != null) rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+            if (pst != null) pst.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        // Note: We are NOT closing the locationCon here
+    }
+}
+
+public void loadBarangays(JComboBox<ComboItem> brgyCombo, String citymunCode) {
+    Connection con = null;
+    PreparedStatement pst = null;
+    ResultSet rs = null;
+    try {
+        brgyCombo.removeAllItems();
+        con = locationCon; // Use the class-level locationCon
+        String sql = "SELECT brgyCode, brgyDesc FROM refbrgy WHERE citymunCode = ? ORDER BY brgyDesc";
+        pst = con.prepareStatement(sql);
+        pst.setString(1, citymunCode);
+        rs = pst.executeQuery();
+        while (rs.next()) {
+            String code = rs.getString("brgyCode");
+            String desc = rs.getString("brgyDesc");
+            brgyCombo.addItem(new ComboItem(code, desc));
+        }
+    } catch (SQLException ex) {
+        Logger.getLogger(guestProcess2.class.getName()).log(Level.SEVERE, null, ex);
+        JOptionPane.showMessageDialog(this, "Error loading barangays: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+    } finally {
+        try {
+            if (rs != null) rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+            if (pst != null) pst.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        // Note: We are NOT closing the locationCon here
+    }
+}
+
+
+   
+
+    
+
     
     
    public String generateReservationNumber() {
-    String reservationNumber = "";
-    
-    // Ensure that the connection is not null
-    if (con == null) {
-        System.out.println("Database connection is not initialized!");
-        return reservationNumber;
-    }
+        String reservationNumber = "";
 
-    try {
-        // Start with generating the initial reservation number
-        reservationNumber = "RES-" + getCurrentDateString() + "-001";
+        // Ensure that the connection is not null
+        if (resortCon == null) {
+            System.out.println("Resort database connection is not initialized!");
+            return reservationNumber;
+        }
 
-        // Query to check if the generated reservation number already exists
-        String query = "SELECT COUNT(*) FROM room_reservation WHERE reservation_number = ?";
-        PreparedStatement pst = con.prepareStatement(query);
-        
-        while (true) {
-            // Set the generated reservation number
-            pst.setString(1, reservationNumber);
-            
-            // Execute query to check if the number already exists
-            ResultSet rs = pst.executeQuery();
-            if (rs.next()) {
-                int count = rs.getInt(1);
-                if (count == 0) {
-                    // If the count is zero, the number is unique
-                    break;
-                } else {
-                    // If the reservation number exists, increment the number part and try again
-                    String lastNumberPart = reservationNumber.substring(reservationNumber.lastIndexOf("-") + 1);
-                    int lastNumber = Integer.parseInt(lastNumberPart);
-                    lastNumber++;
-                    reservationNumber = "RES-" + getCurrentDateString() + "-" + String.format("%03d", lastNumber);
+        try {
+            // Start with generating the initial reservation number
+            reservationNumber = "RES-" + getCurrentDateString() + "-001";
+
+            // Query to check if the generated reservation number already exists
+            String query = "SELECT COUNT(*) FROM room_reservation WHERE reservation_number = ?";
+            pst = resortCon.prepareStatement(query); // Use the resort database connection
+
+            while (true) {
+                // Set the generated reservation number
+                pst.setString(1, reservationNumber);
+
+                // Execute query to check if the number already exists
+                rs = pst.executeQuery();
+                if (rs.next()) {
+                    int count = rs.getInt(1);
+                    if (count == 0) {
+                        // If the count is zero, the number is unique
+                        break;
+                    } else {
+                        // If the reservation number exists, increment the number part and try again
+                        String lastNumberPart = reservationNumber.substring(reservationNumber.lastIndexOf("-") + 1);
+                        int lastNumber = Integer.parseInt(lastNumberPart);
+                        lastNumber++;
+                        reservationNumber = "RES-" + getCurrentDateString() + "-" + String.format("%03d", lastNumber);
+                    }
                 }
             }
+            if (rs != null) rs.close();
+            if (pst != null) pst.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+
+        return reservationNumber;
     }
-
-    return reservationNumber;
-}
-
    
-   
-       public final void checkGuestDetails() {
-  
-    
-    try {
-       
-        String sql = "SELECT * FROM guest WHERE user_id = ?";
-        pst = con.prepareStatement(sql);
-        pst.setInt(1, userID);
-        rs = pst.executeQuery();
-        
-        if (rs.next()) {
-            // Guest exists, populate the fields
-            String fullName = rs.getString("guest_name");
-            String email = rs.getString("email");
-            String contact = rs.getString("contact");
-            String address = rs.getString("address");
-            
-            // Split name into first and last name if possible
-            String[] names = fullName.split(" ", 2);
-            if (names.length > 0) txtFName.setText(names[0]);
-            if (names.length > 1) txtLName.setText(names[1]);
-            
-            txtEmail.setText(email);
-            txtContact.setText(contact);
-            txtAddress.setText(address);
-           
+   public void checkGuestDetails() {
+        try {
+            String sql = "SELECT * FROM user_details WHERE user_id = ?";
+            pst = resortCon.prepareStatement(sql); // Use the resort database connection
+            pst.setInt(1, userID);
+            rs = pst.executeQuery();
+
+            if (rs.next()) {
+                // Get values from DB
+                String fullName = rs.getString("full_name");
+                String email = rs.getString("email");
+                String contact = rs.getString("phone");
+             
+
+                // Split name
+                String[] names = fullName.split(" ", 2);
+                if (names.length > 0) txtFName.setText(names[0]);  // First name
+                if (names.length > 1) txtLName.setText(names[1]);  // Last name (if exists)
+
+                // Set other fields
+                txtEmail.setText(email);
+                txtContact.setText(contact);
+
+            }
+            if (rs != null) rs.close();
+            if (pst != null) pst.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    } 
-}
-
+    }
+       
+   
     // Get the current date in the format YYYYMMDD
     private String getCurrentDateString() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
@@ -349,14 +572,18 @@ private void handleLabelEvent(java.awt.event.MouseEvent evt) {
         jPanel1 = new javax.swing.JPanel();
         jPanel11 = new javax.swing.JPanel();
         jPanel14 = new javax.swing.JPanel();
-        jLabel4 = new javax.swing.JLabel();
-        txtAddress = new textfield.TextField();
         txtEmail = new textfield.TextField();
         txtContact = new textfield.TextField();
         txtLName = new textfield.TextField();
         txtFName = new textfield.TextField();
         panelRound4 = new GUI.PanelRound();
         lbl = new javax.swing.JLabel();
+        regionCombo = new GUI.Combobox();
+        jLabel9 = new javax.swing.JLabel();
+        provinceCombo = new GUI.Combobox();
+        municipalCombo = new GUI.Combobox();
+        brgyCombo = new GUI.Combobox();
+        jLabel10 = new javax.swing.JLabel();
         jPanel12 = new javax.swing.JPanel();
         jLabel30 = new javax.swing.JLabel();
         lblRoomNumber = new javax.swing.JLabel();
@@ -425,25 +652,10 @@ private void handleLabelEvent(java.awt.event.MouseEvent evt) {
         jPanel14.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         jPanel14.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel4.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel4.setText("Who's the lead Guest?");
-        jPanel14.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 30, -1, -1));
-
-        txtAddress.setBackground(new java.awt.Color(255, 255, 255));
-        txtAddress.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
-        txtAddress.setLabelText("Address");
-        txtAddress.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtAddressActionPerformed(evt);
-            }
-        });
-        jPanel14.add(txtAddress, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 260, 780, 45));
-
         txtEmail.setBackground(new java.awt.Color(255, 255, 255));
         txtEmail.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
         txtEmail.setLabelText("Email");
-        jPanel14.add(txtEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 140, 790, 45));
+        jPanel14.add(txtEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 120, 790, 45));
 
         txtContact.setBackground(new java.awt.Color(255, 255, 255));
         txtContact.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
@@ -453,17 +665,17 @@ private void handleLabelEvent(java.awt.event.MouseEvent evt) {
                 txtContactActionPerformed(evt);
             }
         });
-        jPanel14.add(txtContact, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 200, 790, 45));
+        jPanel14.add(txtContact, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 180, 790, 45));
 
         txtLName.setBackground(new java.awt.Color(255, 255, 255));
         txtLName.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
         txtLName.setLabelText("Last Name");
-        jPanel14.add(txtLName, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 80, 380, 45));
+        jPanel14.add(txtLName, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 60, 380, 45));
 
         txtFName.setBackground(new java.awt.Color(255, 255, 255));
         txtFName.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
         txtFName.setLabelText("First Name");
-        jPanel14.add(txtFName, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 80, 380, 45));
+        jPanel14.add(txtFName, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 60, 380, 45));
 
         panelRound4.setBackground(new java.awt.Color(0, 153, 255));
         panelRound4.setRoundBottomLeft(20);
@@ -483,7 +695,38 @@ private void handleLabelEvent(java.awt.event.MouseEvent evt) {
         });
         panelRound4.add(lbl, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 770, 40));
 
-        jPanel14.add(panelRound4, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 335, 790, 40));
+        jPanel14.add(panelRound4, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 350, 790, 40));
+
+        regionCombo.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        regionCombo.setLabeText("Region");
+        regionCombo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                regionComboActionPerformed(evt);
+            }
+        });
+        jPanel14.add(regionCombo, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 280, 190, -1));
+
+        jLabel9.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 16)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel9.setText("Address Details");
+        jPanel14.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 250, -1, -1));
+
+        provinceCombo.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        provinceCombo.setLabeText("Province");
+        jPanel14.add(provinceCombo, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 280, 190, -1));
+
+        municipalCombo.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        municipalCombo.setLabeText("Municipal");
+        jPanel14.add(municipalCombo, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 280, 190, -1));
+
+        brgyCombo.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        brgyCombo.setLabeText("Barangay");
+        jPanel14.add(brgyCombo, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 280, 180, -1));
+
+        jLabel10.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 16)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel10.setText("Lead Guest Details");
+        jPanel14.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 30, -1, -1));
 
         jPanel11.add(jPanel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 30, 870, 410));
 
@@ -852,38 +1095,32 @@ private void handleLabelEvent(java.awt.event.MouseEvent evt) {
 
     }//GEN-LAST:event_jLabel10MouseClicked
 
-    private void txtAddressActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtAddressActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtAddressActionPerformed
-
     private void panelRound1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelRound1MouseClicked
        guestHome gh = new guestHome(userID);  // Ensure that guestHome is a valid class
     gh.setVisible(true);
     }//GEN-LAST:event_panelRound1MouseClicked
 
     private void paymentMethodComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_paymentMethodComboBoxItemStateChanged
-        String selectedPaymentMethod = (String) paymentMethodComboBox.getSelectedItem();
+         String selectedPaymentMethod = (String) paymentMethodComboBox.getSelectedItem();
 
-        if (selectedPaymentMethod != null) {
-            if (selectedPaymentMethod.equals("GCash")) {
-                // Action for GCash
-                txtmessage.setText("You have chosen to pay by GCash. You will be forwarded to the GCash website to proceed with this transaction.");
-                lblPayment.setText("Pay with GCash");
-            } else if (selectedPaymentMethod.equals("Maya")) {
-                // Action for Maya
-                txtmessage.setText("You have chosen to pay by Maya. You will be forwarded to the Maya website to proceed with this transaction.");
-                 lblPayment.setText("Pay with Maya");
-            } else if (selectedPaymentMethod.equals("PayPal")) {
-                // Action for PayMaya
-                txtmessage.setText("You have chosen to pay by PayPal. You will be forwarded to the PayPal website to proceed with this transaction.");
-                 lblPayment.setText("Pay with PayPal");
-            } else {
-                // Handle the case where no valid payment method is selected
-                txtmessage.setText("Invalid Payment Method");
-            }
+       if (selectedPaymentMethod != null) {
+        if (selectedPaymentMethod.equals("GCash")) {
+            // Action for GCash
+            txtmessage.setText("You have chosen to pay by GCash. You will be forwarded to the GCash website to proceed with this transaction.");
+             lblPayment.setText("Pay with GCash");
+        } else if (selectedPaymentMethod.equals("Maya")) {
+            // Action for Maya
+            txtmessage.setText("You have chosen to pay by Maya. You will be forwarded to the Maya website to proceed with this transaction.");
+             lblPayment.setText("Pay with Maya");
+        } else if (selectedPaymentMethod.equals("PayPal")) {
+            // Action for PayMaya
+            txtmessage.setText("You have chosen to pay by PayPal. You will be forwarded to the PayPal website to proceed with this transaction.");
+             lblPayment.setText("Pay with PayPal");
+        } else {
+            // Handle the case where no valid payment method is selected
+            txtmessage.setText("Invalid Payment Method");
         }
-
-        // TODO add your handling code here:
+    }
     }//GEN-LAST:event_paymentMethodComboBoxItemStateChanged
 
     private void paymentMethodComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paymentMethodComboBoxActionPerformed
@@ -891,24 +1128,44 @@ private void handleLabelEvent(java.awt.event.MouseEvent evt) {
     }//GEN-LAST:event_paymentMethodComboBoxActionPerformed
 
     private void lblMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblMouseClicked
-            String reservationNumber = lblReservationNumber.getText();
-            String guestName = txtFName.getText().trim() + " " + txtLName.getText().trim();
-            String email = txtEmail.getText().trim();
-            String contact = txtContact.getText().trim();
-            String address = txtAddress.getText().trim();
+          // Get form field values
+    String reservationNumber = lblReservationNumber.getText();
+    String guestName = txtFName.getText().trim() + " " + txtLName.getText().trim();
+    String email = txtEmail.getText().trim();
+    String contact = txtContact.getText().trim();
 
-            // Basic validation
-            if (reservationNumber.isEmpty() || txtFName.getText().trim().isEmpty() || 
-                txtLName.getText().trim().isEmpty() || email.isEmpty() || 
-                contact.isEmpty() || address.isEmpty()) {
+    // Get the description from the selected ComboItem
+    String region = (regionCombo.getSelectedItem() != null) ? regionCombo.getSelectedItem().toString() : "";
+    String province = (provinceCombo.getSelectedItem() != null) ? provinceCombo.getSelectedItem().toString() : "";
+    String municipality = (municipalCombo.getSelectedItem() != null) ? municipalCombo.getSelectedItem().toString() : "";
+    String barangay = (brgyCombo.getSelectedItem() != null) ? brgyCombo.getSelectedItem().toString() : "";
 
-                JOptionPane.showMessageDialog(this, "Please fill in all the required fields.", "Missing Information", JOptionPane.WARNING_MESSAGE);
-                return; // Stop here if validation fails
-            }
+    // Basic validation
+    if (reservationNumber.isEmpty() || txtFName.getText().trim().isEmpty() ||
+        txtLName.getText().trim().isEmpty() || email.isEmpty() ||
+        contact.isEmpty() || region.isEmpty() || province.isEmpty() || municipality.isEmpty() || barangay.isEmpty()) {
 
-            // You can add more checks (e.g., email format, contact number length) if needed
+        JOptionPane.showMessageDialog(this, "Please fill in all the required fields.", "Missing Information", JOptionPane.WARNING_MESSAGE);
+        return; // Stop here if validation fails
+    }
 
-            pnlPayment.setVisible(true); // Show payment panel only if validation passes
+    // Additional validation: Email format check
+    if (!email.matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9s_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$")) {
+        JOptionPane.showMessageDialog(this, "Please enter a valid email address.", "Invalid Email", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    // Additional validation: Contact number length check (assuming a 10-digit number)
+    if (!contact.matches("^\\d{10,15}$")) {
+        JOptionPane.showMessageDialog(this, "Phone must be 10-15 digits!", 
+            "Validation Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // If all validations pass, show the payment panel
+    pnlPayment.setVisible(true);  // Show the payment panel only if validation passes
+
+
     }//GEN-LAST:event_lblMouseClicked
 
     private void lblPaymentMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblPaymentMouseClicked
@@ -916,7 +1173,13 @@ private void handleLabelEvent(java.awt.event.MouseEvent evt) {
 String guestName = txtFName.getText() + " " + txtLName.getText();
 String email = txtEmail.getText();
 String contact = txtContact.getText();
-String address = txtAddress.getText();
+  // Get the description from the selected ComboItem
+    String region = (regionCombo.getSelectedItem() != null) ? regionCombo.getSelectedItem().toString() : "";
+    String province = (provinceCombo.getSelectedItem() != null) ? provinceCombo.getSelectedItem().toString() : "";
+    String municipality = (municipalCombo.getSelectedItem() != null) ? municipalCombo.getSelectedItem().toString() : "";
+    String barangay = (brgyCombo.getSelectedItem() != null) ? brgyCombo.getSelectedItem().toString() : "";
+
+    String address = barangay + ", " + municipality + ", " + province + ", " + region;
 
 double totalPrice = roomPrice * TimeUnit.MILLISECONDS.toDays(checkOutDate.getTime() - checkInDate.getTime())
         + (100.0 + 20.0) * (numAdults + numChildren);
@@ -1009,12 +1272,12 @@ if ("GCash".equalsIgnoreCase(paymentMethod)) {
     }//GEN-LAST:event_txtProfileMouseClicked
 
     private void jLabel8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel8MouseClicked
-        try {
+         try {
             // Prepare the SQL query for logging the logout action
             String logSql = "INSERT INTO activity_log (user_id, action_type, action_description) VALUES (?, ?, ?)";
 
             // Log the logout activity using the userID of the logged-in user
-            try (PreparedStatement pst = con.prepareStatement(logSql)) {
+            try (PreparedStatement pst = resortCon.prepareStatement(logSql)) { // Use resortCon
                 pst.setInt(1, userID);  // Assuming userID is available after login
                 pst.setString(2, "LOGOUT");
                 pst.setString(3, "User logged out successfully");
@@ -1029,7 +1292,7 @@ if ("GCash".equalsIgnoreCase(paymentMethod)) {
             this.dispose();
             new landingPage().setVisible(true);
 
-        }catch (Exception ex) {
+        } catch (Exception ex) {
             // Handle any other unforeseen exceptions
             java.util.logging.Logger.getLogger(guestProcess2.class.getName()).log(java.util.logging.Level.SEVERE, "Unexpected error during logout", ex);
         }
@@ -1038,6 +1301,10 @@ if ("GCash".equalsIgnoreCase(paymentMethod)) {
     private void panelRound6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelRound6MouseClicked
 
     }//GEN-LAST:event_panelRound6MouseClicked
+
+    private void regionComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regionComboActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_regionComboActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1149,6 +1416,8 @@ if ("GCash".equalsIgnoreCase(paymentMethod)) {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private GUI.Combobox brgyCombo;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel17;
@@ -1161,7 +1430,6 @@ if ("GCash".equalsIgnoreCase(paymentMethod)) {
     private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel35;
     private javax.swing.JLabel jLabel39;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel41;
     private javax.swing.JLabel jLabel42;
     private javax.swing.JLabel jLabel45;
@@ -1171,6 +1439,7 @@ if ("GCash".equalsIgnoreCase(paymentMethod)) {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
@@ -1198,13 +1467,15 @@ if ("GCash".equalsIgnoreCase(paymentMethod)) {
     private javax.swing.JLabel lblRoomNumber;
     private javax.swing.JLabel lblRoomType;
     private javax.swing.JLabel lblTotalRoomPrice;
+    private GUI.Combobox municipalCombo;
     private GUI.PanelRound panelRound1;
     private GUI.PanelRound panelRound4;
     private GUI.PanelRound panelRound5;
     private GUI.PanelRound panelRound6;
     private rojerusan.RSComboMetro paymentMethodComboBox;
     private javax.swing.JPanel pnlPayment;
-    private textfield.TextField txtAddress;
+    private GUI.Combobox provinceCombo;
+    private GUI.Combobox regionCombo;
     private textfield.TextField txtContact;
     private textfield.TextField txtEmail;
     private textfield.TextField txtFName;

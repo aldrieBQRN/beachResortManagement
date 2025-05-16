@@ -325,7 +325,7 @@ public final void showCompleteRoomReservations() {
               "JOIN room_reservation rr ON r.reservation_number = rr.reservation_number " +
               "JOIN room rm ON rr.room_number = rm.room_number " +
               "LEFT JOIN reservation_ratings rat ON rr.room_reservation_id = rat.room_reservation_id " +
-              "WHERE r.user_id = ? AND r.status = 'Check-out' " +
+              "WHERE r.user_id = ? AND r.status != 'Pednding' " +
               "ORDER BY r.reservation_number DESC")) {
 
         pst.setInt(1, userId);
@@ -1062,7 +1062,7 @@ private void cancelReservation(int roomReservationId) {
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         materialTabbed1.setForeground(new java.awt.Color(0, 0, 0));
-        materialTabbed1.setFont(new java.awt.Font("Helvetica Neue", 0, 15)); // NOI18N
+        materialTabbed1.setFont(new java.awt.Font("Helvetica Neue", 1, 15)); // NOI18N
 
         pending.setBackground(new java.awt.Color(255, 255, 255));
         pending.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -1080,7 +1080,7 @@ private void cancelReservation(int roomReservationId) {
         jLabel6.setForeground(new java.awt.Color(0, 0, 0));
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel6.setText("My Reservation");
-        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, 680, 60));
+        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, 840, 60));
 
         jLabel1.setFont(new java.awt.Font("Helvetica Neue", 1, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(0, 0, 0));

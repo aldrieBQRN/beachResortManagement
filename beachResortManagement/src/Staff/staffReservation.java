@@ -98,8 +98,7 @@ public final class staffReservation extends javax.swing.JInternalFrame {
         UI.setNorthPane(null); 
     }
     
-  
- private void fetchPendingRoomReservations() {
+private void fetchPendingRoomReservations() {
     try {
         pst = con.prepareStatement("SELECT reservation_number, guest.guest_name, r.check_in_date, r.check_out_date, r.total_price, r.created_at, r.reservation_id "
                                   + "FROM reservation r "
@@ -109,7 +108,7 @@ public final class staffReservation extends javax.swing.JInternalFrame {
         rs = pst.executeQuery();
 
         DefaultTableModel reservationModel = new DefaultTableModel(
-            new Object[]{"Reservation Number", "Guest Name", "Check-In Date", "Check-Out Date", "Total Price","Created At",  "Actions"}, 0
+            new Object[]{"Reservation Number", "Guest Name", "Check-In Date", "Check-Out Date", "Total Price", "Created At", "Actions"}, 0
         ) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -120,10 +119,10 @@ public final class staffReservation extends javax.swing.JInternalFrame {
 
         tblReservation.setModel(reservationModel);
         
-        // Set up the combined panel renderer and editor
+        // Set up the combined panel renderer and editor (now with 3 buttons)
         TableColumn actionColumn = tblReservation.getColumnModel().getColumn(6);
-        actionColumn.setCellRenderer(new DualPanelRenderer());
-        actionColumn.setCellEditor(new DualPanelEditor(new JCheckBox()));
+        actionColumn.setCellRenderer(new TriPanelRenderer());
+        actionColumn.setCellEditor(new TriPanelEditor(new JCheckBox()));
 
         boolean found = false;
 
@@ -144,42 +143,61 @@ public final class staffReservation extends javax.swing.JInternalFrame {
             String formattedCreatedAt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(createdAt);
 
             reservationModel.addRow(new Object[]{
-                 
                 reservationNumber,
                 guestName,
                 formattedCheckInDate,
                 formattedCheckOutDate,
                 "₱" + String.format("%.2f", totalPrice),
-               formattedCreatedAt,
+                formattedCreatedAt,
                 reservationId // Store the reservation ID in the actions column
             });
         }
 
+        if (!found) {
+            // Clear the table if no pending reservations found
+            reservationModel.setRowCount(0);
+            JOptionPane.showMessageDialog(this, "No pending reservations found.", "Information", JOptionPane.INFORMATION_MESSAGE);
+        }
+
     } catch (SQLException ex) {
-        JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage());
+        JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        ex.printStackTrace();
     } catch (Exception ex) {
-        JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+        JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        ex.printStackTrace();
+    } finally {
+        // Close resources
+        try {
+            if (rs != null) rs.close();
+            if (pst != null) pst.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
     }
 }
-
-// Updated DualPanelRenderer class with white borders
-// Updated DualPanelRenderer with new View color
-class DualPanelRenderer extends JPanel implements TableCellRenderer {
+ 
+// Updated TriPanelRenderer with View, Confirm, and Reject buttons
+class TriPanelRenderer extends JPanel implements TableCellRenderer {
     private JPanel viewPanel;
     private JPanel confirmPanel;
+    private JPanel rejectPanel;
     private JLabel viewLabel;
     private JLabel confirmLabel;
+    private JLabel rejectLabel;
     
     // Define colors as constants
     private static final Color VIEW_COLOR = new Color(27, 59, 95);
     private static final Color VIEW_HOVER = new Color(47, 79, 115);
     private static final Color VIEW_SELECTED = new Color(67, 99, 135);
-    private static final Color CONFIRM_COLOR = new Color(51,204,0);
+    private static final Color CONFIRM_COLOR = new Color(51, 204, 0);
     private static final Color CONFIRM_HOVER = new Color(54, 159, 54);
     private static final Color CONFIRM_SELECTED = new Color(50, 160, 50);
+    private static final Color REJECT_COLOR = new Color(204, 0, 0);
+    private static final Color REJECT_HOVER = new Color(180, 40, 40);
+    private static final Color REJECT_SELECTED = new Color(160, 50, 50);
 
-    public DualPanelRenderer() {
-        setLayout(new GridLayout(1, 2, 0, 0));
+    public TriPanelRenderer() {
+        setLayout(new GridLayout(1, 3, 0, 0));
         setOpaque(true);
         
         // View Panel
@@ -200,7 +218,7 @@ class DualPanelRenderer extends JPanel implements TableCellRenderer {
         confirmPanel.setBackground(CONFIRM_COLOR);
         confirmPanel.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(Color.WHITE, 1),
-            BorderFactory.createEmptyBorder(5, 5, 5, 10)
+            BorderFactory.createEmptyBorder(5, 5, 5, 5)
         ));
         
         confirmLabel = new JLabel("Confirm");
@@ -208,8 +226,22 @@ class DualPanelRenderer extends JPanel implements TableCellRenderer {
         confirmLabel.setFont(confirmLabel.getFont().deriveFont(Font.BOLD));
         confirmPanel.add(confirmLabel, new GridBagConstraints());
         
+        // Reject Panel
+        rejectPanel = new JPanel(new GridBagLayout());
+        rejectPanel.setBackground(REJECT_COLOR);
+        rejectPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.WHITE, 1),
+            BorderFactory.createEmptyBorder(5, 5, 5, 10)
+        ));
+        
+        rejectLabel = new JLabel("Reject");
+        rejectLabel.setForeground(Color.WHITE);
+        rejectLabel.setFont(rejectLabel.getFont().deriveFont(Font.BOLD));
+        rejectPanel.add(rejectLabel, new GridBagConstraints());
+        
         add(viewPanel);
         add(confirmPanel);
+        add(rejectPanel);
     }
 
     public Component getTableCellRendererComponent(JTable table, Object value,
@@ -218,10 +250,12 @@ class DualPanelRenderer extends JPanel implements TableCellRenderer {
             setBackground(table.getSelectionBackground());
             viewPanel.setBackground(VIEW_SELECTED);
             confirmPanel.setBackground(CONFIRM_SELECTED);
+            rejectPanel.setBackground(REJECT_SELECTED);
         } else {
             setBackground(table.getBackground());
             viewPanel.setBackground(VIEW_COLOR);
             confirmPanel.setBackground(CONFIRM_COLOR);
+            rejectPanel.setBackground(REJECT_COLOR);
         }
         
         // Maintain white borders
@@ -231,6 +265,10 @@ class DualPanelRenderer extends JPanel implements TableCellRenderer {
         ));
         confirmPanel.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(Color.WHITE, 1),
+            BorderFactory.createEmptyBorder(5, 5, 5, 5)
+        ));
+        rejectPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.WHITE, 1),
             BorderFactory.createEmptyBorder(5, 5, 5, 10)
         ));
         
@@ -238,13 +276,15 @@ class DualPanelRenderer extends JPanel implements TableCellRenderer {
     }
 }
 
-// Updated DualPanelEditor with new View color
-class DualPanelEditor extends AbstractCellEditor implements TableCellEditor {
+// Updated TriPanelEditor with View, Confirm, and Reject buttons
+class TriPanelEditor extends AbstractCellEditor implements TableCellEditor {
     private JPanel mainPanel;
     private JPanel viewPanel;
     private JPanel confirmPanel;
+    private JPanel rejectPanel;
     private JLabel viewLabel;
     private JLabel confirmLabel;
+    private JLabel rejectLabel;
     private int currentRow;
     private Object currentValue;
     
@@ -252,12 +292,15 @@ class DualPanelEditor extends AbstractCellEditor implements TableCellEditor {
     private static final Color VIEW_COLOR = new Color(27, 59, 95);
     private static final Color VIEW_HOVER = new Color(47, 79, 115);
     private static final Color VIEW_SELECTED = new Color(67, 99, 135);
-    private static final Color CONFIRM_COLOR = new Color(51,204,0);
+    private static final Color CONFIRM_COLOR = new Color(51, 204, 0);
     private static final Color CONFIRM_HOVER = new Color(54, 159, 54);
     private static final Color CONFIRM_SELECTED = new Color(50, 160, 50);
+    private static final Color REJECT_COLOR = new Color(204, 0, 0);
+    private static final Color REJECT_HOVER = new Color(180, 40, 40);
+    private static final Color REJECT_SELECTED = new Color(160, 50, 50);
 
-    public DualPanelEditor(JCheckBox checkBox) {
-        mainPanel = new JPanel(new GridLayout(1, 2, 0, 0));
+    public TriPanelEditor(JCheckBox checkBox) {
+        mainPanel = new JPanel(new GridLayout(1, 3, 0, 0));
         mainPanel.setOpaque(true);
         
         // View Panel
@@ -297,7 +340,7 @@ class DualPanelEditor extends AbstractCellEditor implements TableCellEditor {
         confirmPanel.setBackground(CONFIRM_COLOR);
         confirmPanel.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(Color.WHITE, 1),
-            BorderFactory.createEmptyBorder(5, 5, 5, 10)
+            BorderFactory.createEmptyBorder(5, 5, 5, 5)
         ));
         
         confirmLabel = new JLabel("Confirm");
@@ -324,8 +367,41 @@ class DualPanelEditor extends AbstractCellEditor implements TableCellEditor {
             }
         });
         
+        // Reject Panel
+        rejectPanel = new JPanel(new GridBagLayout());
+        rejectPanel.setBackground(REJECT_COLOR);
+        rejectPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.WHITE, 1),
+            BorderFactory.createEmptyBorder(5, 5, 5, 10)
+        ));
+        
+        rejectLabel = new JLabel("Reject");
+        rejectLabel.setForeground(Color.WHITE);
+        rejectLabel.setFont(rejectLabel.getFont().deriveFont(Font.BOLD));
+        rejectPanel.add(rejectLabel, new GridBagConstraints());
+        
+        // Mouse listeners for Reject panel
+        rejectPanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                fireEditingStopped();
+                handleButtonClick(currentRow, "Reject");
+            }
+            
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                rejectPanel.setBackground(REJECT_HOVER);
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e) {
+                rejectPanel.setBackground(REJECT_COLOR);
+            }
+        });
+        
         mainPanel.add(viewPanel);
         mainPanel.add(confirmPanel);
+        mainPanel.add(rejectPanel);
     }
 
     public Component getTableCellEditorComponent(JTable table, Object value,
@@ -337,10 +413,12 @@ class DualPanelEditor extends AbstractCellEditor implements TableCellEditor {
             mainPanel.setBackground(table.getSelectionBackground());
             viewPanel.setBackground(VIEW_SELECTED);
             confirmPanel.setBackground(CONFIRM_SELECTED);
+            rejectPanel.setBackground(REJECT_SELECTED);
         } else {
             mainPanel.setBackground(table.getBackground());
             viewPanel.setBackground(VIEW_COLOR);
             confirmPanel.setBackground(CONFIRM_COLOR);
+            rejectPanel.setBackground(REJECT_COLOR);
         }
         
         // Maintain white borders
@@ -349,6 +427,10 @@ class DualPanelEditor extends AbstractCellEditor implements TableCellEditor {
             BorderFactory.createEmptyBorder(5, 10, 5, 5)
         ));
         confirmPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.WHITE, 1),
+            BorderFactory.createEmptyBorder(5, 5, 5, 5)
+        ));
+        rejectPanel.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(Color.WHITE, 1),
             BorderFactory.createEmptyBorder(5, 5, 5, 10)
         ));
@@ -363,7 +445,7 @@ class DualPanelEditor extends AbstractCellEditor implements TableCellEditor {
 
 // Keep your existing handleButtonClick, viewReservationDetails, and confirmReservation methods
 
-   private void handleButtonClick(int row, String action) {
+  private void handleButtonClick(int row, String action) {
     String reservationNumber = (String) tblReservation.getValueAt(row, 0);
     
     if ("View".equals(action)) {
@@ -376,8 +458,104 @@ class DualPanelEditor extends AbstractCellEditor implements TableCellEditor {
         
         if (confirm == JOptionPane.YES_OPTION) {
             confirmReservation(reservationNumber);
-        } else {
+        }
+    } else if ("Reject".equals(action)) {
+        int reject = JOptionPane.showConfirmDialog(this,
+                "Are you sure you want to reject reservation number " + reservationNumber + "?",
+                "Reject Reservation",
+                JOptionPane.YES_NO_OPTION);
+        
+        if (reject == JOptionPane.YES_OPTION) {
+            rejectReservation(reservationNumber);
+        }
+    }
+}
+  
+  private void rejectReservation(String reservationNumber) {
+    PreparedStatement updateReservationStmt = null;
+    PreparedStatement updatePaymentStmt = null;
+    PreparedStatement getIdStmt = null;
+    ResultSet rs = null;
+    PreparedStatement logStmt = null;
+    
+    try {
+        // Start transaction
+        con.setAutoCommit(false);
+
+        // 1. First get the reservation_id
+        String getIdQuery = "SELECT reservation_id FROM reservation WHERE reservation_number = ?";
+        getIdStmt = con.prepareStatement(getIdQuery);
+        getIdStmt.setString(1, reservationNumber);
+        rs = getIdStmt.executeQuery();
+        
+        if (!rs.next()) {
+            JOptionPane.showMessageDialog(this,
+                "Reservation not found with number: " + reservationNumber,
+                "Not Found",
+                JOptionPane.ERROR_MESSAGE);
             return;
+        }
+        
+        int reservationId = rs.getInt("reservation_id");
+
+        // 2. Update reservation status to "Rejected"
+        String updateReservationQuery = "UPDATE reservation SET status = 'Rejected' WHERE reservation_id = ?";
+        updateReservationStmt = con.prepareStatement(updateReservationQuery);
+        updateReservationStmt.setInt(1, reservationId);
+        int reservationUpdated = updateReservationStmt.executeUpdate();
+
+        // 3. Update payment status to "Refunded" (if downpayment exists)
+        String updatePaymentQuery = "UPDATE payment SET status = 'Refunded' " +
+                                 "WHERE reservation_id = ? AND payment_type = 'Downpayment'";
+        updatePaymentStmt = con.prepareStatement(updatePaymentQuery);
+        updatePaymentStmt.setInt(1, reservationId);
+        int paymentUpdated = updatePaymentStmt.executeUpdate();
+
+        // Check if the reservation update was successful
+        if (reservationUpdated > 0) {
+            con.commit();
+            // Log the activity
+            String logQuery = "INSERT INTO activity_log (user_id, action_type, action_description) VALUES (?, ?, ?)";
+            logStmt = con.prepareStatement(logQuery);
+            logStmt.setInt(1, userID);
+            logStmt.setString(2, "REJECT_RESERVATION");
+            logStmt.setString(3, "Rejected reservation #" + reservationNumber);
+            logStmt.executeUpdate();
+            
+            JOptionPane.showMessageDialog(this, 
+                "Reservation #" + reservationNumber + " rejected successfully!",
+                "Rejection Successful", 
+                JOptionPane.INFORMATION_MESSAGE);
+            fetchPendingRoomReservations();
+        } else {
+            con.rollback();
+            JOptionPane.showMessageDialog(this,
+                "Failed to reject reservation.",
+                "Rejection Failed",
+                JOptionPane.ERROR_MESSAGE);
+        }
+    } catch (SQLException ex) {
+        try {
+            if (con != null) con.rollback();
+        } catch (SQLException e) {
+            ex.addSuppressed(e);
+        }
+        JOptionPane.showMessageDialog(this,
+            "Database error while rejecting reservation:\n" + ex.getMessage(),
+            "Error",
+            JOptionPane.ERROR_MESSAGE);
+        ex.printStackTrace();
+    } finally {
+        // Restore auto-commit and close resources
+        try {
+            if (con != null) con.setAutoCommit(true);
+            if (rs != null) rs.close();
+            if (getIdStmt != null) getIdStmt.close();
+            if (updateReservationStmt != null) updateReservationStmt.close();
+            if (updatePaymentStmt != null) updatePaymentStmt.close();
+            if (logStmt != null) logStmt.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
     }
 }
@@ -652,7 +830,7 @@ private void confirmReservation(String reservationNumber) {
 
         jLabel1.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
         jLabel1.setText("Reservation");
-        jPanel3.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 180, 40));
+        jPanel3.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 180, 50));
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 1160, 60));
 

@@ -90,7 +90,7 @@
                   <Color blue="0" green="0" red="0" type="rgb"/>
                 </Property>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="Helvetica Neue" size="15" style="0"/>
+                  <Font name="Helvetica Neue" size="15" style="1"/>
                 </Property>
               </Properties>
               <Constraints>

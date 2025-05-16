@@ -14,11 +14,21 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 import Database.DatabaseConnection; 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Insets;
+import java.awt.RenderingHints;
 import java.text.SimpleDateFormat;
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.RowFilter;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
@@ -74,18 +84,15 @@ public class adminReservation extends javax.swing.JInternalFrame {
         BasicInternalFrameUI UI = (BasicInternalFrameUI) this.getUI();
         UI.setNorthPane(null); 
     }
-    
 public final void showReservations() {
-    String selectedStatus = statusComboBox.getSelectedItem().toString(); // "All", "Pending", etc.
+    String selectedStatus = statusComboBox.getSelectedItem().toString();
 
     try {
-        // Base query
         String query = "SELECT reservation_number, guest.guest_name, r.check_in_date, " +
-                       "r.check_out_date, r.total_price, r.status, r.created_at " +
-                       "FROM reservation r " +
-                       "JOIN guest ON r.guest_id = guest.guest_id";
+                      "r.check_out_date, r.total_price, r.status, r.created_at " +
+                      "FROM reservation r " +
+                      "JOIN guest ON r.guest_id = guest.guest_id";
 
-        // Add WHERE clause if a specific status is selected
         if (!selectedStatus.equalsIgnoreCase("All")) {
             query += " WHERE r.status = ?";
         }
@@ -99,12 +106,19 @@ public final void showReservations() {
         rs = pst.executeQuery();
 
         DefaultTableModel model = (DefaultTableModel) completedTable.getModel();
-        model.setRowCount(0); // clear old data
+        model.setRowCount(0);
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+        // Set custom renderer for the status column (adjust the column index as needed)
+        completedTable.getColumnModel().getColumn(6).setCellRenderer(new StatusCellRenderer());
+
         while (rs.next()) {
+            String status = rs.getString("status");
+            // Make sure status is not null
+            if (status == null) status = "Unknown";
+            
             model.addRow(new Object[] {
                 timestampFormat.format(rs.getTimestamp("created_at")),
                 rs.getString("reservation_number"),
@@ -112,13 +126,110 @@ public final void showReservations() {
                 dateFormat.format(rs.getDate("check_in_date")),
                 dateFormat.format(rs.getDate("check_out_date")),
                 "₱" + String.format("%.2f", rs.getDouble("total_price")),
-                rs.getString("status")
+                status // Make sure this is included
             });
         }
 
     } catch (SQLException ex) {
         JOptionPane.showMessageDialog(this, "Error loading reservations: " + ex.getMessage(),
-                                      "Database Error", JOptionPane.ERROR_MESSAGE);
+                                    "Database Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+// Enhanced Status Cell Renderer
+class StatusCellRenderer extends DefaultTableCellRenderer {
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value, 
+            boolean isSelected, boolean hasFocus, int row, int column) {
+        
+        super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        JLabel label = (JLabel) this;
+        
+        if (value == null) {
+            value = "Unknown";
+        }
+        
+        String status = value.toString().toLowerCase();
+        
+        // Set colors based on status with better contrast
+        Color bgColor;
+        Color fgColor = Color.WHITE; // Default text color
+        
+        switch (status.toLowerCase()) {
+            case "confirmed":
+                bgColor = new Color(40, 167, 69); // Green
+                break;
+            case "pending":
+                bgColor = new Color(255, 193, 7); // Yellow
+                fgColor = Color.BLACK;
+                break;
+            case "cancelled":
+                bgColor = new Color(220, 53, 69); // Red
+                break;
+            case "rejected":  // New status
+                bgColor = new Color(139, 0, 0); // Dark Red
+                break;
+            case "checked in":
+                bgColor = new Color(23, 162, 184); // Teal
+                break;
+            case "checked out":
+                bgColor = new Color(108, 117, 125); // Gray
+                break;
+            default:
+                bgColor = Color.LIGHT_GRAY;
+                fgColor = Color.BLACK;
+        }
+
+        // For light backgrounds, use dark text
+        if (bgColor.getRed() + bgColor.getGreen() + bgColor.getBlue() > 382) {
+            fgColor = Color.BLACK;
+        }
+        
+        label.setBackground(bgColor);
+        label.setForeground(fgColor);
+        label.setHorizontalAlignment(JLabel.CENTER);
+        label.setOpaque(true);
+        
+        // Create oval shape with padding
+        label.setBorder(BorderFactory.createCompoundBorder(
+            new RoundedBorder(15, bgColor),
+            BorderFactory.createEmptyBorder(2, 10, 2, 10)
+        ));
+        
+        // Make sure text is set
+        label.setText(value.toString());
+        
+        return label;
+    }
+}
+
+// Improved Rounded Border
+class RoundedBorder implements Border {
+    private int radius;
+    private Color color;
+    
+    public RoundedBorder(int radius, Color color) {
+        this.radius = radius;
+        this.color = color;
+    }
+    
+    @Override
+    public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+        Graphics2D g2 = (Graphics2D) g.create();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setColor(color);
+        g2.drawRoundRect(x, y, width-1, height-1, radius, radius);
+        g2.dispose();
+    }
+    
+    @Override
+    public Insets getBorderInsets(Component c) {
+        return new Insets(radius+1, radius+1, radius+1, radius+1);
+    }
+    
+    @Override
+    public boolean isBorderOpaque() {
+        return false;
     }
 }
 
@@ -228,7 +339,7 @@ public final void showReservations() {
         jPanel2.add(txtsearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 20, 290, 40));
 
         statusComboBox.setEditable(false);
-        statusComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All", "Pending", "Confirmed", "Check-in", "Check-out" }));
+        statusComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All", "Pending", "Rejected", "Confirmed", "Check-in", "Check-out" }));
         statusComboBox.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 statusComboBoxItemStateChanged(evt);

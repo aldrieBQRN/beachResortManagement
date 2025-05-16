@@ -284,6 +284,9 @@ private void clearFields() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel1MouseClicked(evt);
             }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jLabel1MouseEntered(evt);
+            }
         });
         panelRound2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 70, 35));
 
@@ -364,6 +367,10 @@ private void clearFields() {
     private void passwordField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordField3ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_passwordField3ActionPerformed
+
+    private void jLabel1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseEntered
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jLabel1MouseEntered
 
     /**
      * @param args the command line arguments

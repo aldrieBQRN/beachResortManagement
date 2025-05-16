@@ -88,6 +88,7 @@ public class guestGcashPayment extends javax.swing.JFrame {
         this.boatPrice = boatPrice;
 
         initializeUI();
+        
     }
     
     // Constructor without boat reservation
@@ -138,24 +139,24 @@ public class guestGcashPayment extends javax.swing.JFrame {
     
     // Database connection method
     public final void DatabaseConnection() {
-        String url = "jdbc:mysql://localhost:3307/beachResortManagement";
-        String user = "root";
-        String password = "";
-        
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            con = DriverManager.getConnection(url, user, password);
-            System.out.println("Connected to the database successfully!");
-        } catch (SQLException e) {
-            System.out.println("Error connecting to the database: " + e.getMessage());
-            JOptionPane.showMessageDialog(null, "Database connection error: " + e.getMessage(), 
+    String url = "jdbc:mysql://localhost:3307/beachResortManagement?serverTimezone=Asia/Manila";
+    String user = "root";
+    String password = "";
+
+    try {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        con = DriverManager.getConnection(url, user, password);
+        System.out.println("Connected to the database successfully!");
+    } catch (SQLException e) {
+        System.out.println("Error connecting to the database: " + e.getMessage());
+        JOptionPane.showMessageDialog(null, "Database connection error: " + e.getMessage(),
                                         "Connection Error", JOptionPane.ERROR_MESSAGE);
-        } catch (ClassNotFoundException e) {
-            System.out.println("MySQL JDBC Driver not found: " + e.getMessage());
-            JOptionPane.showMessageDialog(null, "Database driver not found: " + e.getMessage(), 
+    } catch (ClassNotFoundException e) {
+        System.out.println("MySQL JDBC Driver not found: " + e.getMessage());
+        JOptionPane.showMessageDialog(null, "Database driver not found: " + e.getMessage(),
                                         "Driver Error", JOptionPane.ERROR_MESSAGE);
-        }
     }
+}
     
     // Main insertion method that decides which path to take
     public void processReservation(String referenceNumber) {
@@ -203,6 +204,9 @@ public class guestGcashPayment extends javax.swing.JFrame {
         int totalGuests = numAdults + numChildren;
         double entranceFee = 100.0 * totalGuests;
         double ecologicalFee = 20.0 * totalGuests;
+        
+        System.out.println("Check-in Date (java.util.Date): " + checkInDate);
+        System.out.println("Check-out Date (java.util.Date): " + checkOutDate);
 
         // SQL query matching your schema
         String roomReservationQuery = "INSERT INTO room_reservation " +

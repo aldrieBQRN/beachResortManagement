@@ -233,7 +233,7 @@ public final void showBoatDetails() {
         jPanel2.add(txtsearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 20, 290, 40));
 
         sortComboBox.setEditable(false);
-        sortComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All", "Ascending", "Descendin", " " }));
+        sortComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All", "Ascending", "Descending" }));
         sortComboBox.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 sortComboBoxItemStateChanged(evt);
