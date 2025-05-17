@@ -137,7 +137,7 @@ public class guestPaypalPayment extends javax.swing.JFrame {
     
     // Database connection method
     public final void DatabaseConnection() {
-        String url = "jdbc:mysql://localhost:3307/beachResortManagement";
+         String url = "jdbc:mysql://localhost:3307/beachResortManagement?serverTimezone=Asia/Manila";
         String user = "root";
         String password = "";
         

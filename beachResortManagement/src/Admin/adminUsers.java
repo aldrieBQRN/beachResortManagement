@@ -264,7 +264,7 @@ public class adminUsers extends javax.swing.JInternalFrame {
         jLabel1.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(0, 0, 0));
         jLabel1.setText("List of Users");
-        jPanel3.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, 40));
+        jPanel3.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, 50));
 
         jPanel4.setBackground(new java.awt.Color(0, 204, 51));
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());

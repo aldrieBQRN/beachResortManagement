@@ -4,16 +4,12 @@
  */
 package Admin;
 
-import Staff.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
-import Database.DatabaseConnection; 
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
@@ -23,14 +19,24 @@ import java.awt.RenderingHints;
 import java.text.SimpleDateFormat;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.RowFilter;
 import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
+import javax.swing.JOptionPane;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+
 
 /**
  *
@@ -135,6 +141,106 @@ public final void showReservations() {
                                     "Database Error", JOptionPane.ERROR_MESSAGE);
     }
 }
+
+public void printTableToPDF() {
+    // Create file chooser
+    JFileChooser fileChooser = new JFileChooser();
+    fileChooser.setDialogTitle("Save PDF");
+    fileChooser.setFileFilter(new FileNameExtensionFilter("PDF Files", "pdf"));
+    
+    // Set default file name with timestamp
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+    String defaultFileName = "Reservations_" + dateFormat.format(new Date()) + ".pdf";
+    fileChooser.setSelectedFile(new java.io.File(defaultFileName));
+    
+    int userSelection = fileChooser.showSaveDialog(this);
+    
+    if (userSelection == JFileChooser.APPROVE_OPTION) {
+        String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+        
+        // Ensure the file has .pdf extension
+        if (!filePath.toLowerCase().endsWith(".pdf")) {
+            filePath += ".pdf";
+        }
+        
+        Document document = new Document();
+        
+        try {
+            PdfWriter.getInstance(document, new FileOutputStream(filePath));
+            document.open();
+            
+            // Add title
+            Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, BaseColor.BLACK);
+            Paragraph title = new Paragraph("Reservation Report", titleFont);
+            title.setAlignment(Element.ALIGN_CENTER);
+            title.setSpacingAfter(20f);
+            document.add(title);
+            
+            // Add date/time of generation
+            Font dateFont = FontFactory.getFont(FontFactory.HELVETICA, 10, BaseColor.BLACK);
+            Paragraph datePara = new Paragraph("Generated on: " + new Date(), dateFont);
+            datePara.setAlignment(Element.ALIGN_CENTER);
+            datePara.setSpacingAfter(20f);
+            document.add(datePara);
+            
+            // Create PDF table
+            PdfPTable pdfTable = new PdfPTable(completedTable.getColumnCount());
+            pdfTable.setWidthPercentage(100);
+            
+            // Add table headers
+            for (int i = 0; i < completedTable.getColumnCount(); i++) {
+                PdfPCell cell = new PdfPCell(new Phrase(completedTable.getColumnName(i)));
+                cell.setBackgroundColor(BaseColor.LIGHT_GRAY);
+                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                pdfTable.addCell(cell);
+            }
+            
+            // Add table rows
+            for (int rows = 0; rows < completedTable.getRowCount(); rows++) {
+                for (int cols = 0; cols < completedTable.getColumnCount(); cols++) {
+                    Object value = completedTable.getValueAt(rows, cols);
+                    String cellValue = (value == null) ? "" : value.toString();
+                    
+                    PdfPCell cell = new PdfPCell(new Phrase(cellValue));
+                    
+                    // Special formatting for status column (assuming it's column 6)
+                    if (cols == 6) {
+                        if (cellValue.equalsIgnoreCase("Confirmed")) {
+                            cell.setBackgroundColor(BaseColor.GREEN);
+                        } else if (cellValue.equalsIgnoreCase("Cancelled")) {
+                            cell.setBackgroundColor(BaseColor.RED);
+                        } else if (cellValue.equalsIgnoreCase("Pending")) {
+                            cell.setBackgroundColor(BaseColor.YELLOW);
+                        } else if (cellValue.equalsIgnoreCase("Completed")) {
+                            cell.setBackgroundColor(BaseColor.BLUE);
+                            cell.setPhrase(new Phrase(cellValue, FontFactory.getFont(FontFactory.HELVETICA, 10, BaseColor.WHITE)));
+                        }
+                    }
+                    
+                    pdfTable.addCell(cell);
+                }
+            }
+            
+            document.add(pdfTable);
+            
+            // Add footer
+            Paragraph footer = new Paragraph("End of Report", dateFont);
+            footer.setAlignment(Element.ALIGN_CENTER);
+            footer.setSpacingBefore(20f);
+            document.add(footer);
+            
+            JOptionPane.showMessageDialog(this, "PDF created successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error creating PDF: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            if (document != null && document.isOpen()) {
+                document.close();
+            }
+        }
+    }
+}
+
+
 
 // Enhanced Status Cell Renderer
 class StatusCellRenderer extends DefaultTableCellRenderer {
@@ -253,6 +359,8 @@ class RoundedBorder implements Border {
         completedTable = new rojerusan.RSTableMetro();
         txtsearch = new textfield_suggestion.TextFieldSuggestion();
         statusComboBox = new GUI.ComboBoxSuggestion();
+        jPanel5 = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
 
@@ -352,6 +460,22 @@ class RoundedBorder implements Border {
         });
         jPanel2.add(statusComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 110, 40));
 
+        jPanel5.setBackground(new java.awt.Color(27, 59, 95));
+        jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel3.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 13)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel3.setText("Print");
+        jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel3MouseClicked(evt);
+            }
+        });
+        jPanel5.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, 70, 40));
+
+        jPanel2.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(1050, 20, 90, 40));
+
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 1160, 660));
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
@@ -361,7 +485,7 @@ class RoundedBorder implements Border {
         jLabel1.setBackground(new java.awt.Color(0, 0, 0));
         jLabel1.setFont(new java.awt.Font("Arial Rounded MT Bold", 0, 18)); // NOI18N
         jLabel1.setText("Reservation History");
-        jPanel3.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 230, 40));
+        jPanel3.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 230, 50));
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 1160, 60));
 
@@ -406,13 +530,21 @@ class RoundedBorder implements Border {
         showReservations();
     }//GEN-LAST:event_statusComboBoxActionPerformed
 
+    private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
+printTableToPDF();
+        
+        
+    }//GEN-LAST:event_jLabel3MouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private rojerusan.RSTableMetro completedTable;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
     private GUI.ComboBoxSuggestion statusComboBox;
     private textfield_suggestion.TextFieldSuggestion txtsearch;

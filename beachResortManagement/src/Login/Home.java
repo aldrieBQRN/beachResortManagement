@@ -272,14 +272,14 @@ private void openHomePage(String role, String userName, int userID) throws SQLEx
         pnllogin.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(102, 480, 140, -1));
 
         jLabel13.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 13)); // NOI18N
-        jLabel13.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel13.setForeground(new java.awt.Color(0, 153, 255));
         jLabel13.setText("Register");
         jLabel13.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel13MouseClicked(evt);
             }
         });
-        pnllogin.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(298, 581, 60, -1));
+        pnllogin.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(299, 581, 60, -1));
 
         panelRound2.setBackground(new java.awt.Color(0, 153, 255));
         panelRound2.setRoundBottomLeft(20);

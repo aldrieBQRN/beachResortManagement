@@ -325,7 +325,7 @@ public final void showCompleteRoomReservations() {
               "JOIN room_reservation rr ON r.reservation_number = rr.reservation_number " +
               "JOIN room rm ON rr.room_number = rm.room_number " +
               "LEFT JOIN reservation_ratings rat ON rr.room_reservation_id = rat.room_reservation_id " +
-              "WHERE r.user_id = ? AND r.status != 'Pednding' " +
+              "WHERE r.user_id = ? AND r.status = 'Check-out' " +
               "ORDER BY r.reservation_number DESC")) {
 
         pst.setInt(1, userId);

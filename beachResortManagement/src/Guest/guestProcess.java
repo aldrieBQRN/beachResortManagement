@@ -107,7 +107,16 @@ public final class guestProcess extends javax.swing.JFrame {
             lblRoomNumber.setText(roomNumber != null ? roomNumber : "N/A");
             lblRoomNumber.setText(roomNumber != null ? roomNumber : "N/A");
             lblRoomType.setText(roomType != null ? roomType : "N/A");
-            lblRoomDescription.setText(roomDescription != null ? roomDescription : "N/A");
+            String displayText = (roomDescription != null) ? roomDescription : "N/A";
+
+        // Limit to 150 characters, then insert a newline
+        if (displayText.length() > 150) {
+            // Insert a newline at character 150 for wrapping
+            displayText = displayText.substring(0, 150) + "\n" + displayText.substring(150);
+        }
+
+        // To make JLabel respect line breaks, use HTML
+        lblRoomDescription.setText(displayText.replaceAll("\n", "<br>"));
             lblBoatName.setText(boatName != null ? boatName : "N/A");
             lblSqlDate.setText(sqlDate != null ? dateFormat.format(sqlDate) : "N/A");
             lblStartTime.setText(sqlStartTime != null ? timeFormat.format(sqlStartTime) : "N/A");
@@ -617,9 +626,10 @@ private void handleLabelEvent(java.awt.event.MouseEvent evt) {
         jLabel30 = new javax.swing.JLabel();
         lblRoomNumber = new javax.swing.JLabel();
         lblRoomType = new javax.swing.JLabel();
-        lblRoomDescription = new javax.swing.JLabel();
         jLabel39 = new javax.swing.JLabel();
         jLabel41 = new javax.swing.JLabel();
+        textAreaScroll1 = new GUI.TextAreaScroll();
+        lblRoomDescription = new GUI.TextArea();
         jPanel14 = new javax.swing.JPanel();
         txtEmail = new textfield.TextField();
         txtContact = new textfield.TextField();
@@ -966,10 +976,6 @@ private void handleLabelEvent(java.awt.event.MouseEvent evt) {
         lblRoomType.setText("Null");
         jPanel12.add(lblRoomType, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 40, 90, -1));
 
-        lblRoomDescription.setForeground(new java.awt.Color(0, 0, 0));
-        lblRoomDescription.setText("jLabel16");
-        jPanel12.add(lblRoomDescription, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 80, 160, 120));
-
         jLabel39.setFont(new java.awt.Font("Helvetica Neue", 1, 12)); // NOI18N
         jLabel39.setForeground(new java.awt.Color(0, 0, 0));
         jLabel39.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
@@ -981,6 +987,19 @@ private void handleLabelEvent(java.awt.event.MouseEvent evt) {
         jLabel41.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel41.setText("Room Type:");
         jPanel12.add(jLabel41, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 40, 120, -1));
+
+        textAreaScroll1.setForeground(new java.awt.Color(0, 0, 0));
+        textAreaScroll1.setFont(new java.awt.Font("Helvetica Neue", 1, 12)); // NOI18N
+        textAreaScroll1.setLabelText("Description");
+
+        lblRoomDescription.setBackground(new java.awt.Color(255, 255, 255));
+        lblRoomDescription.setColumns(20);
+        lblRoomDescription.setForeground(new java.awt.Color(0, 0, 0));
+        lblRoomDescription.setRows(5);
+        lblRoomDescription.setFont(new java.awt.Font("Helvetica Neue", 0, 12)); // NOI18N
+        textAreaScroll1.setViewportView(lblRoomDescription);
+
+        jPanel12.add(textAreaScroll1, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 80, 170, 120));
 
         jPanel11.add(jPanel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(940, 130, 470, 220));
 
@@ -1487,7 +1506,7 @@ int userID = -1; // -1 to indicate no user selected or not logged in
     private javax.swing.JLabel lblNumberOfNights;
     private javax.swing.JLabel lblPayment;
     private javax.swing.JLabel lblReservationNumber;
-    private javax.swing.JLabel lblRoomDescription;
+    private GUI.TextArea lblRoomDescription;
     private javax.swing.JLabel lblRoomNumber;
     private javax.swing.JLabel lblRoomType;
     private javax.swing.JLabel lblSqlDate;
@@ -1502,6 +1521,7 @@ int userID = -1; // -1 to indicate no user selected or not logged in
     private javax.swing.JPanel pnlPayment;
     private GUI.Combobox provinceCombo;
     private GUI.Combobox regionCombo;
+    private GUI.TextAreaScroll textAreaScroll1;
     private textfield.TextField txtContact;
     private textfield.TextField txtEmail;
     private textfield.TextField txtFName;

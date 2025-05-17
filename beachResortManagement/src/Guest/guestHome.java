@@ -493,10 +493,6 @@ private void handleLabelEvent(java.awt.event.MouseEvent evt) {
         return;
     }
 
-    if (!checkOutDate.after(today)) {
-        JOptionPane.showMessageDialog(this, "Check-out date must be after today's date");
-        return;
-    }
 
     if (!checkOutDate.after(checkInDate)) {
         JOptionPane.showMessageDialog(this, "Check-out date must be after check-in date");

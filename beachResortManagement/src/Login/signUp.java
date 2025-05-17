@@ -147,6 +147,7 @@ public class signUp extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Account created successfully!", 
                 "Success", JOptionPane.INFORMATION_MESSAGE);
             clearFields();
+            this.dispose();;
         }
     } catch (SQLException ex) {
         JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), 
@@ -255,7 +256,7 @@ private void clearFields() {
         pnllogin.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 600, 160, -1));
 
         jLabel7.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 13)); // NOI18N
-        jLabel7.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel7.setForeground(new java.awt.Color(0, 153, 255));
         jLabel7.setText("Sign In");
         jLabel7.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {

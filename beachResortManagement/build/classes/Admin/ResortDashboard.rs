@@ -1,2 +1,0 @@
-Admin.MinimalistScrollBarUI
-Admin.ResortDashboard
